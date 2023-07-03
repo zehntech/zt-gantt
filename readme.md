@@ -113,23 +113,25 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   <a href="https://zt-gantt.zehntech.net/">
     <img src="./images/links.gif">
   </a>  
-  * dragging and dropping multiple tasks horizontally and vertically  
-  * tasks filtering  
+    
+  * dragging and dropping multiple tasks horizontally and vertically    
+  * tasks filtering    
   * tooltips  
   * configurable columns in the grid  
   * customizable time scale and task edit form  
-  * task progress percent and drag task progress  
-  * export to PDF, PNG, and Excel  
+  * task progress percent and drag task progress    
+  * export to PDF, PNG, and Excel    
   * zoom levels for viewing gantt with diffrent timeline like hour, day, week, month, qarter, and year  
-  * view gantt in fullscreen  
+  * view gantt in fullscreen    
   * expand/collapse all tasks  
   * add custom marker  
-  * add/update/delete task   
+  * add/update/delete task  
   <a href="https://zt-gantt.zehntech.net/">
     <img src="./images/popup.gif">
-  </a>  
+  </a>    
+  
   * open a single task  
-  * Auto Scheduling tasks      
+  * Auto Scheduling tasks   
   * select start date and end date with drag and drop    
   
   You can see the full list of features in the [documentation](https://zehntechtechnologies-my.sharepoint.com/:w:/g/personal/sunil_solanki_zehntech_com/EbocAxY9pgVNmWLMFjoT_lYBX0am2Qr_Dq-Q28xGF1feRQ?e=yeeapt) 
