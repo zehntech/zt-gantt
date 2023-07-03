@@ -29,7 +29,7 @@
         startDate: opt.startDate,
         endDate: opt.endDate,
         zoomLevel: opt.zoomLevel || "day",
-        zoomConfig: opt.zoomConfig || [{ unit: "day", step: 1, format: "%d" }],
+        zoomConfig: opt.zoomConfig || {levels: [{ unit: "day", step: 1, format: "%d" }]},
         scales: opt.scales || [{ unit: "day", step: 1, format: "%d" }],
         minColWidth: 80,
         openedTasks: [],
@@ -6067,6 +6067,7 @@
     // function to initialize zoom options
     zoomInit: function (type = "after") {
       let zoomLevels = this.options.zoomConfig;
+      console.log(zoomLevels,"???");
       for (levels of zoomLevels.levels) {
         if (this.options.zoomLevel == levels.name) {
           this.options.scale_height =
