@@ -105,7 +105,7 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   
 #### Complete Documentation ####  
   
-[ztGantt Documentation](https://zehntech-gantt.s3.ap-south-1.amazonaws.com/docx/Documentation.pdf)
+[ztGantt Documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf)
     
 <a name="features"></a>
 ### 3. Features ###  
@@ -134,4 +134,4 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   * Auto Scheduling tasks   
   * select start date and end date with drag and drop    
   
-  You can see the full list of features in the [documentation](https://zehntech-gantt.s3.ap-south-1.amazonaws.com/docx/Documentation.pdf) 
+  You can see the full list of features in the [documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf) 
