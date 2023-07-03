@@ -105,7 +105,7 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   
 #### Complete Documentation ####  
   
-[ztGantt Documentation](https://zehntechtechnologies-my.sharepoint.com/:w:/g/personal/sunil_solanki_zehntech_com/EbocAxY9pgVNmWLMFjoT_lYBX0am2Qr_Dq-Q28xGF1feRQ?e=yeeapt)
+[ztGantt Documentation](https://zehntech-gantt.s3.ap-south-1.amazonaws.com/docx/Documentation.pdf)
     
 <a name="features"></a>
 ### 3. Features ###  
@@ -113,7 +113,7 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   <a href="https://zt-gantt.zehntech.net/">
     <img src="./images/links.gif">
   </a>  
-    
+
   * dragging and dropping multiple tasks horizontally and vertically    
   * tasks filtering    
   * tooltips  
@@ -134,4 +134,4 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   * Auto Scheduling tasks   
   * select start date and end date with drag and drop    
   
-  You can see the full list of features in the [documentation](https://zehntechtechnologies-my.sharepoint.com/:w:/g/personal/sunil_solanki_zehntech_com/EbocAxY9pgVNmWLMFjoT_lYBX0am2Qr_Dq-Q28xGF1feRQ?e=yeeapt) 
+  You can see the full list of features in the [documentation](https://zehntech-gantt.s3.ap-south-1.amazonaws.com/docx/Documentation.pdf) 
