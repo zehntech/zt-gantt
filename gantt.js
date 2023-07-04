@@ -29,7 +29,9 @@
         startDate: opt.startDate,
         endDate: opt.endDate,
         zoomLevel: opt.zoomLevel || "day",
-        zoomConfig: opt.zoomConfig || {levels: [{ unit: "day", step: 1, format: "%d" }]},
+        zoomConfig: opt.zoomConfig || {
+          levels: [{ unit: "day", step: 1, format: "%d" }],
+        },
         scales: opt.scales || [{ unit: "day", step: 1, format: "%d" }],
         minColWidth: 80,
         openedTasks: [],
@@ -214,12 +216,10 @@
         this.options.weekStart > 6 ||
         typeof this.options.weekStart !== "number"
       ) {
-        throw new Error(
-          `${
-            this.options.weekStart > 6
-              ? "enter week start between 0 to 6"
-              : "type of week start should be number!"
-          }`
+        this.throwError(
+          this.options.weekStart > 6
+            ? "enter week start between 0 to 6"
+            : "type of week start should be number!"
         );
       }
 
@@ -432,6 +432,7 @@
       headCellContainer.style.lineHeight = containerHeight;
 
       sidebar.append(headCellContainer);
+      let resizerLeft = 0;
       // head loop of left side
       for (let i = 0; i < options.columns.length; i++) {
         let headCell = document.createElement("div");
@@ -468,12 +469,8 @@
             let resizer = document.createElement("div");
             resizer.classList.add("zt-gantt-col-resizer");
             resizerWrap.append(resizer);
-
-            resizerWrap.style.left =
-              i * (options.columns[i].width || 80) +
-              (options.columns[i].width || 80) +
-              "px";
-
+            resizerLeft += options.columns[i].width || 80;
+            resizerWrap.style.left = resizerLeft + "px";
             headCellContainer.append(resizerWrap);
             this.resizeColumns(
               resizerWrap,
@@ -828,7 +825,7 @@
             (options.scales[i].unit == "day" && options.scales[i].step > 1) ||
             options.scales[i].unit == "week" ||
             options.scales[i].unit == "month" ||
-            options.scales[i].unit == "year" 
+            options.scales[i].unit == "year"
           ) {
             colDates = this.initColSizes(
               options.scales[i].unit,
@@ -874,8 +871,10 @@
               "px";
             dateCell.style.left = rangeCount + "px";
           } else {
-            dateCell.style.left = j * this.calculateGridWidth(dates[j], "day") + "px";
-            dateCell.style.width = this.calculateGridWidth(dates[j], "day") + "px";
+            dateCell.style.left =
+              j * this.calculateGridWidth(dates[j], "day") + "px";
+            dateCell.style.width =
+              this.calculateGridWidth(dates[j], "day") + "px";
           }
           let currentDate = new Date(dates[j]).setHours(0, 0, 0, 0);
           if (
@@ -889,10 +888,10 @@
             rangeCount +=
               colDates.dateCount.length * this.calculateGridWidth(dates[j]);
             endDate = new Date(colDates.endDate);
-          } else if(options.scales[i].unit == "hour"){
+          } else if (options.scales[i].unit == "hour") {
             let dateStartHour = new Date(dates[j]).getHours();
             let cellDate = new Date(dates[j]);
-            let cellWidth = this.calculateGridWidth(dates[j])
+            let cellWidth = this.calculateGridWidth(dates[j]);
             for (let k = dateStartHour; k < 24; k++) {
               let hourCell = dateCell.cloneNode(true);
 
@@ -902,11 +901,11 @@
                   : this.formatDateToString(options.scales[i].format, cellDate);
 
               hourCell.innerHTML = dateFormat;
-              cellDate.setHours(k+1);
+              cellDate.setHours(k + 1);
               hourCell.style.width = cellWidth + "px";
               hourCell.style.left = rangeCount + "px";
               ZTGanttScale.append(hourCell);
-              rangeCount += cellWidth
+              rangeCount += cellWidth;
             }
           } else if (
             options.scales[i].unit == "day" &&
@@ -917,7 +916,8 @@
         }
         rightScale.append(ZTGanttScale);
       }
-      rightScale.style.width = this.calculateTimeLineWidth("updated", "day") + "px";
+      rightScale.style.width =
+        this.calculateTimeLineWidth("updated", "day") + "px";
       calendar.append(rightScale);
     },
 
@@ -999,13 +999,14 @@
           }
 
           if (this.options.zoomLevel !== "day") {
-            if(this.options.zoomLevel === "hour"){
+            if (this.options.zoomLevel === "hour") {
               scaleCell.style.left = rangeCount + "px";
               scaleCell.style.width = this.calculateGridWidth(date) + "px";
-            }else{
-            scaleCell.style.left = rangeCount + "px";
-            scaleCell.style.width =
-              colDates.dateCount.length * this.calculateGridWidth(date) + "px";
+            } else {
+              scaleCell.style.left = rangeCount + "px";
+              scaleCell.style.width =
+                colDates.dateCount.length * this.calculateGridWidth(date) +
+                "px";
             }
           } else {
             scaleCell.style.left = this.calculateGridWidth(date) * k + "px";
@@ -1030,7 +1031,7 @@
 
           scaleCell.setAttribute("zt-gantt-task-id", options.data[j].id);
           let currentDate = new Date(date).setHours(0);
-          if(this.options.zoomLevel === "hour"){
+          if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
@@ -1039,7 +1040,7 @@
               rangeCount += cellWidth;
               scaleRow.append(hourCell);
             }
-          }else if (
+          } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
           ) {
@@ -1242,7 +1243,8 @@
         if (this.options.data[j].type === "milestone") {
           ztGanttBarTask.style.width = `${barTaskHeight}px`;
           ztGanttBarTask.style.left =
-            (cellBefore + 1) * this.calculateGridWidth(start_date, "day") + "px";
+            (cellBefore + 1) * this.calculateGridWidth(start_date, "day") +
+            "px";
         }
 
         let ztGanttBarTaskContent = document.createElement("div");
@@ -1413,7 +1415,8 @@
 
         if (this.options.data[j].type !== "milestone") {
           ztGanttBarTask.style.width =
-            taskDates.length * this.calculateGridWidth(start_date, "day") + "px";
+            taskDates.length * this.calculateGridWidth(start_date, "day") +
+            "px";
         }
 
         if (this.options.data[j].type === "milestone") {
@@ -1840,7 +1843,7 @@
 
         daysDiff = daysDiff.length - 1 || 0;
         todayFlag.style.left =
-          this.calculateGridWidth(new Date(),"day") * daysDiff + 15 + "px";
+          this.calculateGridWidth(new Date(), "day") * daysDiff + 15 + "px";
 
         if (calendarContainer) {
           calendarContainer.append(todayFlag);
@@ -2280,16 +2283,18 @@
             // set the left and width to whole column
             taskBar.style.left =
               Math.round(
-                taskBar.offsetLeft / that.calculateGridWidth(task.start_date,"day")
+                taskBar.offsetLeft /
+                  that.calculateGridWidth(task.start_date, "day")
               ) *
-                that.calculateGridWidth(task.start_date,"day") +
+                that.calculateGridWidth(task.start_date, "day") +
               "px";
             if (type !== "move") {
               taskBar.style.width =
                 Math.round(
-                  taskBar.offsetWidth / that.calculateGridWidth(task.start_date,"day")
+                  taskBar.offsetWidth /
+                    that.calculateGridWidth(task.start_date, "day")
                 ) *
-                  that.calculateGridWidth(task.start_date,"day") +
+                  that.calculateGridWidth(task.start_date, "day") +
                 "px";
             }
           }
@@ -2330,7 +2335,7 @@
         resizeTask = true;
 
         // if onBeforeTaskDrag return false then do not drag the task
-        if (that.eventValue != true) {
+        if (that.eventValue === false) {
           return;
         }
 
@@ -2433,7 +2438,8 @@
           let taskStartDate =
             that.dates[
               Math.round(
-                taskBar.offsetLeft / that.calculateGridWidth(task.start_date,"day")
+                taskBar.offsetLeft /
+                  that.calculateGridWidth(task.start_date, "day")
               ) - (task.type === "milestone" ? 1 : 0)
             ];
 
@@ -2441,14 +2447,15 @@
             that.dates[
               Math.round(
                 (taskBar.offsetLeft + taskBar.offsetWidth) /
-                  that.calculateGridWidth(task.start_date,"day")
+                  that.calculateGridWidth(task.start_date, "day")
               ) - 1
             ];
 
           // if taskStartDate is less than the gantt range
           if (!taskStartDate) {
             let dateDiff = Math.round(
-              taskBar.offsetLeft / that.calculateGridWidth(task.start_date,"day")
+              taskBar.offsetLeft /
+                that.calculateGridWidth(task.start_date, "day")
             );
             taskStartDate = that.add(new Date(that.dates[0]), dateDiff, "day");
           }
@@ -2497,7 +2504,10 @@
             startLeft +
             (e.x - startX) -
             (startRightPanelScrollLeft - rightPanelScroll.scrollLeft);
-          if (size <= that.calculateGridWidth(task.start_date,"day") || left <= 0) {
+          if (
+            size <= that.calculateGridWidth(task.start_date, "day") ||
+            left <= 0
+          ) {
             return;
           } else {
             taskBar.style.left = left + "px";
@@ -2510,7 +2520,7 @@
             (startRightPanelScrollLeft - rightPanelScroll.scrollLeft);
           // return if taskBar at start, end or width is 1 or less
           if (
-            size <= that.calculateGridWidth(task.start_date,"day") ||
+            size <= that.calculateGridWidth(task.start_date, "day") ||
             taskBar.offsetLeft + size >= rightPanelScrollWidth
           ) {
             return;
@@ -2523,14 +2533,14 @@
           that.dates[
             Math.round(
               (taskBar.offsetLeft + 1) /
-                that.calculateGridWidth(task.start_date,"day")
+                that.calculateGridWidth(task.start_date, "day")
             )
           ];
         let taskEndDate =
           that.dates[
             Math.round(
               (taskBar.offsetLeft + taskBar.offsetWidth) /
-                that.calculateGridWidth(task.start_date,"day")
+                that.calculateGridWidth(task.start_date, "day")
             ) - 1
           ];
 
@@ -2548,7 +2558,8 @@
         if (!taskStartDate) {
           let dateDiff =
             Math.round(
-              taskBar.offsetLeft / that.calculateGridWidth(task.start_date,"day")
+              taskBar.offsetLeft /
+                that.calculateGridWidth(task.start_date, "day")
             ) - that.dates.length;
           taskStartDate = that.add(
             new Date(that.dates[that.dates.length - 1]),
@@ -2561,7 +2572,7 @@
           let dateDiff =
             Math.round(
               (taskBar.offsetLeft + taskBar.offsetWidth) /
-                that.calculateGridWidth(task.start_date,"day")
+                that.calculateGridWidth(task.start_date, "day")
             ) - that.dates.length;
           taskEndDate = that.add(
             new Date(that.dates[that.dates.length - 1]),
@@ -2585,19 +2596,19 @@
       // get the current start and end date of the taskbar
       let taskCurrentStart = new Date(
         this.dates[
-          Math.floor(target.offsetLeft / this.calculateGridWidth(start,"day"))
+          Math.floor(target.offsetLeft / this.calculateGridWidth(start, "day"))
         ]
       );
       let taskCurrentEnd = new Date(
         this.dates[
           Math.floor(
             (target.offsetLeft + target.offsetWidth - 1) /
-              this.calculateGridWidth(start,"day")
+              this.calculateGridWidth(start, "day")
           )
         ]
       );
       let startTimePixel = Math.round(
-        target.offsetLeft % this.calculateGridWidth(start,"day")
+        target.offsetLeft % this.calculateGridWidth(start, "day")
       );
       let startDateTime = this.getTimeByPx(startTimePixel, start);
       taskCurrentStart = new Date(taskCurrentStart);
@@ -2605,7 +2616,7 @@
 
       let endTimePixel = Math.round(
         (target.offsetLeft + target.offsetWidth - 1) %
-          this.calculateGridWidth(start,"day")
+          this.calculateGridWidth(start, "day")
       );
       let endDateTime = this.getTimeByPx(endTimePixel, end);
       taskCurrentEnd = new Date(taskCurrentEnd);
@@ -2747,11 +2758,12 @@
                   currentTask.hasOwnProperty("end_date")
                 ) {
                   allChildsLeft.push(
-                    cellBefore * that.calculateGridWidth(start_date,"day")
+                    cellBefore * that.calculateGridWidth(start_date, "day")
                   );
                   allChildsLeftAndWidth.push(
-                    cellBefore * that.calculateGridWidth(start_date,"day") +
-                      taskDates.length * that.calculateGridWidth(start_date,"day")
+                    cellBefore * that.calculateGridWidth(start_date, "day") +
+                      taskDates.length *
+                        that.calculateGridWidth(start_date, "day")
                   );
                 }
 
@@ -2761,7 +2773,10 @@
                   Math.min(...allChildsLeft);
 
                 if (eventType === "mouseup") {
-                  const gridWidth = that.calculateGridWidth(task.start_date,"day");
+                  const gridWidth = that.calculateGridWidth(
+                    task.start_date,
+                    "day"
+                  );
                   parentLeft = Math.round(parentLeft / gridWidth) * gridWidth;
                   parentWidth = Math.round(parentWidth / gridWidth) * gridWidth;
                 }
@@ -2826,7 +2841,7 @@
           end: new Date(dateYear, 11, 31),
         };
       } else {
-        throw new Error(`Invalid scale unit: ${unit}`);
+        this.throwError(`Invalid scale unit: ${unit}`);
       }
 
       startDate = startAndEndDate.start;
@@ -2906,7 +2921,10 @@
       }
     },
 
-    calculateGridWidth: function (date = new Date(0), levelType = this.options.zoomLevel) {
+    calculateGridWidth: function (
+      date = new Date(0),
+      levelType = this.options.zoomLevel
+    ) {
       let sidebar = document.getElementById("zt-gantt-grid-left-data");
       const totalWidth = this.options.columns.reduce(
         (totalWidth, col) => totalWidth + col.width,
@@ -2947,11 +2965,19 @@
           minWidth = minWidth;
           break;
       }
-      const gridWidth = Math.max(Math.floor(elementWidth /(level === "hour" ? colCount*24 : colCount)), minWidth);
+      const gridWidth = Math.max(
+        Math.floor(
+          elementWidth / (level === "hour" ? colCount * 24 : colCount)
+        ),
+        minWidth
+      );
       return gridWidth;
     },
 
-    calculateTimeLineWidth: function (type, levelType = this.options.zoomLevel) {
+    calculateTimeLineWidth: function (
+      type,
+      levelType = this.options.zoomLevel
+    ) {
       let totalWidth = 0;
       if (type == "updated") {
         if (this.options.zoomLevel !== "day" && levelType !== "day") {
@@ -2970,7 +2996,8 @@
             }
           }
         } else {
-          totalWidth = this.calculateGridWidth(new Date(0), levelType) * this.dates.length;
+          totalWidth =
+            this.calculateGridWidth(new Date(0), levelType) * this.dates.length;
         }
       } else {
         let timeLineRow = document.querySelector(".zt-gantt-task-row");
@@ -3054,7 +3081,7 @@
     // add Task
     addTask: function (task) {
       if (task.id == task.parent) {
-        throw new Error("task id and task parent can not be same");
+        this.throwError("task id and task parent can not be same");
       }
 
       this.originalData.unshift(task);
@@ -3300,9 +3327,7 @@
             "zt-gantt-row-item",
             "zt-gantt-child-row",
             `zt-gantt-child-${taskData[l].parent}`,
-            !isOpened
-              ? "d-none"
-              : "d-flex"
+            !isOpened ? "d-none" : "d-flex"
           );
 
           //add custom classes from user
@@ -3749,7 +3774,7 @@
 
           scaleCell.setAttribute("zt-gantt-task-id", taskData[l].id);
           let currentDate = new Date(date).setHours(0);
-          if(this.options.zoomLevel === "hour"){
+          if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
@@ -3758,7 +3783,7 @@
               rangeCount += cellWidth;
               scaleRow.append(hourCell);
             }
-          }else if (
+          } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
           ) {
@@ -3926,7 +3951,8 @@
         if (taskData[k].type === "milestone") {
           ztGanttBarTask.style.width = `${barTaskHeight}px`;
           ztGanttBarTask.style.left =
-            (cellBefore + 1) * this.calculateGridWidth(start_date, "day") + "px";
+            (cellBefore + 1) * this.calculateGridWidth(start_date, "day") +
+            "px";
         }
 
         let ztGanttBarTaskContent = document.createElement("div");
@@ -4237,6 +4263,7 @@
         headCellContainer.style.width = sidebar.offsetWidth + "px";
       }, 0);
       sidebar.append(headCellContainer);
+      let resizerLeft = 0;
       // head loop of left side
       for (let i = 0; i < options.columns.length; i++) {
         let headCell = document.createElement("div");
@@ -4273,10 +4300,8 @@
             let resizer = document.createElement("div");
             resizer.classList.add("zt-gantt-col-resizer");
             resizerWrap.append(resizer);
-            setTimeout(() => {
-              resizerWrap.style.left =
-                headCell.offsetWidth + headCell.offsetLeft + "px";
-            }, 0);
+            resizerLeft += options.columns[i].width || 80;
+            resizerWrap.style.left = resizerLeft + "px";
             headCellContainer.append(resizerWrap);
             this.resizeColumns(
               resizerWrap,
@@ -4299,7 +4324,7 @@
       leftDataContainer.id = "zt-gantt-left-grid";
       setTimeout(() => {
         leftDataContainer.style.width = sidebar.offsetWidth + "px";
-      });
+      }, 0);
       // loop through all the data
       for (let j = 0; j < options.data.length; j++) {
         let dataItem = document.createElement("div");
@@ -4914,7 +4939,7 @@
       }
 
       flag.style.left =
-        this.calculateGridWidth(data.start_date,"day") * daysDiff + 15 + "px";
+        this.calculateGridWidth(data.start_date, "day") * daysDiff + 15 + "px";
 
       if (calendarContainer) {
         markerArea.append(flag);
@@ -4931,7 +4956,7 @@
       function handleEvent(e) {
         if (name === "onBeforeTaskDrag" || name === "onBeforeTaskDrop") {
           that.eventValue = callback(e.detail);
-          that.eventValue = that.eventValue ?? true;
+          that.eventValue = that.eventValue !== false;
         } else {
           callback(e.detail);
         }
@@ -6223,7 +6248,7 @@
             that.dates[
               Math.floor(
                 (taskArea.offsetLeft < 0 ? 0 : taskArea.offsetLeft) /
-                  that.calculateGridWidth(end_date,"day")
+                  that.calculateGridWidth(end_date, "day")
               )
             ];
 
@@ -6234,7 +6259,7 @@
           if (!isAtLastCol) {
             dateIndex = Math.floor(
               (taskArea.offsetLeft + taskArea.offsetWidth) /
-                that.calculateGridWidth(end_date,"day")
+                that.calculateGridWidth(end_date, "day")
             );
           } else {
             dateIndex = that.dates.length - 1;
@@ -6484,7 +6509,8 @@
         let taskStartDate =
           this.dates[
             Math.round(
-              target.offsetLeft / this.calculateGridWidth(task.start_date,"day")
+              target.offsetLeft /
+                this.calculateGridWidth(task.start_date, "day")
             ) - (task.type === "milestone" ? 1 : 0)
           ];
 
@@ -6492,14 +6518,14 @@
           this.dates[
             Math.round(
               (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date,"day")
+                this.calculateGridWidth(task.start_date, "day")
             ) - 1
           ];
 
         // if taskStartDate is less than the gantt range
         if (!taskStartDate) {
           let dateDiff = Math.round(
-            target.offsetLeft / this.calculateGridWidth(task.start_date,"day")
+            target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
           );
           taskStartDate = this.add(new Date(this.dates[0]), dateDiff, "day");
         }
@@ -6509,7 +6535,7 @@
           let dateDiff =
             Math.round(
               (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date,"day")
+                this.calculateGridWidth(task.start_date, "day")
             ) - this.dates.length;
           taskEndDate = this.add(
             new Date(this.dates[this.dates.length - 1]),
@@ -6532,7 +6558,7 @@
       }
     },
 
-    // check for has cycle or not 
+    // check for has cycle or not
     hasCycle: function (currentSource, currentTarget, linkId = "") {
       if (currentTarget === null) {
         return;
@@ -6557,7 +6583,7 @@
         }
       }
 
-      // check is child or parent 
+      // check is child or parent
       function findTask(parentTask, type) {
         for (const task of parentTask.children) {
           if (
@@ -6592,6 +6618,10 @@
         }
         return false;
       }
+    },
+
+    throwError: function (error) {
+      throw new Error(error);
     },
   };
 
