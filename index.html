@@ -241,23 +241,36 @@
             return `<span>${task.text}</span>`;
           },
         },
-        // {
-        //   name: "end_date",
-        //   width: 245,
-        //   min_width: 80,
-        //   max_width: 300,
-        //   tree: false,
-        //   label: "End Date",
-        //   resize: true,
-        //   align: "center",
-        //   template: (task) => {
-        //     return `<span>${task.end_date}</span>`;
-        //   },
-        // },
+        {
+          name: "end_date",
+          width: 245,
+          min_width: 80,
+          max_width: 300,
+          tree: false,
+          label: "End Date",
+          resize: true,
+          align: "center",
+          template: (task) => {
+            return `<span>${task.end_date}</span>`;
+          },
+        },
+        {
+          name: "end_date",
+          width: 245,
+          min_width: 80,
+          max_width: 300,
+          tree: false,
+          label: "End Date",
+          resize: true,
+          align: "center",
+          template: (task) => {
+            return `<span>${task.end_date}</span>`;
+          },
+        },
       ];
 
       ZT_Gantt.options.data = data;
-      ZT_Gantt.options.collapse = false;
+      ZT_Gantt.options.collapse = true;
       ZT_Gantt.options.weekends = ["Sat", "Sun"];
       ZT_Gantt.options.fullWeek = true;
       ZT_Gantt.options.todayMarker = true;

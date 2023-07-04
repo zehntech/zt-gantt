@@ -741,6 +741,7 @@
                 that.createTaskBars();
                 for (let i = 0; i < children.length; i++) {
                   children[i].classList.toggle("d-none");
+                  children[i].classList.toggle("d-flex");
                 }
 
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
@@ -3299,7 +3300,7 @@
             "zt-gantt-row-item",
             "zt-gantt-child-row",
             `zt-gantt-child-${taskData[l].parent}`,
-            !this.options.openedTasks.includes(taskData[l].parent) || !isOpened
+            !isOpened
               ? "d-none"
               : "d-flex"
           );
@@ -6067,7 +6068,6 @@
     // function to initialize zoom options
     zoomInit: function (type = "after") {
       let zoomLevels = this.options.zoomConfig;
-      console.log(zoomLevels,"???");
       for (levels of zoomLevels.levels) {
         if (this.options.zoomLevel == levels.name) {
           this.options.scale_height =
