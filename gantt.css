@@ -96,7 +96,7 @@
   width: 100%;
 }
 
-.zt-gantt-scale-container:not(:nth-child(1)){
+.zt-gantt-scale-container:not(:nth-child(1)) {
   border-top: 1px solid #cecece;
 }
 
@@ -235,7 +235,7 @@
   min-width: 100%;
 }
 
-.zt-gantt-grid-data .zt-gantt-row-item{
+.zt-gantt-grid-data .zt-gantt-row-item {
   transition: background-color 0.2s ease-in-out;
 }
 
@@ -602,13 +602,13 @@
   width: 2px;
 }
 
-.ver-inner-line{
+.ver-inner-line {
   height: 100%;
   width: 15px;
   margin-left: -7px;
 }
 
-.hor-inner-line{
+.hor-inner-line {
   height: 15px;
   width: 100%;
   margin-top: -7px;
@@ -767,15 +767,14 @@
   }
 }
 
-.task-area{
+.task-area {
   position: absolute;
   border: 1px solid rgb(0, 148, 255);
   background-color: rgba(0, 148, 255, 0.3);
   z-index: 1008;
 }
 
-.zt-gantt-task-progress-wrapper{
-  border-radius: inherit;
+.zt-gantt-task-progress-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
@@ -783,11 +782,11 @@
   overflow: hidden;
 }
 
-.zt-gantt-task-progress{
+.zt-gantt-task-progress {
   height: 100%;
 }
 
-.zt-gantt-task-progress-drag{
+.zt-gantt-task-progress-drag {
   position: absolute;
   cursor: ew-resize;
   display: none;
@@ -814,13 +813,13 @@
 }
 
 /* milestone css  */
-.zt-gantt-bar-milestone{
+.zt-gantt-bar-milestone {
   position: absolute;
   z-index: 1007;
   height: 40px;
   line-height: inherit;
-  background: #E84855;
-  border: 0px solid #E84855;
+  background-color: #e84855;
+  border: 0px solid #e84855;
   border-radius: 3px;
   text-align: center;
   visibility: hidden;
@@ -839,7 +838,7 @@
 }
 
 .zt-gantt-bar-milestone .zt-gantt-bar-task-content {
-  background: #E84855;
+  background: #e84855;
   border: inherit;
   border-width: 1px;
   border-radius: inherit;
@@ -869,29 +868,29 @@
   cursor: pointer;
 }
 
-.zt-gantt-toastr p{
+.zt-gantt-toastr p {
   color: #fff;
   font-weight: 600;
 }
 
-.zt-gantt-toastr p:first-child{
+.zt-gantt-toastr p:first-child {
   font-weight: 800;
 }
 
-.zt-gantt-toastr.success{
-  background-color: #51A351;
+.zt-gantt-toastr.success {
+  background-color: #51a351;
 }
 
-.zt-gantt-toastr.error{
-  background-color: #BD362F;
+.zt-gantt-toastr.error {
+  background-color: #bd362f;
 }
 
-.zt-gantt-toastr.info{
-  background-color: #2F96B4;
+.zt-gantt-toastr.info {
+  background-color: #2f96b4;
 }
 
-.zt-gantt-toastr.warning{
-  background-color: #F89406;
+.zt-gantt-toastr.warning {
+  background-color: #f89406;
 }
 
 .zt-gantt-toastr.show {
@@ -901,22 +900,91 @@
 }
 
 @-webkit-keyframes fadein {
-  from {top: 0; opacity: 0;} 
-  to {top: 5px; opacity: 1;}
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 5px;
+    opacity: 1;
+  }
 }
 
 @keyframes fadein {
-  from {top: 0; opacity: 0;}
-  to {top: 5px; opacity: 1;}
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 5px;
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes fadeout {
-  from {top: 5px; opacity: 1;} 
-  to {top: 0; opacity: 0;}
+  from {
+    top: 5px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
 }
 
 @keyframes fadeout {
-  from {top: 5px; opacity: 1;}
-  to {top: 0; opacity: 0;}
+  from {
+    top: 5px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
 }
 /* toastr css end  */
+
+.zt-gantt-task-color-picker {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 50px;
+  margin-right: -50px;
+}
+
+.zt-gantt-bar-task:hover .zt-gantt-task-color-picker {
+  display: block;
+}
+
+.zt-gantt-task-color-picker input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+}
+.zt-gantt-task-color-picker input::-webkit-color-swatch {
+  border-radius: 2px;
+  border: none;
+}
+.zt-gantt-task-color-picker input::-moz-color-swatch {
+  border-radius: 2px;
+  border: none;
+}
+
+.zt-gantt-bar-milestone .zt-gantt-task-color-picker{
+  left: 0;
+  margin-left: -50px;
+  margin-right: 0;
+}
+
+.zt-gantt-bar-milestone .zt-gantt-task-color-picker input{
+  margin-left: -25px;
+}

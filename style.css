@@ -88,7 +88,7 @@ input[type="checkbox"] {
 	visibility: hidden;
 }
 
-label {
+.action-container label {
 	cursor: pointer;
 	text-indent: -9999px;
 	width: 44px;
@@ -99,7 +99,7 @@ label {
 	position: relative;
 }
 
-label:after {
+.action-container label:after {
 	content: "";
 	position: absolute;
 	top: 2px;
@@ -111,11 +111,11 @@ label:after {
 	transition: 0.3s;
 }
 
-input:checked + label {
+.action-container input:checked + label {
 	background: #8ac2f3;
 }
 
-input:checked + label:after {
+.action-container input:checked + label:after {
 	left: 22px;
 }
 

@@ -43,6 +43,7 @@
         sidebarWidth: opt.sidebarWidth || 400,
         customMarker: opt.customMarker || [],
         fullCell: opt.fullCell || true,
+        taskColor: opt.taskColor || false,
         addLinks: opt.addLinks || false,
         links: opt.links || [],
         arrangeData: true,
@@ -1221,6 +1222,20 @@
         }
 
         let ztGanttBarTask = document.createElement("div");
+
+        if (this.options.data[j].taskColor) {
+          ztGanttBarTask.style.setProperty(
+            "background-color",
+            this.changeOpacity(this.options.data[j].taskColor, 0.8),
+            "important"
+          );
+          ztGanttBarTask.style.setProperty(
+            "border-color",
+            this.options.data[j].taskColor,
+            "important"
+          );
+        }
+
         if (this.options.data[j].type === "milestone") {
           ztGanttBarTask.classList.add(
             "zt-gantt-bar-task",
@@ -1280,6 +1295,17 @@
           "zt-gantt-bar-task-content",
           "parent-task-bar-content"
         );
+
+        if (
+          this.options.data[j].type === "milestone" &&
+          this.options.data[j].taskColor
+        ) {
+          ztGanttBarTaskContent.style.setProperty(
+            "background-color",
+            this.options.data[j].taskColor,
+            "important"
+          );
+        }
 
         let that = this;
 
@@ -1365,6 +1391,7 @@
           });
         }
 
+        let taskProgress;
         if (
           this.options.taskProgress === true &&
           this.options.data[j].type !== "milestone"
@@ -1372,11 +1399,20 @@
           let progressPer = this.options.data[j].progress || 0;
           let taskProgressContainer = document.createElement("div");
           taskProgressContainer.classList.add("zt-gantt-task-progress-wrapper");
-          let taskProgress = document.createElement("div");
+          taskProgress = document.createElement("div");
           taskProgress.classList.add("zt-gantt-task-progress");
           taskProgress.style.width = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          if (this.options.data[j].taskColor) {
+            taskProgress.style.setProperty(
+              "background-color",
+              this.options.data[j].taskColor,
+              "important"
+            );
+          }
+
           taskProgressContainer.append(taskProgress);
 
           let taskProgressDrag = document.createElement("div");
@@ -1438,6 +1474,27 @@
             ztGanttBarTask,
             this.options.data[j].id,
             "left"
+          );
+        }
+
+        if (this.options.taskColor) {
+          let colorPicker = document.createElement("div");
+          colorPicker.classList.add("zt-gantt-task-color-picker");
+          let colorInput = document.createElement("input");
+          colorInput.id = `color-${this.options.data[j].id}`;
+          colorInput.type = "color";
+          colorInput.value =
+            this.options.data[j].taskColor ||
+            (this.options.data[j].type === "milestone" ? "#e84855" : "#56a4fd");
+          colorPicker.append(colorInput);
+          ztGanttBarTask.append(colorPicker);
+
+          this.changeTaskbarColor(
+            ztGanttBarTask,
+            colorInput,
+            taskProgress,
+            ztGanttBarTaskContent,
+            this.options.data[j]
           );
         }
 
@@ -3109,7 +3166,11 @@
     // add Task
     addTask: function (task) {
       if (task.id == task.parent) {
-        this.toastr("Error", "task id and task parent can not be same", "error");
+        this.toastr(
+          "Error",
+          "task id and task parent can not be same",
+          "error"
+        );
       }
 
       this.originalData.unshift(task);
@@ -3950,6 +4011,19 @@
           );
         }
 
+        if (taskData[k].taskColor) {
+          ztGanttBarTask.style.setProperty(
+            "background-color",
+            this.changeOpacity(taskData[k].taskColor, 0.8),
+            "important"
+          );
+          ztGanttBarTask.style.setProperty(
+            "border-color",
+            taskData[k].taskColor,
+            "important"
+          );
+        }
+
         //add custom class from user
         if (typeof this.templates.task_class === "function") {
           let cssClass = this.templates.task_class(
@@ -3987,6 +4061,14 @@
           "zt-gantt-bar-task-content",
           "child-task-bar-content"
         );
+
+        if (taskData[k].type === "milestone" && taskData[k].taskColor) {
+          ztGanttBarTaskContent.style.setProperty(
+            "background-color",
+            taskData[k].taskColor,
+            "important"
+          );
+        }
 
         let that = this;
 
@@ -4122,6 +4204,7 @@
           this.createNewLink(leftPoint, ztGanttBarTask, taskData[k].id, "left");
         }
 
+        let taskProgress;
         if (
           this.options.taskProgress === true &&
           taskData[k].type !== "milestone"
@@ -4129,11 +4212,20 @@
           let progressPer = taskData[k].progress || 0;
           let taskProgressContainer = document.createElement("div");
           taskProgressContainer.classList.add("zt-gantt-task-progress-wrapper");
-          let taskProgress = document.createElement("div");
+          taskProgress = document.createElement("div");
           taskProgress.classList.add("zt-gantt-task-progress");
           taskProgress.style.width = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          if (taskData[k].taskColor) {
+            taskProgress.style.setProperty(
+              "background-color",
+              taskData[k].taskColor,
+              "important"
+            );
+          }
+
           taskProgressContainer.append(taskProgress);
 
           let taskProgressDrag = document.createElement("div");
@@ -4147,6 +4239,29 @@
             taskProgressDrag,
             taskProgress,
             ztGanttBarTask,
+            taskData[k]
+          );
+        }
+
+        if (this.options.taskColor) {
+          let colorPicker = document.createElement("div");
+          colorPicker.classList.add("zt-gantt-task-color-picker");
+          let colorInput = document.createElement("input");
+          colorInput.id = `color-${taskData[k].id}`;
+          colorInput.type = "color";
+          colorInput.setAttribute(
+            "value",
+            taskData[k].taskColor ||
+              (taskData[k].type === "milestone" ? "#e84855" : "#56a4fd")
+          );
+          colorPicker.append(colorInput);
+          ztGanttBarTask.append(colorPicker);
+
+          this.changeTaskbarColor(
+            ztGanttBarTask,
+            colorInput,
+            taskProgress,
+            ztGanttBarTaskContent,
             taskData[k]
           );
         }
@@ -6661,7 +6776,7 @@
       toastr.append(titleDiv, messageDiv);
       toastr.classList.add("show", type);
       document.body.append(toastr);
-      
+
       setTimeout(function () {
         toastr.classList.remove("show");
         toastr.remove();
@@ -6770,6 +6885,100 @@
           return currentCentury - 100 + year;
         }
       }
+    },
+
+    changeTaskbarColor: function (
+      taskbar,
+      colorInput,
+      taskProgress,
+      taskbarContent,
+      task
+    ) {
+      let that = this;
+      colorInput.addEventListener("change", (e) => {
+        taskbar.style.setProperty(
+          "background-color",
+          that.changeOpacity(e.target.value, 0.8),
+          "important"
+        );
+
+        taskbar.style.setProperty("border-color", e.target.value, "important");
+
+        if (taskProgress) {
+          taskProgress.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }
+
+        if (task.type === "milestone") {
+          taskbarContent.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }
+        setColorToOriginalData(e.target.value);
+        
+        // handle custom event
+        const onColorChange = new CustomEvent("onColorChange", {
+          detail: {
+            taskColor: e.target.value, 
+            task: task,
+          },
+        });
+        that.element.dispatchEvent(onColorChange);
+      });
+      colorInput.addEventListener("input", function (e) {
+        taskbar.style.setProperty(
+          "background-color",
+          that.changeOpacity(e.target.value, 0.8),
+          "important"
+        );
+
+        taskbar.style.setProperty("border-color", e.target.value, "important");
+
+        if (taskProgress) {
+          taskProgress.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }
+
+        if (task.type === "milestone") {
+          taskbarContent.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }
+        setColorToOriginalData(e.target.value);
+      });
+
+      function setColorToOriginalData(color){
+        task.taskColor = color;
+        for(let i=0;i<that.originalData.length;i++){
+          if(that.originalData[i].id == task.id){
+            that.originalData[i].taskColor = color;
+            break;
+          }
+        }
+      }
+    },
+
+    changeOpacity: function (color, opacity) {
+      var tempElement = document.createElement("div");
+      tempElement.style.color = color;
+      document.body.appendChild(tempElement);
+      var computedColor = window.getComputedStyle(tempElement).color;
+      document.body.removeChild(tempElement);
+
+      var rgbaColor = computedColor
+        .replace("rgb", "rgba")
+        .replace(")", "," + opacity + ")");
+      return rgbaColor;
     },
   };
 
