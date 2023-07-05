@@ -493,9 +493,12 @@
   width: 100%;
   position: absolute;
   top: 100%;
-  margin-top: -17px;
   left: 0;
   height: 1px;
+}
+
+.zt-gantt-fullScreen #zt-gantt-hor-scroll-cell {
+  margin-top: -17px;
 }
 
 .zt-gantt-hor-scroll {
