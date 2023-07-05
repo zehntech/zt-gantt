@@ -847,3 +847,72 @@
 .zt-gantt-bar-milestone div {
   visibility: visible;
 }
+
+/* toastr css start  */
+.zt-gantt-toastr {
+  visibility: hidden;
+  min-width: 250px;
+  max-width: 350px;
+  background-color: #aaaaaa;
+  color: #fff;
+  border-radius: 3px;
+  padding: 16px;
+  position: fixed;
+  z-index: 9999999;
+  right: 5px;
+  top: 5px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.zt-gantt-toastr p{
+  color: #fff;
+  font-weight: 600;
+}
+
+.zt-gantt-toastr p:first-child{
+  font-weight: 800;
+}
+
+.zt-gantt-toastr.success{
+  background-color: #51A351;
+}
+
+.zt-gantt-toastr.error{
+  background-color: #BD362F;
+}
+
+.zt-gantt-toastr.info{
+  background-color: #2F96B4;
+}
+
+.zt-gantt-toastr.warning{
+  background-color: #F89406;
+}
+
+.zt-gantt-toastr.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {top: 0; opacity: 0;} 
+  to {top: 5px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 5px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {top: 5px; opacity: 1;} 
+  to {top: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {top: 5px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
+/* toastr css end  */

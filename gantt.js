@@ -19,6 +19,7 @@
         opt = {};
       }
       this.options = {
+        date_format: opt.date_format,
         columns: opt.columns || [],
         rightGrid: opt.rightGrid,
         data: opt.data || [],
@@ -216,10 +217,17 @@
         this.options.weekStart > 6 ||
         typeof this.options.weekStart !== "number"
       ) {
-        this.throwError(
+        let message =
           this.options.weekStart > 6
             ? "enter week start between 0 to 6"
-            : "type of week start should be number!"
+            : "type of week start should be number!";
+        this.toastr("Error", message, "error");
+      }
+      if (!this.options.date_format) {
+        this.toastr(
+          "Error",
+          `date_format is ${this.options.date_format}, please provide a valid date format of your data date format`,
+          "error"
         );
       }
 
@@ -259,6 +267,26 @@
         let count = 0;
         for (let i = 0; i < this.originalData.length; i++) {
           this.originalData[i]._id = count;
+          if (
+            this.originalData[i].start_date !== undefined &&
+            isNaN(
+              new Date(this.originalData[i].start_date) &&
+                this.options.date_format
+            )
+          ) {
+            this.originalData[i].start_date = this.getDateTimeComponents(
+              this.originalData[i].start_date
+            );
+          }
+          if (
+            this.originalData[i].end_date !== undefined &&
+            isNaN(new Date(this.originalData[i].end_date)) &&
+            this.options.date_format
+          ) {
+            this.originalData[i].end_date = this.getDateTimeComponents(
+              this.originalData[i].end_date
+            );
+          }
           count += 1;
         }
       }
@@ -2841,7 +2869,7 @@
           end: new Date(dateYear, 11, 31),
         };
       } else {
-        this.throwError(`Invalid scale unit: ${unit}`);
+        this.toastr("Error", `Invalid scale unit: ${unit}`, "error");
       }
 
       startDate = startAndEndDate.start;
@@ -3081,7 +3109,7 @@
     // add Task
     addTask: function (task) {
       if (task.id == task.parent) {
-        this.throwError("task id and task parent can not be same");
+        this.toastr("Error", "task id and task parent can not be same", "error");
       }
 
       this.originalData.unshift(task);
@@ -3322,7 +3350,6 @@
           }
           let taskParents = `${parentIdString}${l}`;
           let dataItem = document.createElement("div");
-
           dataItem.classList.add(
             "zt-gantt-row-item",
             "zt-gantt-child-row",
@@ -6622,6 +6649,127 @@
 
     throwError: function (error) {
       throw new Error(error);
+    },
+
+    toastr: function (title, message, type) {
+      let toastr = document.createElement("div");
+      toastr.classList.add("zt-gantt-toastr", type);
+      let titleDiv = document.createElement("p");
+      let messageDiv = document.createElement("p");
+      titleDiv.innerHTML = title;
+      messageDiv.innerHTML = message;
+      toastr.append(titleDiv, messageDiv);
+      toastr.classList.add("show", type);
+      document.body.append(toastr);
+      
+      setTimeout(function () {
+        toastr.classList.remove("show");
+        toastr.remove();
+      }, 3000);
+    },
+
+    getDateTimeComponents: function (dateTimeString) {
+      const format = this.options.date_format;
+      const regex = /%([dmyhis])|(\b\w+\b)/gi;
+
+      const dateTimeParts = dateTimeString.split(/[^\w]+/);
+
+      let matchedParts = format.match(regex);
+      matchedParts = matchedParts.join(",").replaceAll("%", "").split(",");
+
+      const components = {
+        day: 1,
+        month: 0,
+        year: new Date().getFullYear(),
+        hour: 0,
+        minute: 0,
+        second: 0,
+        date: null,
+      };
+
+      for (let i in matchedParts) {
+        const part = matchedParts[i];
+        const value = parseInt(dateTimeParts[i]);
+        switch (part) {
+          case "d":
+            components.day = value;
+            break;
+          case "m":
+            components.month = +value - 1;
+            break;
+          case "j":
+            components.day = value;
+            break;
+          case "n":
+            components.month = +value - 1;
+            break;
+          case "y":
+            components.year = parseYear(value);
+            break;
+          case "Y":
+            components.year = value;
+            break;
+          case "M":
+            components.month = getIndexByValue(
+              this.options.dateFormat.month_short,
+              value
+            ); //need to change
+            break;
+          case "F":
+            components.month = getIndexByValue(
+              this.options.dateFormat.month_full,
+              value
+            ); //need to change
+            break;
+          case "h":
+            components.hour = value;
+            break;
+          case "g":
+            components.hour = value;
+            break;
+          case "G":
+            components.hour = value;
+            break;
+          case "H":
+            components.hour = value;
+            break;
+          case "i":
+            components.minute = value;
+            break;
+          case "s":
+            components.second = value;
+            break;
+          default:
+            components.extra = value;
+            break;
+        }
+      }
+
+      components.date = new Date(
+        components.year,
+        components.month,
+        components.day,
+        components.hour,
+        components.minute,
+        components.second
+      );
+      return components.date;
+
+      function getIndexByValue(arr, value) {
+        return arr.findIndex((item) => item === value);
+      }
+
+      function parseYear(year) {
+        const currentYear = new Date().getFullYear();
+        const currentCentury = Math.floor(currentYear / 100) * 100;
+        const currentDecade = currentYear % 100;
+
+        if (year <= currentDecade) {
+          return currentCentury + year;
+        } else {
+          return currentCentury - 100 + year;
+        }
+      }
     },
   };
 
