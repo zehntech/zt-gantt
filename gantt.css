@@ -431,7 +431,7 @@
 }
 
 .zt-gantt-fullScreen {
-  height: 98vh !important;
+  height: 100vh !important;
   width: 100vw !important;
   position: absolute;
   top: 0;
@@ -492,7 +492,8 @@
 #zt-gantt-hor-scroll-cell {
   width: 100%;
   position: absolute;
-  top: 99.6%;
+  top: 100%;
+  margin-top: -17px;
   left: 0;
   height: 1px;
 }
