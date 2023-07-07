@@ -31,24 +31,9 @@
   color: #000;
   font-weight: 600;
 }
-/* .zt-gantt-folder-icon > div {
-  font-style: normal;
-  border-radius: 18px;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  font-weight: 400;
-  height: 30px;
-  width: 30px;
-  margin-top: 10px;
-  text-align: center;
-  font-size: 11px;
-  color: #fff;
-}
-*/
 
 .zt-gantt-folder-icon > div{
-  background-image: url("../images/folder.svg");
+  background-image: url("./images/folder.svg");
   background-size: 24px;
   height: 100%;
   background-repeat: no-repeat;

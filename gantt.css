@@ -471,10 +471,10 @@
   flex-shrink: 0;
 }
 .zt-gantt-tree-close {
-  background-image: url("../images/zt-gantt-tree-closed.svg");
+  background-image: url("./images/zt-gantt-tree-closed.svg");
 }
 .zt-gantt-tree-open {
-  background-image: url("../images/zt-gantt-tree-opened.svg");
+  background-image: url("./images/zt-gantt-tree-opened.svg");
 }
 
 /* custom scroller  */
@@ -797,7 +797,7 @@
   bottom: -4px;
   margin-left: -8px;
   z-index: 1;
-  background-image: url("../images/drag-task.png");
+  background-image: url("./images/drag-task.png");
 }
 
 .zt-gantt-bar-task.zt-gantt-bar-parent-task .zt-gantt-task-progress {
