@@ -406,9 +406,9 @@
         return `<b>${task.parent === 0 ? "Project" : "Task"}:</b>
             ${task.text}
             <br/><b>Start date:</b>
-            ${ZT_Gantt.formatDateToString("%d-%m-%y", start)}
+            ${ZT_Gantt.formatDateToString("%d-%m-%y %H:%i", start)}
             <br/><b>End date:</b>
-            ${ZT_Gantt.formatDateToString("%d-%m-%y", end)}<br/>
+            ${ZT_Gantt.formatDateToString("%d-%m-%y %H:%i", end)}<br/>
             <b>Duration:</b> ${task.duration} ${
           task.duration > 1 ? "Days" : "Day"
         }`;

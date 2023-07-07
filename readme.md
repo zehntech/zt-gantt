@@ -136,6 +136,6 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
   * custom color for each task by the color picker  
   <a href="https://zt-gantt.zehntech.net/">
     <img src="./images/taskColor.gif">
-  </a>   
+  </a>     
   
   You can see the full list of features in the [documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf) 
