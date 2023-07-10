@@ -530,6 +530,9 @@
       ZT_Gantt.attachEvent("onLinkDblClick", (event) => {
         // console.log("onLinkDblClick: ", event);
       });
+      ZT_Gantt.attachEvent("onBeforeLinkAdd", (event) => {
+        // console.log("onBeforeLinkAdd: ", event);
+      });
       ZT_Gantt.attachEvent("onLinkAdd", (event) => {
         // console.log("onLinkAdd: ", event);
       });
@@ -579,6 +582,14 @@
       // });
       ZT_Gantt.attachEvent("onAfterProgressDrag", (event) => {
         // console.log("onAfterProgressDrag: ", event);
+      });
+      ZT_Gantt.attachEvent("onBeforeProgressDrag", (event) => {
+        // console.log("onBeforeProgressDrag: ", event);
+        // if(event.task.parent === 0){
+        //   return false;
+        // }else{
+        //   return true;
+        // }
       });
       ZT_Gantt.attachEvent("onAutoScheduling", (event) => {
         // console.log("onAutoScheduling: ", event);

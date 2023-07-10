@@ -2362,8 +2362,8 @@
             taskBar.style.left = startLeft + "px";
             resizer.style.cursor = "pointer";
             that.updateTask(task, initStartDate, initEndDate, taskBar);
-            that.event = true;
             resizeTask = false;
+            that.eventValue = true;
           } else {
             if (type === "move") {
               resizer.style.cursor = "pointer";
@@ -5143,7 +5143,7 @@
 
       let that = this;
       function handleEvent(e) {
-        if (name === "onBeforeTaskDrag" || name === "onBeforeTaskDrop") {
+        if (name === "onBeforeTaskDrag" || name === "onBeforeTaskDrop" || name === "onBeforeProgressDrag" || name === "onBeforeLinkAdd") {
           that.eventValue = callback(e.detail);
           that.eventValue = that.eventValue !== false;
         } else {
@@ -6081,6 +6081,22 @@
 
           let hasCycle = that.hasCycle(sourceId, targetId);
 
+          
+            // handle custom event
+            const onBeforeLinkAdd = new CustomEvent("onBeforeLinkAdd", {
+              detail: {
+                sourceId: sourceId,
+                targetId: targetId,
+                type: linkType
+              },
+            });
+            that.element.dispatchEvent(onBeforeLinkAdd);
+
+            if(that.eventValue === false){
+              that.eventValue = true;
+              return;
+            }
+
           if (
             targetId !== undefined &&
             targetId !== null &&
@@ -6599,6 +6615,18 @@
       }
 
       function resize(e) {
+        const onBeforeProgressDrag = new CustomEvent("onBeforeProgressDrag", {
+          detail: {
+            task: task,
+          },
+        });
+        that.element.dispatchEvent(onBeforeProgressDrag);
+
+      // if onBeforeProgressDrag return false then do not drag the Progress
+      if (that.eventValue === false) {
+        return;
+      }
+
         dargging = true;
         let progressWidth =
           startProgressWidth +
