@@ -64,6 +64,43 @@
           <option value="hour">Hour</option>
       </select>
       </div>
+      <div class="Language">
+        <select class="lang" id="lang" placeholder="Select Language" onchange="changeLang(event)">
+          <option value="" disabled="" selected="">Select Language:</option>
+          <option value="ar">Arabic</option>
+          <option value="be">Belarusian</option>
+          <option value="en">English</option>
+          <option value="ca">Catalan</option>
+          <option value="cn">Chinese</option>
+          <option value="hr">Croatian</option>
+          <option value="cs">Czech</option>
+          <option value="da">Danish</option>
+          <option value="nl">Dutch</option>
+          <option value="fi">Finnish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="el">Greek</option>
+          <option value="he">Hebrew</option>
+          <option value="hi">Hindi (India)</option>
+          <option value="hu">Hungarian</option>
+          <option value="id">Indonesian</option>
+          <option value="it">Italian</option>
+          <option value="ja">Japanese</option>
+          <option value="kr">Korean</option>
+          <option value="no">Norwegian</option>
+          <option value="fa">Persian</option>
+          <option value="pl">Polish</option>
+          <option value="pt">Portuguese</option>
+          <option value="ro">Romanian</option>
+          <option value="ro">Russian</option>
+          <option value="sk">Slovak</option>
+          <option value="si">Slovenian</option>
+          <option value="es">Spanish</option>
+          <option value="sv">Swedish</option>
+          <option value="tr">Turkish</option>
+          <option value="ua">Ukrainian</option>
+      </select>
+      </div>
       <input
         type="search"
         placeholder="Search Task"
@@ -257,6 +294,7 @@
       ];
 
       ZT_Gantt.options.date_format = "%m-%d-%Y";
+      ZT_Gantt.options.localLang = "en";
       ZT_Gantt.options.data = data;
       ZT_Gantt.options.collapse = false;
       ZT_Gantt.options.weekends = ["Sat", "Sun"];
@@ -268,7 +306,7 @@
         { id: 1, source: 2, target: 23, type: 0 },
         { id: 2, source: 3, target: 6, type: 1 },
         { id: 3, source: 4, target: 23, type: 0 },
-        { id: 4, source: 12, target: 15, type: 3 },
+        { id: 4, source: 12, target: 15, },
       ];
       ZT_Gantt.options.weekStart = 1; // set the start of the week
       ZT_Gantt.options.sidebarWidth = 300;
@@ -612,6 +650,10 @@
       function changeZoom(e){
         ZT_Gantt.options.zoomLevel = e.target.value;
         ZT_Gantt.zoomInit(); 
+      }
+
+      function changeLang(e){
+        ZT_Gantt.setLocalLang(e.target.value); 
       }
 
       function changeCollapse(e) {

@@ -23,7 +23,7 @@
   background-color: #3585e0f2;
 }
 
-.scale-zoom{
+.scale-zoom, .lang{
   padding: 10px 20px;
   border: 1px solid #4ca0fff2;
   outline: transparent;
