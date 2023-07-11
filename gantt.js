@@ -1746,10 +1746,15 @@
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
       
       let fullscreenChangeEvent = 'fullscreenchange';
-      if (document.webkitFullscreenElement !== null) {
-        // Safari specific event
-        fullscreenChangeEvent = 'webkitfullscreenchange';
-      }
+      const prefixes = ["", "moz", "webkit", "ms"]
+
+          prefixes.forEach(function(prefix) {
+            console.log(document[prefix + "fullscreenchange"],"here");
+            document.addEventListener(prefix + "fullscreenchange", function() {
+                console.log("working else if");
+            });
+           });
+
       // Listen for the fullscreenchange event
       document.body.removeEventListener(
         fullscreenChangeEvent,
@@ -1760,8 +1765,10 @@
         handleFullScreenChange
       );
       function handleFullScreenChange(event) {
+        console.log("working document");
         // Check if full screen mode has been exited
         if (!document.fullscreenElement) {
+          console.log("working !document");
           that.element.classList.remove("zt-gantt-fullScreen");
           that.exitFullScreen(true);
         }
@@ -1818,6 +1825,7 @@
 
       this.element = ele || this.element;
       let options = this.options;
+      this.options.currentLanguage = this.options.i18n[this.options.localLang];
       this.zoomInit("initial");
       function createNestedTree(
         flatArray,
@@ -2838,7 +2846,7 @@
 
         let ztGanttBarTask = document.createElement("div");
 
-        if (this.options.data[j].taskColor) {
+        if (this.options.data[j].taskColor && this.options.data[j].type !== "milestone") {
           ztGanttBarTask.style.setProperty(
             "background-color",
             this.changeOpacity(this.options.data[j].taskColor, 0.8),
@@ -5678,7 +5686,7 @@
           );
         }
 
-        if (taskData[k].taskColor) {
+        if (taskData[k].taskColor && taskData[k].type !== "milestone") {
           ztGanttBarTask.style.setProperty(
             "background-color",
             this.changeOpacity(taskData[k].taskColor, 0.8),
@@ -8628,6 +8636,14 @@
     ) {
       let that = this;
       colorInput.addEventListener("change", (e) => {
+        
+        if (task.type === "milestone") {
+          taskbarContent.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }else{
         taskbar.style.setProperty(
           "background-color",
           that.changeOpacity(e.target.value, 0.8),
@@ -8635,7 +8651,7 @@
         );
 
         taskbar.style.setProperty("border-color", e.target.value, "important");
-
+        }
         if (taskProgress) {
           taskProgress.style.setProperty(
             "background-color",
@@ -8644,13 +8660,6 @@
           );
         }
 
-        if (task.type === "milestone") {
-          taskbarContent.style.setProperty(
-            "background-color",
-            e.target.value,
-            "important"
-          );
-        }
         setColorToOriginalData(e.target.value);
 
         // handle custom event
@@ -8664,6 +8673,14 @@
       });
 
       colorInput.addEventListener("input", function (e) {
+        
+        if (task.type === "milestone") {
+          taskbarContent.style.setProperty(
+            "background-color",
+            e.target.value,
+            "important"
+          );
+        }else{
         taskbar.style.setProperty(
           "background-color",
           that.changeOpacity(e.target.value, 0.8),
@@ -8671,6 +8688,7 @@
         );
 
         taskbar.style.setProperty("border-color", e.target.value, "important");
+        }
 
         if (taskProgress) {
           taskProgress.style.setProperty(
@@ -8680,13 +8698,6 @@
           );
         }
 
-        if (task.type === "milestone") {
-          taskbarContent.style.setProperty(
-            "background-color",
-            e.target.value,
-            "important"
-          );
-        }
       });
 
       function setColorToOriginalData(color) {

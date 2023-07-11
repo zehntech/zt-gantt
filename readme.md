@@ -99,8 +99,10 @@ gantt.options.links = [
 
 gantt.render();
 ~~~ 
-Define your tasks, their durations, and any dependencies. Render the chart by calling the appropriate function. gantt.render(element); Customize the chart's appearance and behavior as needed.   
-  
+Define your tasks, their durations, and any dependencies. Render the chart by calling the appropriate function. `gantt.render();` Customize the chart's appearance and behavior as needed.    
+
+To render the updated data call `gantt.render();`  
+
 [Live demo](https://zt-gantt.zehntech.net/)    
   
 #### Complete Documentation ####  
