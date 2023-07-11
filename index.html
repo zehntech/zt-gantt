@@ -37,17 +37,16 @@
         />
         <label for="today-switch">Today</label>
       </div>
-      <div class="export-to-png">
-        <button class="btn" onclick="exportAsPNG()">Export To PNG</button>
-      </div>
-      <div class="export-to-pdf">
-        <button class="btn" onclick="exportAsPDF()">Export To PDF</button>
-      </div>
-      <div class="export-to-excel">
-        <button class="btn" onclick="exportAsExcel()">Export To Excel</button>
+      <div class="export-data">
+        <select class="export" id="export" placeholder="Export" onchange="exportChange(event)">
+          <option value="" disabled="" selected="">Export</option>
+          <option value="png">Export To PNG</option>
+          <option value="pdf">Export To PDF</option>
+          <option value="excel">Export To Excel</option>
+      </select>
       </div>
       <div class="fullscreen">
-        <button class="btn" onclick="changeScreen()">FULLSCREEN</button>
+        <button class="btn" onclick="changeScreen()">FullScreen</button>
       </div>
       <div class="auto-scheduling">
         <!-- <span class="coming-soon">coming soon</span> -->
@@ -672,15 +671,16 @@
         }
       }
 
-      function exportAsPNG() {
-        ZT_Gantt.exportToPNG("ztGanttChart");
+      function exportChange(e){
+        if(e.target.value === "png"){
+          ZT_Gantt.exportToPNG("ztGanttChart");
+        }else if(e.target.value === "pdf"){
+          ZT_Gantt.exportToPDF("ztGanttChart");
+        }else{
+          ZT_Gantt.exportToExcel("ztGanttChart");
+        }
       }
-      function exportAsPDF() {
-        ZT_Gantt.exportToPDF("ztGanttChart");
-      }
-      function exportAsExcel() {
-        ZT_Gantt.exportToExcel("ztGanttChart");
-      }
+
       function autoScheduling() {
         ZT_Gantt.autoScheduling();
       }

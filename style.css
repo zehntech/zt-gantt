@@ -23,8 +23,9 @@
   background-color: #3585e0f2;
 }
 
-.scale-zoom, .lang{
-  padding: 10px 20px;
+.scale-zoom, .lang, .export{
+  padding: 8px;
+  height: 35px;
   border: 1px solid #4ca0fff2;
   outline: transparent;
   font-family: sans-serif;
@@ -115,7 +116,7 @@ input[type="checkbox"] {
 
 .action-container *{
     font-weight: 500;
-    font-size: 15px;
+    font-size: 13px;
 }
 .action-container{
     margin: 0 10px;
