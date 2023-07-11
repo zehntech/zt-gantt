@@ -142,13 +142,13 @@
             ],
             day_short: ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
             label: {
-              "description": "विवरण"
+              description: "विवरण",
             },
             buttons: {
-              "save": "जमा करे",
-              "cancel": "रद्द करे",
-              "delete": "मिटाये",
-            }
+              save: "जमा करे",
+              cancel: "रद्द करे",
+              delete: "मिटाये",
+            },
           },
           en: {
             month_full: [
@@ -190,13 +190,13 @@
             ],
             day_short: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             label: {
-              "description": "Description"
+              description: "Description",
             },
             buttons: {
-              "save": "Save",
-              "cancel": "Cancel",
-              "delete": "Delete",
-            }
+              save: "Save",
+              cancel: "Cancel",
+              delete: "Delete",
+            },
           },
           fr: {
             month_full: [
@@ -238,13 +238,13 @@
             ],
             day_short: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
             label: {
-              "description": "Description"
+              description: "Description",
             },
             buttons: {
-              "save": "Sauvegarder",
-              "cancel": "Annuler",
-              "delete": "Effacer",
-            }
+              save: "Sauvegarder",
+              cancel: "Annuler",
+              delete: "Effacer",
+            },
           },
           de: {
             month_full: [
@@ -286,13 +286,13 @@
             ],
             day_short: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
             label: {
-              "description": "Beschreibung"
+              description: "Beschreibung",
             },
             buttons: {
-              "save": "Speichern",
-              "cancel": "Abbrechen",
-              "delete": "Löschen",
-            }
+              save: "Speichern",
+              cancel: "Abbrechen",
+              delete: "Löschen",
+            },
           },
           ja: {
             month_full: [
@@ -334,13 +334,13 @@
             ],
             day_short: ["太陽", "月", "火", "結婚した", "木", "金", "土"],
             label: {
-              "description": "説明"
+              description: "説明",
             },
             buttons: {
-              "save": "保存する",
-              "cancel": "キャンセル",
-              "delete": "削除",
-            }
+              save: "保存する",
+              cancel: "キャンセル",
+              delete: "削除",
+            },
           },
           ar: {
             month_full: [
@@ -390,13 +390,13 @@
               "سبت",
             ],
             label: {
-              "description": "وصف"
+              description: "وصف",
             },
             buttons: {
-              "save": "يحفظ",
-              "cancel": "يلغي",
-              "delete": "يمسح",
-            }
+              save: "يحفظ",
+              cancel: "يلغي",
+              delete: "يمسح",
+            },
           },
           be: {
             month_full: [
@@ -438,13 +438,13 @@
             ],
             day_short: ["Нд", "Пн", "Аўт", "Ср", "Чцв", "Пт", "Сб"],
             label: {
-              "description": "Апісанне"
+              description: "Апісанне",
             },
             buttons: {
-              "save": "Захаваць",
-              "cancel": "Адмяніць",
-              "delete": "Выдаліць",
-            }
+              save: "Захаваць",
+              cancel: "Адмяніць",
+              delete: "Выдаліць",
+            },
           },
           ca: {
             month_full: [
@@ -486,13 +486,13 @@
             ],
             day_short: ["Dg", "Dl", "Dm", "Dc", "Dj", "Dv", "Ds"],
             label: {
-              "description": "Descripció"
+              description: "Descripció",
             },
             buttons: {
-              "save": "Desa",
-              "cancel": "Cancel · lar",
-              "delete": "Suprimeix",
-            }
+              save: "Desa",
+              cancel: "Cancel · lar",
+              delete: "Suprimeix",
+            },
           },
           cn: {
             month_full: [
@@ -542,13 +542,13 @@
               "星期六",
             ],
             label: {
-              "description": "描述"
+              description: "描述",
             },
             buttons: {
-              "save": "节省",
-              "cancel": "取消",
-              "delete": "删除",
-            }
+              save: "节省",
+              cancel: "取消",
+              delete: "删除",
+            },
           },
           hr: {
             month_full: [
@@ -590,13 +590,13 @@
             ],
             day_short: ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
             label: {
-              "description": "Opis"
+              description: "Opis",
             },
             buttons: {
-              "save": "Uštedjeti",
-              "cancel": "Otkazati",
-              "delete": "Izbrisati",
-            }
+              save: "Uštedjeti",
+              cancel: "Otkazati",
+              delete: "Izbrisati",
+            },
           },
           cs: {
             month_full: [
@@ -638,13 +638,13 @@
             ],
             day_short: ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
             label: {
-              "description": "Popis"
+              description: "Popis",
             },
             buttons: {
-              "save": "Uložit",
-              "cancel": "zrušení",
-              "delete": "Vymazat",
-            }
+              save: "Uložit",
+              cancel: "zrušení",
+              delete: "Vymazat",
+            },
           },
           da: {
             month_full: [
@@ -686,13 +686,13 @@
             ],
             day_short: ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"],
             label: {
-              "description": "Beskrivelse"
+              description: "Beskrivelse",
             },
             buttons: {
-              "save": "Gemme",
-              "cancel": "Afbestille",
-              "delete": "Slet",
-            }
+              save: "Gemme",
+              cancel: "Afbestille",
+              delete: "Slet",
+            },
           },
           nl: {
             month_full: [
@@ -734,13 +734,13 @@
             ],
             day_short: ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"],
             label: {
-              "description": "Beschrijving"
+              description: "Beschrijving",
             },
             buttons: {
-              "save": "Redden",
-              "cancel": "Annuleren",
-              "delete": "Verwijderen",
-            }
+              save: "Redden",
+              cancel: "Annuleren",
+              delete: "Verwijderen",
+            },
           },
           fi: {
             month_full: [
@@ -782,13 +782,13 @@
             ],
             day_short: ["Su", "Ma", "Ti", "Ke", "To", "Pe", "La"],
             label: {
-              "description": "Kuvaus"
+              description: "Kuvaus",
             },
             buttons: {
-              "save": "Tallentaa",
-              "cancel": "Peruuttaa",
-              "delete": "Poistaa",
-            }
+              save: "Tallentaa",
+              cancel: "Peruuttaa",
+              delete: "Poistaa",
+            },
           },
           el: {
             month_full: [
@@ -830,13 +830,13 @@
             ],
             day_short: ["ΚΥ", "ΔΕ", "ΤΡ", "ΤΕ", "ΠΕ", "ΠΑ", "ΣΑ"],
             label: {
-              "description": "Περιγραφή"
+              description: "Περιγραφή",
             },
             buttons: {
-              "save": "Αποθηκεύσετε",
-              "cancel": "Ματαίωση",
-              "delete": "Διαγράφω",
-            }
+              save: "Αποθηκεύσετε",
+              cancel: "Ματαίωση",
+              delete: "Διαγράφω",
+            },
           },
           hu: {
             month_full: [
@@ -878,13 +878,13 @@
             ],
             day_short: ["Va", "Hé", "Ke", "Sze", "Csü", "Pé", "Szo"],
             label: {
-              "description": "Leírás"
+              description: "Leírás",
             },
             buttons: {
-              "save": "Megment",
-              "cancel": "Megszünteti",
-              "delete": "Töröl",
-            }
+              save: "Megment",
+              cancel: "Megszünteti",
+              delete: "Töröl",
+            },
           },
           id: {
             month_full: [
@@ -926,13 +926,13 @@
             ],
             day_short: ["Ming", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
             label: {
-              "description": "Keterangan"
+              description: "Keterangan",
             },
             buttons: {
-              "save": "Menyimpan",
-              "cancel": "Membatalkan",
-              "delete": "Menghapus",
-            }
+              save: "Menyimpan",
+              cancel: "Membatalkan",
+              delete: "Menghapus",
+            },
           },
           it: {
             month_full: [
@@ -974,13 +974,13 @@
             ],
             day_short: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
             label: {
-              "description": "Descrizione"
+              description: "Descrizione",
             },
             buttons: {
-              "save": "Salva",
-              "cancel": "Annulla",
-              "delete": "Eliminare",
-            }
+              save: "Salva",
+              cancel: "Annulla",
+              delete: "Eliminare",
+            },
           },
           kr: {
             month_full: [
@@ -1022,13 +1022,13 @@
             ],
             day_short: ["일", "월", "화", "수", "목", "금", "토"],
             label: {
-              "description": "설명"
+              description: "설명",
             },
             buttons: {
-              "save": "구하다",
-              "cancel": "취소",
-              "delete": "삭제",
-            }
+              save: "구하다",
+              cancel: "취소",
+              delete: "삭제",
+            },
           },
           fa: {
             month_full: [
@@ -1070,13 +1070,13 @@
             ],
             day_short: ["ی", "د", "س", "چ", "پ", "ج", "ش"],
             label: {
-              "description": "شرح"
+              description: "شرح",
             },
             buttons: {
-              "save": "صرفه جویی",
-              "cancel": "لغو کنید",
-              "delete": "حذف",
-            }
+              save: "صرفه جویی",
+              cancel: "لغو کنید",
+              delete: "حذف",
+            },
           },
           pl: {
             month_full: [
@@ -1118,13 +1118,13 @@
             ],
             day_short: ["Nie", "Pon", "Wto", "Śro", "Czw", "Pią", "Sob"],
             label: {
-              "description": "Opis"
+              description: "Opis",
             },
             buttons: {
-              "save": "Ratować",
-              "cancel": "Anulować",
-              "delete": "Usuwać",
-            }
+              save: "Ratować",
+              cancel: "Anulować",
+              delete: "Usuwać",
+            },
           },
           pt: {
             month_full: [
@@ -1166,13 +1166,13 @@
             ],
             day_short: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
             label: {
-              "description": "Descrição"
+              description: "Descrição",
             },
             buttons: {
-              "save": "Salvar",
-              "cancel": "Cancelar",
-              "delete": "Excluir",
-            }
+              save: "Salvar",
+              cancel: "Cancelar",
+              delete: "Excluir",
+            },
           },
           ro: {
             month_full: [
@@ -1214,13 +1214,13 @@
             ],
             day_short: ["Du", "Lu", "Ma", "Mi", "Jo", "Vi", "Sa"],
             label: {
-              "description": "Descriere"
+              description: "Descriere",
             },
             buttons: {
-              "save": "Salvați",
-              "cancel": "Anulare",
-              "delete": "Șterge",
-            }
+              save: "Salvați",
+              cancel: "Anulare",
+              delete: "Șterge",
+            },
           },
           ru: {
             month_full: [
@@ -1262,13 +1262,13 @@
             ],
             day_short: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
             label: {
-              "description": "Описание"
+              description: "Описание",
             },
             buttons: {
-              "save": "Сохранять",
-              "cancel": "Отмена",
-              "delete": "Удалить",
-            }
+              save: "Сохранять",
+              cancel: "Отмена",
+              delete: "Удалить",
+            },
           },
           si: {
             month_full: [
@@ -1310,13 +1310,13 @@
             ],
             day_short: ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
             label: {
-              "description": "Opis"
+              description: "Opis",
             },
             buttons: {
-              "save": "Shrani",
-              "cancel": "Prekliči",
-              "delete": "Izbriši",
-            }
+              save: "Shrani",
+              cancel: "Prekliči",
+              delete: "Izbriši",
+            },
           },
           es: {
             month_full: [
@@ -1358,13 +1358,13 @@
             ],
             day_short: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
             label: {
-              "description": "Descripción"
+              description: "Descripción",
             },
             buttons: {
-              "save": "Ahorrar",
-              "cancel": "Cancelar",
-              "delete": "Borrar",
-            }
+              save: "Ahorrar",
+              cancel: "Cancelar",
+              delete: "Borrar",
+            },
           },
           sv: {
             month_full: [
@@ -1406,13 +1406,13 @@
             ],
             day_short: ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"],
             label: {
-              "description": "Beskrivning"
+              description: "Beskrivning",
             },
             buttons: {
-              "save": "Spara",
-              "cancel": "Annullera",
-              "delete": "Radera",
-            }
+              save: "Spara",
+              cancel: "Annullera",
+              delete: "Radera",
+            },
           },
           tr: {
             month_full: [
@@ -1454,13 +1454,13 @@
             ],
             day_short: ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
             label: {
-              "description": "Tanım"
+              description: "Tanım",
             },
             buttons: {
-              "save": "Kaydetmek",
-              "cancel": "İptal etmek",
-              "delete": "Silmek",
-            }
+              save: "Kaydetmek",
+              cancel: "İptal etmek",
+              delete: "Silmek",
+            },
           },
           ua: {
             month_full: [
@@ -1502,13 +1502,13 @@
             ],
             day_short: ["Нед", "Пон", "Вів", "Сер", "Чет", "Птн", "Суб"],
             label: {
-              "description": "опис"
+              description: "опис",
             },
             buttons: {
-              "save": "зберегти",
-              "cancel": "Скасувати",
-              "delete": "Видалити",
-            }
+              save: "зберегти",
+              cancel: "Скасувати",
+              delete: "Видалити",
+            },
           },
           he: {
             month_full: [
@@ -1558,13 +1558,13 @@
               "ישב",
             ],
             label: {
-              "description": "תיאור"
+              description: "תיאור",
             },
             buttons: {
-              "save": "להציל",
-              "cancel": "לְבַטֵל",
-              "delete": "לִמְחוֹק",
-            }
+              save: "להציל",
+              cancel: "לְבַטֵל",
+              delete: "לִמְחוֹק",
+            },
           },
           no: {
             month_full: [
@@ -1606,13 +1606,13 @@
             ],
             day_short: ["Søn", "man", "tirs", "ons", "tor", "fre", "Lør"],
             label: {
-              "description": "Beskrivelse"
+              description: "Beskrivelse",
             },
             buttons: {
-              "save": "Lagre",
-              "cancel": "Avbryt",
-              "delete": "Slett",
-            }
+              save: "Lagre",
+              cancel: "Avbryt",
+              delete: "Slett",
+            },
           },
           sk: {
             month_full: [
@@ -1654,13 +1654,13 @@
             ],
             day_short: ["Ne", "Po", "Ut", "St", "Št", "Pia", "So"],
             label: {
-              "description": "Popis"
+              description: "Popis",
             },
             buttons: {
-              "save": "Uložiť",
-              "cancel": "Zrušiť",
-              "delete": "Odstrániť",
-            }
+              save: "Uložiť",
+              cancel: "Zrušiť",
+              delete: "Odstrániť",
+            },
           },
         },
         localLang: opt.localLang || "en",
@@ -1849,14 +1849,20 @@
           this.originalData[i]._id = count;
           if (
             this.originalData[i].start_date !== undefined &&
-            isNaN(
-              new Date(this.originalData[i].start_date) &&
-                this.options.date_format
-            )
+            isNaN(new Date(this.originalData[i].start_date)) &&
+            this.options.date_format
           ) {
             this.originalData[i].start_date = this.getDateTimeComponents(
               this.originalData[i].start_date
             );
+          } else {
+            // this.hasHours
+            this.getDateTimeComponents(this.originalData[i].start_date);
+            if (this.hasHours !== true) {
+              this.originalData[i].start_date = new Date(
+                new Date(this.originalData[i].start_date).setHours(0, 0, 0, 0)
+              );
+            }
           }
           if (
             this.originalData[i].end_date !== undefined &&
@@ -1866,6 +1872,14 @@
             this.originalData[i].end_date = this.getDateTimeComponents(
               this.originalData[i].end_date
             );
+          } else {
+            // this.hasHours
+            this.getDateTimeComponents(this.originalData[i].end_date);
+            if (this.hasHours !== true) {
+              this.originalData[i].end_date = new Date(
+                new Date(this.originalData[i].end_date).setHours(0, 0, 0, 0)
+              );
+            }
           }
           count += 1;
         }
@@ -2272,6 +2286,14 @@
               " ";
           });
 
+          // update content innerHTML on after progress drag
+          this.attachEvent("onAfterProgressDrag", (e) => {
+            content.innerHTML =
+              options.columns[k].template(options.data[j]) ||
+              options.data[j][options.columns[k].name] ||
+              " ";
+          });
+
           this.attachEvent("onTaskDrag", (e) => {
             content.innerHTML =
               options.columns[k].template(options.data[j]) ||
@@ -2433,6 +2455,7 @@
             (options.scales[i].unit == "day" && options.scales[i].step > 1) ||
             options.scales[i].unit == "week" ||
             options.scales[i].unit == "month" ||
+            options.scales[i].unit == "quarter" ||
             options.scales[i].unit == "year"
           ) {
             colDates = this.initColSizes(
@@ -2472,6 +2495,7 @@
             (options.scales[i].unit == "day" && options.scales[i].step > 1) ||
             options.scales[i].unit == "week" ||
             options.scales[i].unit == "month" ||
+            options.scales[i].unit == "quarter" ||
             options.scales[i].unit == "year"
           ) {
             dateCell.style.width =
@@ -2489,6 +2513,7 @@
             ((options.scales[i].unit == "day" && options.scales[i].step > 1) ||
               options.scales[i].unit == "week" ||
               options.scales[i].unit == "month" ||
+              options.scales[i].unit == "quarter" ||
               options.scales[i].unit == "year") &&
             new Date(endDate).getTime() < currentDate
           ) {
@@ -5247,6 +5272,14 @@
 
             // update content innerHTML on after task update
             this.attachEvent("onAfterTaskUpdate", (e) => {
+              content.innerHTML =
+                options.columns[k].template(taskData[l]) ||
+                taskData[l][options.columns[k].name] ||
+                " ";
+            });
+
+            // update content innerHTML on after progress drag
+            this.attachEvent("onAfterProgressDrag", (e) => {
               content.innerHTML =
                 options.columns[k].template(taskData[l]) ||
                 taskData[l][options.columns[k].name] ||
@@ -8466,9 +8499,11 @@
     },
 
     getDateTimeComponents: function (dateTimeString) {
+      if (!dateTimeString) {
+        return;
+      }
       const format = this.options.date_format;
       const regex = /%([dmyhis])|(\b\w+\b)/gi;
-
       const dateTimeParts = dateTimeString.split(/[^\w]+/);
 
       let matchedParts = format.match(regex);
@@ -8510,25 +8545,29 @@
             components.month = getIndexByValue(
               this.options.dateFormat.month_short,
               value
-            ); //need to change
+            );
             break;
           case "F":
             components.month = getIndexByValue(
               this.options.dateFormat.month_full,
               value
-            ); //need to change
+            );
             break;
           case "h":
             components.hour = value;
+            this.hasHours = value ? true : false;
             break;
           case "g":
             components.hour = value;
+            this.hasHours = value ? true : false;
             break;
           case "G":
             components.hour = value;
+            this.hasHours = value ? true : false;
             break;
           case "H":
             components.hour = value;
+            this.hasHours = value ? true : false;
             break;
           case "i":
             components.minute = value;

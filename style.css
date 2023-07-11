@@ -65,7 +65,7 @@ input[type="search"]:focus {
 }
 #ZT-Gantt {
   width: 100vw;
-  height: calc(100vh - 97px);
+  height: calc(100vh - 100px);
 }
 
 input[type="checkbox"] {

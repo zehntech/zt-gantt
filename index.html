@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./style.css" />
     <link
       rel="shortcut icon"
-      href="../images/ztGanttLogo.png"
+      href="./images/ztGanttLogo.png"
       type="image/x-icon"
     />
     <script src="./gantt.js"></script>
@@ -38,12 +38,17 @@
         <label for="today-switch">Today</label>
       </div>
       <div class="export-data">
-        <select class="export" id="export" placeholder="Export" onchange="exportChange(event)">
+        <select
+          class="export"
+          id="export"
+          placeholder="Export"
+          onchange="exportChange(event)"
+        >
           <option value="" disabled="" selected="">Export</option>
           <option value="png">Export To PNG</option>
           <option value="pdf">Export To PDF</option>
           <option value="excel">Export To Excel</option>
-      </select>
+        </select>
       </div>
       <div class="fullscreen">
         <button class="btn" onclick="changeScreen()">FullScreen</button>
@@ -53,7 +58,12 @@
         <button class="btn" onclick="autoScheduling()">Auto Scheduling</button>
       </div>
       <div class="zoom">
-        <select class="scale-zoom" id="scale_zoom" placeholder="Zoom to" onchange="changeZoom(event)">
+        <select
+          class="scale-zoom"
+          id="scale_zoom"
+          placeholder="Zoom to"
+          onchange="changeZoom(event)"
+        >
           <option value="" disabled="" selected="">Zoom to:</option>
           <option value="year">Years</option>
           <option value="quarter">Quarters</option>
@@ -61,10 +71,15 @@
           <option value="week">Weeks</option>
           <option value="day">Days</option>
           <option value="hour">Hour</option>
-      </select>
+        </select>
       </div>
       <div class="Language">
-        <select class="lang" id="lang" placeholder="Select Language" onchange="changeLang(event)">
+        <select
+          class="lang"
+          id="lang"
+          placeholder="Select Language"
+          onchange="changeLang(event)"
+        >
           <option value="" disabled="" selected="">Select Language:</option>
           <option value="ar">Arabic</option>
           <option value="be">Belarusian</option>
@@ -98,7 +113,7 @@
           <option value="sv">Swedish</option>
           <option value="tr">Turkish</option>
           <option value="ua">Ukrainian</option>
-      </select>
+        </select>
       </div>
       <input
         type="search"
@@ -112,10 +127,10 @@
     <div id="ZT-Gantt"></div>
     <script>
       let data = [
-        { id: 1, text: "Project 1", parent: 0, progress: 30},
+        { id: 1, text: "Project 1", parent: 0, progress: 30 },
         {
           id: 2,
-          text: "Task #1",
+          text: "Task #2",
           start_date: "06-05-2023",
           end_date: "06-05-2023",
           parent: 1,
@@ -127,7 +142,7 @@
           start_date: "06-17-2023",
           end_date: "06-17-2023",
           parent: 1,
-          type:"milestone"
+          type: "milestone",
         },
         {
           id: 3,
@@ -135,7 +150,7 @@
           start_date: "06-06-2023",
           end_date: "06-07-2023",
           parent: 1,
-          progress: 60
+          progress: 60,
         },
         {
           id: 5,
@@ -143,7 +158,7 @@
           start_date: "06-04-2023",
           end_date: "06-06-2023",
           parent: 3,
-          progress: 20
+          progress: 20,
         },
         {
           id: 6,
@@ -151,7 +166,7 @@
           start_date: "06-06-2023",
           end_date: "06-09-2023",
           parent: 3,
-          progress: 10
+          progress: 10,
         },
         {
           id: 7,
@@ -159,7 +174,7 @@
           start_date: "06-08-2023",
           end_date: "06-11-2023",
           parent: 3,
-          progress: 50
+          progress: 50,
         },
         {
           id: 4,
@@ -167,7 +182,7 @@
           start_date: "06-13-2023",
           end_date: "06-16-2023",
           parent: 1,
-          progress: 90
+          progress: 90,
         },
         { id: 8, text: "Project 2", parent: 0, progress: 80 },
         {
@@ -176,7 +191,7 @@
           start_date: "06-03-2023",
           end_date: "06-05-2023",
           parent: 8,
-          progress: 50
+          progress: 50,
         },
         {
           id: 25,
@@ -184,7 +199,7 @@
           start_date: "06-20-2023",
           end_date: "06-20-2023",
           parent: 8,
-          type:"milestone"
+          type: "milestone",
         },
         {
           id: 13,
@@ -207,7 +222,7 @@
           end_date: "06-08-2023",
           parent: 8,
         },
-        { id: 9, text: "Project 3", parent: 0, progress: 10  },
+        { id: 9, text: "Project 3", parent: 0, progress: 10 },
         {
           id: 16,
           text: "Task #16",
@@ -222,7 +237,7 @@
           end_date: "06-08-2023",
           parent: 9,
         },
-        { id: 10, text: "Project 4", parent: 0, progress: 40  },
+        { id: 10, text: "Project 4", parent: 0, progress: 40 },
         {
           id: 18,
           text: "Task #18",
@@ -244,7 +259,7 @@
           end_date: "06-13-2023",
           parent: 10,
         },
-        { id: 11, text: "Project 5", parent: 0, progress: 250  },
+        { id: 11, text: "Project 5", parent: 0, progress: 250 },
         {
           id: 21,
           text: "Task #21",
@@ -277,19 +292,19 @@
             return `<span>${task.text}</span>`;
           },
         },
-        // {
-        //   name: "end_date",
-        //   width: 245,
-        //   min_width: 80,
-        //   max_width: 300,
-        //   tree: false,
-        //   label: "End Date",
-        //   resize: true,
-        //   align: "center",
-        //   template: (task) => {
-        //     return `<span>${task.end_date}</span>`;
-        //   },
-        // },
+        {
+          name: "progress",
+          width: 245,
+          min_width: 80,
+          max_width: 300,
+          tree: false,
+          label: "Progress",
+          resize: true,
+          align: "center",
+          template: (task) => {
+            return `<span>${task.progress || 0}</span>`;
+          },
+        },
       ];
 
       ZT_Gantt.options.date_format = "%m-%d-%Y";
@@ -305,7 +320,7 @@
         { id: 1, source: 2, target: 23, type: 0 },
         { id: 2, source: 3, target: 6, type: 1 },
         { id: 3, source: 4, target: 23, type: 0 },
-        { id: 4, source: 12, target: 15, },
+        { id: 4, source: 12, target: 15 },
       ];
       ZT_Gantt.options.weekStart = 1; // set the start of the week
       ZT_Gantt.options.sidebarWidth = 300;
@@ -329,13 +344,13 @@
 
       ZT_Gantt.options.zoomLevel = "day";
 
-      // zoom config 
+      // zoom config
       ZT_Gantt.options.zoomConfig = {
         levels: [
           {
             name: "hour",
             scale_height: 27,
-            min_col_width:550,
+            min_col_width: 550,
             scales: [
               { unit: "day", step: 1, format: "%d %M" },
               { unit: "hour", step: 1, format: "%H" },
@@ -344,61 +359,68 @@
           {
             name: "day",
             scale_height: 27,
-            min_col_width:80,
-            scales: [{ unit: "day", step: 1, format: "%d %M" }],
-          },
-          {
-            name: "week",
-            scale_height: 45,
-            min_col_width:50,
+            min_col_width: 80,
             scales: [
-              {
-                unit: "week",
-                step: 1,
-                format: function (date) {
-                  var dateToStr = ZT_Gantt.formatDateToString("%d %M");
-                  var endDate = ZT_Gantt.add(date, 6, "day");
-                  var weekNum = ZT_Gantt.formatDateToString("%W",date);
-                  return (
-                    "#" +
-                    weekNum +
-                    ", " +
-                    ZT_Gantt.formatDateToString("%d %M",date) +
-                    " - " +
-                    ZT_Gantt.formatDateToString("%d %M",endDate)
-                  );
-                },
-              },
-              { unit: "day", step: 1, format: "%j %D" },
-            ],
-          },
-          {
-            name: "month",
-            scale_height: 45,
-            min_col_width:120,
-            scales: [
-              { unit: "month", format: "%F, %Y" },
+              { unit: "week", step: 1, format: "%W" },
               { unit: "day", step: 1, format: "%d %M" },
             ],
           },
           {
-            name: "quarter",
+            name: "week",
             scale_height: 45,
-            min_col_width:90,
+            min_col_width: 50,
             scales: [
-              { unit: "month", format: "%F, %Y" },
-              { unit: "week", format: "Week #%W" },
+              { unit: "month", step: 1, format: "%M" },
+              {
+                unit: "week",
+                step: 1,
+                format: (t) => {
+                  const {
+                    startDate: a,
+                    endDate: n,
+                    weekNum: i,
+                  } = weekStartAndEnd(t);
+                  return ` ${ZT_Gantt.formatDateToString(
+                    "%j %M",
+                    a
+                  )} - ${ZT_Gantt.formatDateToString(
+                    "%j %M",
+                    n
+                  )}, ${a.getFullYear()}`;
+                },
+              },
+            ],
+          },
+          {
+            name: "month",
+            scale_height: 30,
+            min_col_width: 120,
+            scales: [
+              { unit: "year", step: 1, format: "%Y" },
+              { unit: "month", step: 1, format: "%M" },
+            ],
+          },
+          {
+            name: "quarter",
+            scale_height: 25,
+            min_col_width: 90,
+            scales: [
+              { unit: "year", step: 1, format: "%Y" },
+              { unit: "quarter", step: 1, format: "Q%q" },
+              { unit: "month", format: "%M" },
             ],
           },
           {
             name: "year",
-            scale_height: 45,
+            scale_height: 30,
             min_col_width: 30,
-            scales: [{ unit: "year", step: 1, format: "%Y" }],
+            scales: [
+              { unit: "year", step: 3, format: "2022 - 2024" },
+              { unit: "year", step: 1, format: "%Y" }
+          ],
           },
         ],
       };
-     
 
       ZT_Gantt.options.scale_height = 30;
       ZT_Gantt.options.row_height = 24;
@@ -454,8 +476,8 @@
       ZT_Gantt.templates.taskbar_text = function (start, end, task) {
         if (task.parent == 0) {
           return `Project : ${task.text}`;
-        }else if(task.type === "milestone"){
-          return task.text
+        } else if (task.type === "milestone") {
+          return task.text;
         } else {
           return `Task : ${task.text}`;
         }
@@ -551,16 +573,16 @@
       ZT_Gantt.attachEvent("onTaskDblClick", (event) => {
         // console.log("onTaskDblClick: ", event);
       });
-      let idCount = 0
+      let idCount = 0;
       ZT_Gantt.attachEvent("addTaskOnDrag", (event) => {
         // console.log("addTaskOnDrag: ", event.task);
         ZT_Gantt.addTask({
-          id: "Added"+idCount,
+          id: "Added" + idCount,
           start_date: new Date(event.task.startDate),
           end_date: new Date(event.task.endDate),
           parent: event.task.parent,
-          text: "Task Added"
-        })
+          text: "Task Added",
+        });
         ZT_Gantt.render();
         idCount += 1;
       });
@@ -634,7 +656,6 @@
       ZT_Gantt.attachEvent("onColorChange", (event) => {
         // console.log("onColorChange: ", event);
       });
-      
 
       let fullscreen = false;
       function changeScreen() {
@@ -646,13 +667,24 @@
         }
       }
 
-      function changeZoom(e){
+      function changeZoom(e) {
         ZT_Gantt.options.zoomLevel = e.target.value;
-        ZT_Gantt.zoomInit(); 
+        if(e.target.value === "month" || e.target.value === "quarter"){
+          ZT_Gantt.options.startDate = "2023-05-01T11:46:17.775Z";
+          ZT_Gantt.options.endDate = "2023-07-31T11:46:17.775Z";
+        }else if(e.target.value === "year"){
+          ZT_Gantt.options.startDate = "2022-01-01T11:46:17.775Z";
+          ZT_Gantt.options.endDate = "2024-12-31T11:46:17.775Z";
+        }else{
+          ZT_Gantt.options.startDate = "2023-06-01T11:46:17.775Z";
+          ZT_Gantt.options.endDate = "2023-06-30T11:46:17.775Z";
+        }
+        ZT_Gantt.zoomInit();
+        ZT_Gantt.render();
       }
 
-      function changeLang(e){
-        ZT_Gantt.setLocalLang(e.target.value); 
+      function changeLang(e) {
+        ZT_Gantt.setLocalLang(e.target.value);
       }
 
       function changeCollapse(e) {
@@ -671,12 +703,12 @@
         }
       }
 
-      function exportChange(e){
-        if(e.target.value === "png"){
+      function exportChange(e) {
+        if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart");
-        }else if(e.target.value === "pdf"){
+        } else if (e.target.value === "pdf") {
           ZT_Gantt.exportToPDF("ztGanttChart");
-        }else{
+        } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
       }
@@ -732,16 +764,14 @@
       //   console.log(task._id,"task _id ?????????????????????????????????");
       // })
 
-      getScale=()=>{
+      getScale = () => {
         console.log(ZT_Gantt.getScale());
-      }
+      };
 
       function searchTask(e) {
         let isFilter = e.target.value.trim() !== "";
         ZT_Gantt.filterTask((task) => {
-            return task.text
-              .toLowerCase()
-              .includes(e.target.value.toLowerCase());
+          return task.text.toLowerCase().includes(e.target.value.toLowerCase());
         }, isFilter);
       }
     </script>

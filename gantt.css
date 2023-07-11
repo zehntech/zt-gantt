@@ -84,7 +84,7 @@
 
 .zt-gantt-scale-cell {
   position: absolute;
-  border-right: 1px solid #ebebeb;
+  border-right: 1px solid #cecece;
   text-align: center;
 }
 
@@ -240,6 +240,7 @@
 }
 
 .zt-gantt-grid-data .zt-gantt-row-item:hover {
+  cursor: pointer;
   background-color: #d5eaff;
 }
 
@@ -979,12 +980,12 @@
   border: none;
 }
 
-.zt-gantt-bar-milestone .zt-gantt-task-color-picker{
+.zt-gantt-bar-milestone .zt-gantt-task-color-picker {
   left: 0;
   margin-left: -50px;
   margin-right: 0;
 }
 
-.zt-gantt-bar-milestone .zt-gantt-task-color-picker input{
+.zt-gantt-bar-milestone .zt-gantt-task-color-picker input {
   margin-left: -25px;
 }
