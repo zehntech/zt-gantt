@@ -1746,15 +1746,10 @@
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
       
       let fullscreenChangeEvent = 'fullscreenchange';
-      const prefixes = ["", "moz", "webkit", "ms"]
-
-          prefixes.forEach(function(prefix) {
-            console.log(document[prefix + "fullscreenchange"],"here");
-            document.addEventListener(prefix + "fullscreenchange", function() {
-                console.log("working else if");
-            });
-           });
-
+      if (document.webkitFullscreenElement !== null) {
+        // Safari specific event
+        fullscreenChangeEvent = 'webkitfullscreenchange';
+      }
       // Listen for the fullscreenchange event
       document.body.removeEventListener(
         fullscreenChangeEvent,
@@ -1764,15 +1759,19 @@
         fullscreenChangeEvent,
         handleFullScreenChange
       );
-      function handleFullScreenChange(event) {
-        console.log("working document");
+      function handleFullScreenChange() {
         // Check if full screen mode has been exited
         if (!document.fullscreenElement) {
-          console.log("working !document");
           that.element.classList.remove("zt-gantt-fullScreen");
           that.exitFullScreen(true);
         }
       }
+
+      document.addEventListener('keydown', (event) => {
+        
+        if (event.key === 'Escape') {
+          handleFullScreenChange();
+        }});
 
       window.removeEventListener("resize", handleResize);
       window.addEventListener("resize", handleResize);
