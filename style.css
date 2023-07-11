@@ -136,7 +136,7 @@ input[type="checkbox"] {
     background-color: #7fbbfff2 !important;
 }
 
-.zt-gantt-bar-task.child-task{
+.zt-gantt-bar-task.child-task:not(.zt-gantt-bar-milestone){
     background-color: #56a4fdf2 !important;
 }
 

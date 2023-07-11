@@ -1744,14 +1744,19 @@
       let that = this;
 
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
-
+      
+      let fullscreenChangeEvent = 'fullscreenchange';
+      if (document.webkitFullscreenElement !== null) {
+        // Safari specific event
+        fullscreenChangeEvent = 'webkitfullscreenchange';
+      }
       // Listen for the fullscreenchange event
       document.body.removeEventListener(
-        "fullscreenchange",
+        fullscreenChangeEvent,
         handleFullScreenChange
       );
       document.body.addEventListener(
-        "fullscreenchange",
+        fullscreenChangeEvent,
         handleFullScreenChange
       );
       function handleFullScreenChange(event) {
@@ -1864,10 +1869,6 @@
             ) {
               this.originalData[i].start_date = new Date(
                 new Date(this.originalData[i].start_date).setHours(0, 0, 0, 0)
-              );
-              console.log(
-                this.originalData[i].text,
-                this.originalData[i].start_date
               );
             }
           }

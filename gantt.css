@@ -819,11 +819,10 @@
   z-index: 1007;
   height: 40px;
   line-height: inherit;
-  background-color: #e84855;
-  border: 0px solid #e84855;
+  background-color: transparent !important;
+  border: 0px solid transparent !important;
   border-radius: 3px;
   text-align: center;
-  visibility: hidden;
   margin-left: -10px;
 }
 
