@@ -1856,11 +1856,18 @@
               this.originalData[i].start_date
             );
           } else {
-            // this.hasHours
+            this.hasHours = false;
             this.getDateTimeComponents(this.originalData[i].start_date);
-            if (this.hasHours !== true) {
+            if (
+              this.hasHours !== true &&
+              !isNaN(new Date(this.originalData[i].start_date))
+            ) {
               this.originalData[i].start_date = new Date(
                 new Date(this.originalData[i].start_date).setHours(0, 0, 0, 0)
+              );
+              console.log(
+                this.originalData[i].text,
+                this.originalData[i].start_date
               );
             }
           }
@@ -1873,9 +1880,12 @@
               this.originalData[i].end_date
             );
           } else {
-            // this.hasHours
+            this.hasHours = false;
             this.getDateTimeComponents(this.originalData[i].end_date);
-            if (this.hasHours !== true) {
+            if (
+              this.hasHours !== true &&
+              !isNaN(new Date(this.originalData[i].end_date))
+            ) {
               this.originalData[i].end_date = new Date(
                 new Date(this.originalData[i].end_date).setHours(0, 0, 0, 0)
               );
