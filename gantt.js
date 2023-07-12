@@ -1745,14 +1745,20 @@
 
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
 
-      let fullscreenChangeEvent = "fullscreenchange";
-      if (document.webkitFullscreenElement !== null) {
-        // Safari specific event
-        fullscreenChangeEvent = "webkitfullscreenchange";
+      /*for Safari below v16 */
+      document.removeEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
+      document.addEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
+      function handleFullScreenChangeSafari() {
+        // Check if full screen mode has been exited
+        if (!document.webkitIsFullScreen) {
+          that.element.classList.remove("zt-gantt-fullScreen");
+          that.exitFullScreen(true);
+        }
       }
+
       // Listen for the fullscreenchange event
-      document.removeEventListener("webkitfullscreenchange", handleFullScreenChange);
-      document.addEventListener("webkitfullscreenchange", handleFullScreenChange);
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+      document.addEventListener("fullscreenchange", handleFullScreenChange);
       function handleFullScreenChange() {
         // Check if full screen mode has been exited
         if (!document.fullscreenElement) {
@@ -1888,8 +1894,8 @@
         } else {
           this.hasHours = false;
           if (
-            this.originalData[i].start_date !== undefined &&
-            isNaN(this.originalData[i].start_date)
+            this.originalData[i].end_date !== undefined &&
+            isNaN(this.originalData[i].end_date)
           ) {
             this.getDateTimeComponents(this.originalData[i].end_date);
             if (
