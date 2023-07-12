@@ -1761,6 +1761,7 @@
       );
       function handleFullScreenChange() {
         // Check if full screen mode has been exited
+        console.log(document.fullscreenElement,"webkitfullscreenchange");
         if (!document.fullscreenElement) {
           that.element.classList.remove("zt-gantt-fullScreen");
           that.exitFullScreen(true);
