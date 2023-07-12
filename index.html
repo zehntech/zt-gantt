@@ -259,7 +259,7 @@
           end_date: "06-13-2023",
           parent: 10,
         },
-        { id: 11, text: "Project 5", parent: 0, progress: 250 },
+        { id: 11, text: "Project 5", parent: 0, progress: 100 },
         {
           id: 21,
           text: "Task #21",
@@ -326,7 +326,7 @@
       ZT_Gantt.options.sidebarWidth = 300;
       ZT_Gantt.options.scales = [
         {
-        unit: "week",
+          unit: "week",
           step: 1,
           format: (t) => {
             const { startDate: a, endDate: n, weekNum: i } = weekStartAndEnd(t);

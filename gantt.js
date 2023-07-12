@@ -1744,35 +1744,22 @@
       let that = this;
 
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
-      
-      let fullscreenChangeEvent = 'fullscreenchange';
+
+      let fullscreenChangeEvent = "fullscreenchange";
       if (document.webkitFullscreenElement !== null) {
         // Safari specific event
-        fullscreenChangeEvent = 'webkitfullscreenchange';
+        fullscreenChangeEvent = "webkitfullscreenchange";
       }
       // Listen for the fullscreenchange event
-      document.body.removeEventListener(
-        fullscreenChangeEvent,
-        handleFullScreenChange
-      );
-      document.body.addEventListener(
-        fullscreenChangeEvent,
-        handleFullScreenChange
-      );
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+      document.addEventListener("fullscreenchange", handleFullScreenChange);
       function handleFullScreenChange() {
         // Check if full screen mode has been exited
-        console.log(document.fullscreenElement,"webkitfullscreenchange");
         if (!document.fullscreenElement) {
           that.element.classList.remove("zt-gantt-fullScreen");
           that.exitFullScreen(true);
         }
       }
-
-      document.addEventListener('keydown', (event) => {
-        
-        if (event.key === 'Escape') {
-          handleFullScreenChange();
-        }});
 
       window.removeEventListener("resize", handleResize);
       window.addEventListener("resize", handleResize);
@@ -1860,16 +1847,25 @@
         let count = 0;
         for (let i = 0; i < this.originalData.length; i++) {
           this.originalData[i]._id = count;
+          count += 1;
+        }
+      }
+
+      for (let i = 0; i < this.originalData.length; i++) {
+        if (
+          this.originalData[i].start_date !== undefined &&
+          isNaN(new Date(this.originalData[i].start_date)) &&
+          this.options.date_format
+        ) {
+          this.originalData[i].start_date = this.getDateTimeComponents(
+            this.originalData[i].start_date
+          );
+        } else {
+          this.hasHours = false;
           if (
             this.originalData[i].start_date !== undefined &&
-            isNaN(new Date(this.originalData[i].start_date)) &&
-            this.options.date_format
+            isNaN(this.originalData[i].start_date)
           ) {
-            this.originalData[i].start_date = this.getDateTimeComponents(
-              this.originalData[i].start_date
-            );
-          } else {
-            this.hasHours = false;
             this.getDateTimeComponents(this.originalData[i].start_date);
             if (
               this.hasHours !== true &&
@@ -1880,16 +1876,21 @@
               );
             }
           }
+        }
+        if (
+          this.originalData[i].end_date !== undefined &&
+          isNaN(new Date(this.originalData[i].end_date)) &&
+          this.options.date_format
+        ) {
+          this.originalData[i].end_date = this.getDateTimeComponents(
+            this.originalData[i].end_date
+          );
+        } else {
+          this.hasHours = false;
           if (
-            this.originalData[i].end_date !== undefined &&
-            isNaN(new Date(this.originalData[i].end_date)) &&
-            this.options.date_format
+            this.originalData[i].start_date !== undefined &&
+            isNaN(this.originalData[i].start_date)
           ) {
-            this.originalData[i].end_date = this.getDateTimeComponents(
-              this.originalData[i].end_date
-            );
-          } else {
-            this.hasHours = false;
             this.getDateTimeComponents(this.originalData[i].end_date);
             if (
               this.hasHours !== true &&
@@ -1900,7 +1901,6 @@
               );
             }
           }
-          count += 1;
         }
       }
 
@@ -2846,7 +2846,10 @@
 
         let ztGanttBarTask = document.createElement("div");
 
-        if (this.options.data[j].taskColor && this.options.data[j].type !== "milestone") {
+        if (
+          this.options.data[j].taskColor &&
+          this.options.data[j].type !== "milestone"
+        ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
             this.changeOpacity(this.options.data[j].taskColor, 0.8),
@@ -8638,21 +8641,24 @@
     ) {
       let that = this;
       colorInput.addEventListener("change", (e) => {
-        
         if (task.type === "milestone") {
           taskbarContent.style.setProperty(
             "background-color",
             e.target.value,
             "important"
           );
-        }else{
-        taskbar.style.setProperty(
-          "background-color",
-          that.changeOpacity(e.target.value, 0.8),
-          "important"
-        );
+        } else {
+          taskbar.style.setProperty(
+            "background-color",
+            that.changeOpacity(e.target.value, 0.8),
+            "important"
+          );
 
-        taskbar.style.setProperty("border-color", e.target.value, "important");
+          taskbar.style.setProperty(
+            "border-color",
+            e.target.value,
+            "important"
+          );
         }
         if (taskProgress) {
           taskProgress.style.setProperty(
@@ -8675,21 +8681,24 @@
       });
 
       colorInput.addEventListener("input", function (e) {
-        
         if (task.type === "milestone") {
           taskbarContent.style.setProperty(
             "background-color",
             e.target.value,
             "important"
           );
-        }else{
-        taskbar.style.setProperty(
-          "background-color",
-          that.changeOpacity(e.target.value, 0.8),
-          "important"
-        );
+        } else {
+          taskbar.style.setProperty(
+            "background-color",
+            that.changeOpacity(e.target.value, 0.8),
+            "important"
+          );
 
-        taskbar.style.setProperty("border-color", e.target.value, "important");
+          taskbar.style.setProperty(
+            "border-color",
+            e.target.value,
+            "important"
+          );
         }
 
         if (taskProgress) {
@@ -8699,7 +8708,6 @@
             "important"
           );
         }
-
       });
 
       function setColorToOriginalData(color) {

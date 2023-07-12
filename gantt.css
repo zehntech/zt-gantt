@@ -839,8 +839,7 @@
 
 .zt-gantt-bar-milestone .zt-gantt-bar-task-content {
   background: #e84855;
-  border: inherit;
-  border-width: 1px;
+  border: 1px solid #e84855;
   border-radius: inherit;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
