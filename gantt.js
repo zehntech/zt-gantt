@@ -7330,7 +7330,9 @@
       let linkHorInnerLine = document.createElement("div");
       linkHorInnerLine.classList.add("hor-inner-line");
 
-      if (linkObj.type === 0) {
+      let linkType = linkObj.type || 0;
+
+      if (linkType === 0) {
         startLine.style.left = sourceLeft + sourceWidth + "px";
         startLine.style.top = sourceTop + rowHeight / 2 + "px";
         startLine.style.width = 15 + "px";
@@ -7445,7 +7447,7 @@
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
-      } else if (linkObj.type === 1) {
+      } else if (linkType === 1) {
         startLine.style.left = Math.min(sourceLeft, targetLeft) - 15 + "px";
         startLine.style.top = sourceTop + rowHeight / 2 + "px";
         if (sourceLeft > targetLeft) {
@@ -7480,7 +7482,7 @@
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
-      } else if (linkObj.type === 2) {
+      } else if (linkType === 2) {
         startLine.style.left = `${sourceLeft + sourceWidth}px`;
         startLine.style.top = `${sourceTop + rowHeight / 2}px`;
         if (sourceLeft + sourceWidth < targetLeft + targetWidth) {
@@ -7517,7 +7519,7 @@
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
-      } else if (linkObj.type === 3) {
+      } else if (linkType === 3) {
         startLine.style.top = `${sourceTop + rowHeight / 2}px`;
         if (sourceLeft > targetLeft + targetWidth + 30) {
           startLine.style.left = `${targetLeft + targetWidth + 15}px`;
