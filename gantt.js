@@ -1751,8 +1751,8 @@
         fullscreenChangeEvent = "webkitfullscreenchange";
       }
       // Listen for the fullscreenchange event
-      document.removeEventListener("fullscreenchange", handleFullScreenChange);
-      document.addEventListener("fullscreenchange", handleFullScreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullScreenChange);
+      document.addEventListener("webkitfullscreenchange", handleFullScreenChange);
       function handleFullScreenChange() {
         // Check if full screen mode has been exited
         if (!document.fullscreenElement) {
