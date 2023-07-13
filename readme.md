@@ -18,7 +18,7 @@ Download the library files from our website or repository. Include the library f
 You're now ready to start using the Gantt Chart Library!    
 
 <a href="https://zt-gantt.zehntech.net/">
-  <img src="./images/zt-gantt-screenshot.png">
+  <img src="./public/images/zt-gantt-screenshot.png">
 </a>  
   
 <a name="getting-started"></a>
@@ -113,7 +113,7 @@ To render the updated data call `gantt.render();`
 ### 3. Features ###  
   * 4 types of tasks linking: finish-to-start, start-to-start, finish-to-finish, start-to-finish    
   <a href="https://zt-gantt.zehntech.net/">
-    <img src="./images/links.gif">
+    <img src="./public/images/links.gif">
   </a>  
 
   * dragging and dropping multiple tasks horizontally and vertically    
@@ -129,7 +129,7 @@ To render the updated data call `gantt.render();`
   * add custom marker  
   * add/update/delete task  
   <a href="https://zt-gantt.zehntech.net/">
-    <img src="./images/popup.gif">
+    <img src="./public/images/popup.gif">
   </a>    
   
   * open a single task  
@@ -137,7 +137,7 @@ To render the updated data call `gantt.render();`
   * select start date and end date with drag and drop    
   * custom color for each task by the color picker  
   <a href="https://zt-gantt.zehntech.net/">
-    <img src="./images/taskColor.gif">
+    <img src="./public/images/taskColor.gif">
   </a>       
     
   * Multilanguage support  
