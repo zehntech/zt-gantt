@@ -1,0 +1,28 @@
+{
+    "name": "zt-gantt",
+    "version": "2.0.0",
+    "description": "An open source JavaScript Gantt chart that helps you illustrate a project schedule in a nice-looking chart.",
+    "main": "public/gantt.js",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/zehntech/zt-gantt"
+    },
+    "keywords": [
+      "gantt",
+      "chart",
+      "gantt chart",
+      "scheduler",
+      "timeline",
+      "zehntech"
+    ],
+    "author": "Zehntech",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/zehntech/zt-gantt/issues"
+    },
+    "homepage": "https://github.com/zehntech/zt-gantt#readme",
+    "devDependencies": {
+      "jspdf": "2.5.1",
+      "html2canvas": "1.4.1" 
+    }
+  }
