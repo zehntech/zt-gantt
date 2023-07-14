@@ -106,9 +106,9 @@ input[type="checkbox"] {
 	left: 22px;
 }
 
-.my-scale-class-2{
+/* .my-scale-class-2{
     background-color: #fafafa;
-}
+} */
 
 .collapse-container{
     display: flex;
@@ -134,11 +134,11 @@ input[type="checkbox"] {
 }
 
 .parent-task{
-    background-color: #7fbbfff2 !important;
+    /* background-color: #7fbbfff2 !important; */
 }
 
 .zt-gantt-bar-task.child-task:not(.zt-gantt-bar-milestone){
-    background-color: #56a4fdf2 !important;
+    /* background-color: #56a4fdf2 !important; */
 }
 
 .gantt-search{

@@ -2145,7 +2145,9 @@
           this.options.openedTasks.push(options.data[j].id);
         }
         let dataItem = document.createElement("div");
-        dataItem.classList.add("zt-gantt-row-item", "d-flex");
+        dataItem.classList.add("zt-gantt-row-item", "d-flex",this.options.selectedRow === `${options.data[j].id}`
+        ? "zt-gantt-selected"
+        : "zt-gantt-row-item");
 
         //add custom classes from user
         if (typeof this.templates.grid_row_class === "function") {
@@ -2259,7 +2261,7 @@
           for (let item of taskRow) {
             item.classList.add("zt-gantt-selected");
           }
-          that.options.selectedRow = `${j}`;
+          that.options.selectedRow = `${options.data[j].id}`;
           that.options.selectedTask = `${options.data[j].id}`;
         });
 
@@ -2599,7 +2601,7 @@
         let scaleRow = document.createElement("div");
         scaleRow.classList.add(
           "zt-gantt-task-row",
-          options.selectedRow === `${j}`
+          options.selectedRow === `${options.data[j].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-task-row"
         );
@@ -3928,7 +3930,7 @@
 
       function handleMouseUp(e) {
         autoScroll = false;
-        taskBar.classList.remove("task-dargging");
+        taskBar.classList.remove("task-dragging");
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
 
@@ -4169,7 +4171,7 @@
             (e.y - startY) -
             (startRightPanelScrollTop - rightPanelScroll.scrollTop) +
             "px";
-          taskBar.classList.add("task-dargging");
+          taskBar.classList.add("task-dragging");
 
           let taskStartDate =
             that.dates[
@@ -5091,7 +5093,10 @@
             "zt-gantt-row-item",
             "zt-gantt-child-row",
             `zt-gantt-child-${taskData[l].parent}`,
-            !isOpened ? "d-none" : "d-flex"
+            !isOpened ? "d-none" : "d-flex",
+            this.options.selectedRow === `${taskData[l].id}`
+            ? "zt-gantt-selected"
+            : "zt-gantt-row-item"
           );
 
           //add custom classes from user
@@ -5249,7 +5254,7 @@
             for (let item of taskRow) {
               item.classList.add("zt-gantt-selected");
             }
-            that.options.selectedRow = `${taskParents}`;
+            that.options.selectedRow = `${taskData[l].id}`;
             that.options.selectedTask = `${taskData[l].id}`;
           });
 
@@ -5457,7 +5462,7 @@
           "zt-gantt-child-row",
           `zt-gantt-child-${taskData[l].parent}`,
           isCollapsed || !isOpened ? "d-none" : "zt-gantt-task-row",
-          options.selectedRow === taskParents
+          options.selectedRow === `${taskData[l].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-task-row"
         );
@@ -6252,7 +6257,7 @@
           for (let item of taskRow) {
             item.classList.add("zt-gantt-selected");
           }
-          that.options.selectedRow = `${j}`;
+          that.options.selectedRow = `${options.data[j].id}`;
           that.options.selectedTask = `${options.data[j].id}`;
         });
 
@@ -8222,7 +8227,7 @@
 
     dragTaskProgress: function (resizer, progress, taskBar, task) {
       let startX,
-        dargging = false,
+        dragging = false,
         that = this,
         autoScroll = false,
         timeLineContainer,
@@ -8244,7 +8249,7 @@
       function handleMouseUp(e) {
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
-        if (dargging === true) {
+        if (dragging === true) {
           let progressPer = Math.round(
             (progress.offsetWidth / taskBar.offsetWidth) * 100
           );
@@ -8265,7 +8270,7 @@
           });
           that.element.dispatchEvent(onAfterProgressDrag);
         }
-        dargging = false;
+        dragging = false;
       }
 
       function resize(e) {
@@ -8281,7 +8286,7 @@
           return;
         }
 
-        dargging = true;
+        dragging = true;
         let progressWidth =
           startProgressWidth +
           (e.clientX - startX) +

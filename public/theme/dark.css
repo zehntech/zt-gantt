@@ -1,0 +1,118 @@
+:root {
+/* -------- Background Colors Start ----------- */
+--body-background: #333332;
+--header-background: #333332;
+--header-cell-background: #333332;
+--timeline-cell-background: #333332;
+--timeline-scale-background: #333332;
+--resizer-background: #ffffff4d;
+--grid-resize-area-background: #c0bebe4f;
+--row-item-background: #333332;
+--row-item-hover-background: rgba(19, 147, 190, 0.379);
+--weekend-cell-background: #4d4d4d;
+--selected-background: rgba(19, 147, 190, 0.379);
+--marker-background: #1396bea7;
+--marker-hover-background: #1395be;
+--toastr-background: #aaaaaa;
+
+/* lightbox backgrounds  */
+--lightbox-background: #333332;
+--textarea-background: #333332;
+
+/* tooltip background */
+--tooltip-background: #333332;
+
+/* taskbar background */
+--taskbar-background: #1395be;
+--taskbar-child-background: #1395be;
+--task-area-background: rgba(19, 149, 190, 0.302);
+--task-progress-background: #0e7595;
+--child-task-progress-background: #0e7595;
+
+/* milestone content */
+--milestone-content-background: #ff3737;
+
+/* backdrop background */
+--backdrop-background: #0000004d;
+--loder-backdrop-background: #000000cc;
+
+/* btn background  */
+--btn-primary-background: #1395be;
+--btn-normal-background: rgb(255, 255, 255, .85);
+--btn-danger-background: #ff3737;
+
+/* link backgrounds */
+--link-background: rgba(255, 140, 0, .85);
+--link-control-background: #f0f0f0;
+--link-control-hover-background: #fff;
+--selected-link-control-background: rgba(255, 140, 0, .85);
+/* -------- Background Colors End ----------- */
+
+/* -------- Text Colors Start ----------- */
+--primary-color: rgb(255, 255, 255, .85);
+--marker-color: rgb(255, 255, 255, .85);
+--tooltip-color: rgb(255, 255, 255, .85);
+--task-content-color: rgb(255, 255, 255, .85);
+--milestone-content-color: rgb(255, 255, 255, .85);
+
+/* btn colors  */
+--btn-primary-color: rgb(255, 255, 255, .85);
+--btn-normal-color: #000;
+--btn-danger-color: #ff3737;
+
+/* loader color  */
+--loader-color: #d1ebfa;
+--loader-after-color: #ff3d00;
+
+/* toastr color  */
+--toastr-color: rgb(255, 255, 255, .85);
+--toastr-p-color: rgb(255, 255, 255, .85);
+/* -------- Text Colors End ----------- */
+
+/* -------- Border Colors Start ----------- */
+--primary-border: #ffffff4d;
+
+/* taskbar border  */
+--taskbar-border: #0e7595;
+--task-area-border: #1395be;
+--milestone-content-border: #ff3737;
+
+/* link border  */
+--link-border: rgba(255, 140, 0, .85);
+--link-control-border: #929292;
+
+}
+
+:root {
+    --antd-wave-shadow-color: #fff;
+    --primary: #1395be;
+    --primary-disable-color: rgba(19, 149, 190, .8);
+    --hover-primary: #138db4;
+    --secondary: rgba(42, 159, 196, 1);
+    --bar-color: #e6f7ff;
+    --box-color: #393937;
+    --background-color: #333332;
+    --bg-box: #1d1d1c;
+    --bg-footer: #2b2b2b;
+    --text-color: rgba(255, 255, 255, .87);
+    --text-hover: rgba(0, 0, 0, .87);
+    --text-muted: rgba(255, 255, 255, .57);
+    --placholder-color: rgba(255, 255, 255, .5);
+    --box-shadow: rgba(255, 255, 255, .1);
+    --border-color: rgba(255, 255, 255, .3);
+    --menu-hover: rgba(29, 29, 28, .7);
+    --bg-dimgrey: #999;
+    --green: #9ccc65;
+    --red: #ff2727;
+    --mangenta: #bf00bf;
+    --bg-mangenta: #b966b9;
+    --row-selected: #e6f7ff;
+    --date-selected: rgba(19, 149, 190, .4);
+    --date-selected-hover: rgba(19, 149, 190, 0.55);
+    --date-selected-exclude: rgba(255, 163, 102, 0.56);
+    --date-selected-exclude-hover: rgba(255, 163, 102, 0.66);
+    --range-hover: rgba(255, 140, 0, .55);
+    --range-start: rgba(255, 140, 0, .85);
+    --btn-secondary: rgba(255, 140, 0, .87);
+    --btn-secondary-hover: rgb(255, 140, 0);
+  }
