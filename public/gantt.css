@@ -3,13 +3,13 @@
   --body-background: #fff;
   --header-background: #b6d6f2;
   --header-cell-background: #FAFAFA;
-  --timeline-cell-background: #ebebeb;
+  --timeline-cell-background: #f8f8f8;
   --timeline-scale-background: #FAFAFA;
   --resizer-background: #cecece;
   --grid-resize-area-background: #a2a2a24f;
   --row-item-background: #fff;
   --row-item-hover-background: #d5eaff;
-  --weekend-cell-background: #f8f8f8;
+  --weekend-cell-background: #ebebeb;
   --selected-background: #d5eaff;
   --marker-background: #4ca0ff80;
   --marker-hover-background: #4ca0fff2;
@@ -329,7 +329,7 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-.zt-gantt-grid-data .zt-gantt-row-item:hover {
+.zt-gantt-grid-data .zt-gantt-row-item {
   background-color: var(--row-item-background);
 }
 

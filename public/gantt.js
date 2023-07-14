@@ -1746,8 +1746,14 @@
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
 
       /*for Safari below v16 */
-      document.removeEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
-      document.addEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChangeSafari
+      );
+      document.addEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChangeSafari
+      );
       function handleFullScreenChangeSafari() {
         // Check if full screen mode has been exited
         if (!document.webkitIsFullScreen) {
@@ -2145,9 +2151,13 @@
           this.options.openedTasks.push(options.data[j].id);
         }
         let dataItem = document.createElement("div");
-        dataItem.classList.add("zt-gantt-row-item", "d-flex",this.options.selectedRow === `${options.data[j].id}`
-        ? "zt-gantt-selected"
-        : "zt-gantt-row-item");
+        dataItem.classList.add(
+          "zt-gantt-row-item",
+          "d-flex",
+          this.options.selectedRow === `${options.data[j].id}`
+            ? "zt-gantt-selected"
+            : "zt-gantt-row-item"
+        );
 
         //add custom classes from user
         if (typeof this.templates.grid_row_class === "function") {
@@ -4704,6 +4714,10 @@
         elementWidth -= totalWidth;
       }
 
+      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
+        elementWidth -= 20;
+      }
+
       let minWidth = this.options.minColWidth;
       const colCount = this.dates.length;
       let level = date !== new Date(0) ? this.options.zoomLevel : "day";
@@ -4729,9 +4743,7 @@
           break;
       }
       const gridWidth = Math.max(
-        Math.floor(
-          elementWidth / (level === "hour" ? colCount * 24 : colCount)
-        ),
+        elementWidth / (level === "hour" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
@@ -5095,8 +5107,8 @@
             `zt-gantt-child-${taskData[l].parent}`,
             !isOpened ? "d-none" : "d-flex",
             this.options.selectedRow === `${taskData[l].id}`
-            ? "zt-gantt-selected"
-            : "zt-gantt-row-item"
+              ? "zt-gantt-selected"
+              : "zt-gantt-row-item"
           );
 
           //add custom classes from user
@@ -7041,7 +7053,7 @@
         startLine.append(innerHorLine);
         taskLink.append(startLine);
 
-        if (sourceLeft + sourceWidth >= targetLeft) {
+        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
           let middleLine = document.createElement("div");
           middleLine.classList.add(
             "zt-gantt-ver-link-line",
@@ -7119,10 +7131,10 @@
         middleLine.append(innerLine);
         taskLink.append(middleLine);
 
-        if (sourceLeft + sourceWidth > targetLeft) {
+        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
           endLine.style.left = middleLine.offsetLeft + "px";
           endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width = targetLeft - middleLine.offsetLeft + "px";
+          endLine.style.width = 15 + "px";
         } else {
           endLine.style.left = middleLine.offsetLeft + "px";
           endLine.style.top = targetTop + rowHeight / 2 + "px";
@@ -7131,6 +7143,7 @@
               startLine.offsetLeft + startLine.offsetWidth - targetLeft
             ) + "px";
         }
+
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
