@@ -82,3 +82,7 @@
 --link-control-border: #929292;
 
 }
+
+.zt-gantt-folder-icon > div {
+    background-image: url(../images/folder-dark.svg);
+}

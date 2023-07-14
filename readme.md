@@ -140,6 +140,10 @@ To render the updated data call `gantt.render();`
     <img src="./public/images/taskColor.gif">
   </a>       
     
-  * Multilanguage support  
+  * Multilanguage support    
+  * Dark theme  
+  <a href="https://zt-gantt.zehntech.net/">
+    <img src="./public/images/theme.gif">
+  </a>  
   
   You can see the full list of features in the [documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf) 

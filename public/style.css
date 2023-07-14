@@ -1,17 +1,30 @@
+:root{
+  --bg-color: #fff;  
+  --text-color: #000;
+  --text-secondary-color: #fff;
+  --index-primary-color: #4ca0fff2;
+  --index-primary-hover-color: #3585e0f2;
+}
+
 * {
   font-family: sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
-  color: #1d273c;
+  color: var(--text-color);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+body{
+  background-color: var(--bg-color);
+}
+
 .btn {
   padding: 10px 20px;
-  background-color: #4ca0fff2;
-  color: #fff;
+  background-color: var(--index-primary-color);
+  color: var(--text-secondary-color);
   font-weight: 500;
   border-radius: 3px;
   border: transparent;
@@ -20,13 +33,15 @@
   transition: all 0.3s ease-in-out;
 }
 .btn:hover {
-  background-color: #3585e0f2;
+  background-color: var(--index-primary-hover-color);
 }
 
 .scale-zoom, .lang, .export{
   padding: 8px;
   height: 35px;
-  border: 1px solid #4ca0fff2;
+  border: 1px solid var(--index-primary-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   outline: transparent;
   font-family: sans-serif;
   color: #000;
@@ -50,7 +65,7 @@
 input[type="search"] {
   height: 35px;
   width: 280px;
-  color: #000;
+  color: var(--text-color);
   border: 1px solid #cecece;
   margin-bottom: 0px;
   display: inline-block;
@@ -58,7 +73,7 @@ input[type="search"] {
   font-size: 14px;
   font-weight: 500;
   padding: 0px 10px 0px 10px;
-  background: #f5fbff;
+  background: var(--bg-color);
   border-radius: 6px;
 }
 input[type="search"]:focus {
@@ -93,13 +108,13 @@ input[type="checkbox"] {
 	left: 2px;
 	width: 20px;
 	height: 20px;
-	background: #fff;
+	background: var(--bg-color);
 	border-radius: 20px;
 	transition: 0.3s;
 }
 
 .action-container input:checked + label {
-	background: #8ac2f3;
+	background: var(--index-primary-color);
 }
 
 .action-container input:checked + label:after {
@@ -160,4 +175,13 @@ input[type="checkbox"] {
 
 .auto-scheduling{
   position: relative;
+}
+
+.toggle-theme{
+  margin-left: 2px;
+}
+
+.export, .scale-zoom, .lang{
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
