@@ -113,7 +113,7 @@
   align-items: center;
   height: 50px;
   line-height: inherit;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid #cecece;
 }
 
 .zt-gantt-cell-data {
@@ -156,14 +156,15 @@
   height: 50px;
   position: relative;
   white-space: nowrap;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid #cecece;
 }
 
 .zt-gantt-task-cell {
   width: 80px;
   height: 100%;
   position: absolute;
-  border-right: 1px solid #ebebeb;
+  background-color: #fff;
+  border-right: 1px solid #cecece;
   /* border-left: 1px solid #ebebeb; */
 }
 
@@ -180,6 +181,7 @@
 
 .zt-gantt-right-cell {
   height: 100%;
+  width: 100%;
   overflow: auto;
 }
 
@@ -239,6 +241,10 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.zt-gantt-grid-data .zt-gantt-row-item {
+  background-color: #fff;
+}
+
 .zt-gantt-grid-data .zt-gantt-row-item:hover {
   cursor: pointer;
   background-color: #d5eaff;
@@ -250,6 +256,10 @@
 }
 
 .zt-gantt-selected {
+  background-color: #d5eaff;
+}
+
+.zt-gantt-selected > div {
   background-color: #d5eaff;
 }
 
@@ -296,11 +306,7 @@
   color: #454545;
   border-color: #b3b3b3;
   line-height: 120%;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.07);
-  border-left: 1px solid rgba(0, 0, 0, 0.07);
-  border-top: 1px solid rgba(0, 0, 0, 0.07);
-  border-bottom: 1px solid #b3b3b3;
-  border-right: 1px solid #b3b3b3;
+  box-shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
 }
 
 .zt-gantt-bars-area {
@@ -384,6 +390,7 @@
   z-index: 1070;
   border-radius: 4px;
   min-width: 400px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .zt-gantt-lightbox-backdrop {
@@ -440,27 +447,9 @@
   z-index: 1;
 }
 
-.task-dargging {
+.task-dragging {
   opacity: 0.5;
   z-index: 9999;
-}
-
-.task-drag-over {
-  border-bottom: 4px solid #1188ba;
-  position: absolute;
-  transition: all 0.3s ease-in-out;
-}
-
-.task-drag-over::before {
-  content: "";
-  background: #1188ba;
-  border-radius: 50%;
-  display: block;
-  width: 10px !important;
-  height: 10px !important;
-  left: -5px;
-  position: absolute;
-  top: -3px;
 }
 
 .zt-gantt-tree-icon {

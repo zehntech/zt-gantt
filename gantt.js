@@ -1746,8 +1746,14 @@
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
 
       /*for Safari below v16 */
-      document.removeEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
-      document.addEventListener("webkitfullscreenchange", handleFullScreenChangeSafari);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChangeSafari
+      );
+      document.addEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChangeSafari
+      );
       function handleFullScreenChangeSafari() {
         // Check if full screen mode has been exited
         if (!document.webkitIsFullScreen) {
@@ -2145,7 +2151,13 @@
           this.options.openedTasks.push(options.data[j].id);
         }
         let dataItem = document.createElement("div");
-        dataItem.classList.add("zt-gantt-row-item", "d-flex");
+        dataItem.classList.add(
+          "zt-gantt-row-item",
+          "d-flex",
+          this.options.selectedRow === `${options.data[j].id}`
+            ? "zt-gantt-selected"
+            : "zt-gantt-row-item"
+        );
 
         //add custom classes from user
         if (typeof this.templates.grid_row_class === "function") {
@@ -2259,7 +2271,7 @@
           for (let item of taskRow) {
             item.classList.add("zt-gantt-selected");
           }
-          that.options.selectedRow = `${j}`;
+          that.options.selectedRow = `${options.data[j].id}`;
           that.options.selectedTask = `${options.data[j].id}`;
         });
 
@@ -2599,7 +2611,7 @@
         let scaleRow = document.createElement("div");
         scaleRow.classList.add(
           "zt-gantt-task-row",
-          options.selectedRow === `${j}`
+          options.selectedRow === `${options.data[j].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-task-row"
         );
@@ -3928,7 +3940,7 @@
 
       function handleMouseUp(e) {
         autoScroll = false;
-        taskBar.classList.remove("task-dargging");
+        taskBar.classList.remove("task-dragging");
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
 
@@ -4169,7 +4181,7 @@
             (e.y - startY) -
             (startRightPanelScrollTop - rightPanelScroll.scrollTop) +
             "px";
-          taskBar.classList.add("task-dargging");
+          taskBar.classList.add("task-dragging");
 
           let taskStartDate =
             that.dates[
@@ -4702,6 +4714,10 @@
         elementWidth -= totalWidth;
       }
 
+      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
+        elementWidth -= 20;
+      }
+
       let minWidth = this.options.minColWidth;
       const colCount = this.dates.length;
       let level = date !== new Date(0) ? this.options.zoomLevel : "day";
@@ -4727,9 +4743,7 @@
           break;
       }
       const gridWidth = Math.max(
-        Math.floor(
-          elementWidth / (level === "hour" ? colCount * 24 : colCount)
-        ),
+        elementWidth / (level === "hour" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
@@ -5091,7 +5105,10 @@
             "zt-gantt-row-item",
             "zt-gantt-child-row",
             `zt-gantt-child-${taskData[l].parent}`,
-            !isOpened ? "d-none" : "d-flex"
+            !isOpened ? "d-none" : "d-flex",
+            this.options.selectedRow === `${taskData[l].id}`
+              ? "zt-gantt-selected"
+              : "zt-gantt-row-item"
           );
 
           //add custom classes from user
@@ -5249,7 +5266,7 @@
             for (let item of taskRow) {
               item.classList.add("zt-gantt-selected");
             }
-            that.options.selectedRow = `${taskParents}`;
+            that.options.selectedRow = `${taskData[l].id}`;
             that.options.selectedTask = `${taskData[l].id}`;
           });
 
@@ -5457,7 +5474,7 @@
           "zt-gantt-child-row",
           `zt-gantt-child-${taskData[l].parent}`,
           isCollapsed || !isOpened ? "d-none" : "zt-gantt-task-row",
-          options.selectedRow === taskParents
+          options.selectedRow === `${taskData[l].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-task-row"
         );
@@ -6252,7 +6269,7 @@
           for (let item of taskRow) {
             item.classList.add("zt-gantt-selected");
           }
-          that.options.selectedRow = `${j}`;
+          that.options.selectedRow = `${options.data[j].id}`;
           that.options.selectedTask = `${options.data[j].id}`;
         });
 
@@ -7036,7 +7053,7 @@
         startLine.append(innerHorLine);
         taskLink.append(startLine);
 
-        if (sourceLeft + sourceWidth >= targetLeft) {
+        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
           let middleLine = document.createElement("div");
           middleLine.classList.add(
             "zt-gantt-ver-link-line",
@@ -7114,18 +7131,19 @@
         middleLine.append(innerLine);
         taskLink.append(middleLine);
 
-        if (sourceLeft + sourceWidth > targetLeft) {
+        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
           endLine.style.left = middleLine.offsetLeft + "px";
           endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width = targetLeft - middleLine.offsetLeft + "px";
+          endLine.style.width = 15 + "px";
         } else {
           endLine.style.left = middleLine.offsetLeft + "px";
           endLine.style.top = targetTop + rowHeight / 2 + "px";
           endLine.style.width =
             Math.abs(
-              startLine.offsetLeft + startLine.offsetWidth - targetLeft
+              startLine.offsetLeft + startLine.offsetWidth + 15 - targetLeft
             ) + "px";
         }
+
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
@@ -8222,7 +8240,7 @@
 
     dragTaskProgress: function (resizer, progress, taskBar, task) {
       let startX,
-        dargging = false,
+        dragging = false,
         that = this,
         autoScroll = false,
         timeLineContainer,
@@ -8244,7 +8262,7 @@
       function handleMouseUp(e) {
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
-        if (dargging === true) {
+        if (dragging === true) {
           let progressPer = Math.round(
             (progress.offsetWidth / taskBar.offsetWidth) * 100
           );
@@ -8265,7 +8283,7 @@
           });
           that.element.dispatchEvent(onAfterProgressDrag);
         }
-        dargging = false;
+        dragging = false;
       }
 
       function resize(e) {
@@ -8281,7 +8299,7 @@
           return;
         }
 
-        dargging = true;
+        dragging = true;
         let progressWidth =
           startProgressWidth +
           (e.clientX - startX) +
