@@ -113,7 +113,7 @@
   align-items: center;
   height: 50px;
   line-height: inherit;
-  border-bottom: 1px solid #cecece;
+  border-bottom: 1px solid #dddddd;
 }
 
 .zt-gantt-cell-data {
@@ -156,7 +156,7 @@
   height: 50px;
   position: relative;
   white-space: nowrap;
-  border-bottom: 1px solid #cecece;
+  border-bottom: 1px solid #dddddd;
 }
 
 .zt-gantt-task-cell {
@@ -164,7 +164,7 @@
   height: 100%;
   position: absolute;
   background-color: #fff;
-  border-right: 1px solid #cecece;
+  border-right: 1px solid #dddddd;
   /* border-left: 1px solid #ebebeb; */
 }
 

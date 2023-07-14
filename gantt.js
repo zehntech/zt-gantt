@@ -7140,7 +7140,7 @@
           endLine.style.top = targetTop + rowHeight / 2 + "px";
           endLine.style.width =
             Math.abs(
-              startLine.offsetLeft + startLine.offsetWidth + 15 - targetLeft
+              startLine.offsetLeft + startLine.offsetWidth - targetLeft
             ) + "px";
         }
 
