@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZT Gantt</title>
-    <link rel="stylesheet" href="./gantt.css" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./gantt.css" />
+    <!-- <link rel="stylesheet" href="./theme/dark.css" /> -->
     <link
       rel="shortcut icon"
       href="./images/ztGanttLogo.png"
@@ -17,7 +18,7 @@
   </head>
   <body>
     <div class="d-flex action-container">
-<div class="collapse-container">
+      <div class="collapse-container">
         <span>Collapse</span>
         <input
           type="checkbox"
@@ -115,6 +116,10 @@
           <option value="ua">Ukrainian</option>
         </select>
       </div>
+      <span>Change Theme</span>
+      <input type="checkbox" id="toggle" onchange="changeTheme(event)" class="toggle--checkbox">
+      <label for="toggle" class="toggle-theme">
+      </label>
       <input
         type="search"
         placeholder="Search Task"
@@ -680,7 +685,6 @@
           ZT_Gantt.options.endDate = "2023-06-30T11:46:17.775Z";
         }
         ZT_Gantt.zoomInit();
-        ZT_Gantt.render();
       }
 
       function changeLang(e) {
@@ -763,6 +767,30 @@
       // ZT_Gantt.eachTask((task)=>{
       //   console.log(task._id,"task _id ?????????????????????????????????");
       // })
+        let cssStyle;
+        let root = document.querySelector(":root");
+      function changeTheme(event){
+        if(event.target.checked){
+          cssStyle = document.createElement('link');
+          cssStyle.setAttribute("rel", "stylesheet");
+          cssStyle.setAttribute("href", "./theme/dark.css");
+          document.getElementsByTagName('head')[0].append(cssStyle);
+
+          root.style.setProperty("--bg-color", "#333332");
+          root.style.setProperty("--text-color", "#fff");
+          root.style.setProperty("--text-secondary-color", "#333332");
+          root.style.setProperty("--index-primary-color", "#1395BE");
+          root.style.setProperty("--index-primary-hover-color", "#0E7595");
+
+        }else{
+          cssStyle.remove();
+          root.style.setProperty("--bg-color", "#fff");
+          root.style.setProperty("--text-color", "#000");
+          root.style.setProperty("--text-secondary-color", "#fff");
+          root.style.setProperty("--index-primary-color", "#4ca0fff2");
+          root.style.setProperty("--index-primary-hover-color", "#3585e0f2");
+        }
+      }
 
       getScale = () => {
         console.log(ZT_Gantt.getScale());

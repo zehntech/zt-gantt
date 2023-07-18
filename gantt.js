@@ -4402,7 +4402,7 @@
           1 -
           taskLeft * this.calculateGridWidth(task.start_date, "day");
         let taskStartTime = this.getTimeByPx(extraStartPX);
-        start = new Date(start).setHours(taskStartTime.hours);
+        start = new Date(new Date(start).setHours(taskStartTime.hours));
 
         let taskLeftAndWidth =
           Math.floor(
@@ -4417,7 +4417,7 @@
           1 -
           taskLeftAndWidth * this.calculateGridWidth(task.end, "day");
         let taskEndTime = this.getTimeByPx(extraEndPX);
-        end = new Date(end).setHours(taskEndTime.hours);
+        end = new Date(new Date(end).setHours(taskEndTime.hours));
       }
 
       this.updateTaskDate(task, start, end);
