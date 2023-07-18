@@ -17,7 +17,7 @@ To use the Gantt Chart Library, follow these steps:
 Download the library files from our website or repository. Include the library files (gantt.js and gantt.css) in your project. Add the necessary dependencies, such as jsPDF (V. 2.5.1) and html2canvas (V. 1.4.1) if you are using the export for the pdf or PNG. Link the library files in your HTML file.
 You're now ready to start using the Gantt Chart Library!    
 
-<a href="https://zt-gantt.zehntech.net/">
+<a href="https://zehntech.github.io/zt-gantt/">
   <img src="./images/zt-gantt-screenshot.png">
 </a>  
   
@@ -103,16 +103,16 @@ Define your tasks, their durations, and any dependencies. Render the chart by ca
 
 To render the updated data call `gantt.render();`  
 
-[Live demo](https://zt-gantt.zehntech.net/)    
+[Live demo](https://zehntech.github.io/zt-gantt/)    
   
 #### Complete Documentation ####  
   
-[ztGantt Documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf)
+[ztGantt Documentation](./Documentaion/Gantt-Chart-Documentation.pdf)
     
 <a name="features"></a>
 ### 3. Features ###  
   * 4 types of tasks linking: finish-to-start, start-to-start, finish-to-finish, start-to-finish    
-  <a href="https://zt-gantt.zehntech.net/">
+  <a href="https://zehntech.github.io/zt-gantt/">
     <img src="./images/links.gif">
   </a>  
 
@@ -128,7 +128,7 @@ To render the updated data call `gantt.render();`
   * expand/collapse all tasks  
   * add custom marker  
   * add/update/delete task  
-  <a href="https://zt-gantt.zehntech.net/">
+  <a href="https://zehntech.github.io/zt-gantt/">
     <img src="./images/popup.gif">
   </a>    
   
@@ -136,14 +136,14 @@ To render the updated data call `gantt.render();`
   * Auto Scheduling tasks   
   * select start date and end date with drag and drop    
   * custom color for each task by the color picker  
-  <a href="https://zt-gantt.zehntech.net/">
+  <a href="https://zehntech.github.io/zt-gantt/">
     <img src="./images/taskColor.gif">
   </a>       
     
   * Multilanguage support   
   * Dark theme  
-  <a href="https://zt-gantt.zehntech.net/">
+  <a href="https://zehntech.github.io/zt-gantt/">
     <img src="./images/theme.gif">
   </a>  
   
-  You can see the full list of features in the [documentation](https://zt-gantt.zehntech.net/docx/Documentation.pdf) 
+  You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf) 
