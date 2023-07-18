@@ -14,6 +14,7 @@
   --marker-background: #4ca0ff80;
   --marker-hover-background: #4ca0fff2;
   --toastr-background: #aaaaaa;
+  --scroll-background: #f5f7fa;
 
   /* lightbox backgrounds  */
   --lightbox-background: #fff;
@@ -572,7 +573,7 @@
   width: 18px;
   flex-grow: 0;
   flex-shrink: 0;
-  background-color: #f5f7fa;
+  background-color: var(--scroll-background);
   position: relative;
   left: 0;
   right: 0;
@@ -584,6 +585,7 @@
   top: 100%;
   left: 0;
   height: 1px;
+  background-color: var(--scroll-background);
 }
 
 .zt-gantt-fullScreen #zt-gantt-hor-scroll-cell {
