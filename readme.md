@@ -2,7 +2,7 @@
   
 
 ### Introduction  ###
-Welcome to the documentation for [ztGantt](https://zt-gantt.zehntech.net/) Chart Library. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management. This documentation will guide you through the installation process, usage instructions, and available features of the library.   
+Welcome to the documentation for [ztGantt](https://zehntech.github.io/zt-gantt/) Chart Library. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management. This documentation will guide you through the installation process, usage instructions, and available features of the library.   
   
 
 ### Table of Contents ###
