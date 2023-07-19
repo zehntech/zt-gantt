@@ -116,12 +116,14 @@
           <option value="ua">Ukrainian</option>
         </select>
       </div>
-      <span>Change Theme</span>
+      <span>Dark Mode</span>
       <input type="checkbox" id="toggle" onchange="changeTheme(event)" class="toggle--checkbox">
       <label for="toggle" class="toggle-theme">
       </label>
       <!-- <button onclick="ZT_Gantt.destroy()">destroy</button>
       <button onclick="ZT_Gantt.render()">render</button> -->
+      <button onclick="addCol()">Add Column</button>
+      <button onclick="removeCol()">Remove Column</button>
       <input
         type="search"
         placeholder="Search Task"
@@ -615,10 +617,8 @@
       });
       ZT_Gantt.attachEvent("onTaskDrag", (event) => {
         // console.log("onTaskDrag: ", event);
-        // ZT_Gantt.render();
       });
       ZT_Gantt.attachEvent("onAfterTaskDrag", (event) => {
-        // console.log(event);
         // console.log("onAfterTaskDrag: ", event);
       });
       ZT_Gantt.attachEvent("onBeforeTaskDrop", (event) => {
@@ -806,6 +806,26 @@
           return task.text.toLowerCase().includes(e.target.value.toLowerCase());
         }, isFilter);
       }
+      function addCol(){
+        ZT_Gantt.options.columns.push({
+          name: "progress",
+          width: 245,
+          min_width: 80,
+          max_width: 300,
+          tree: false,
+          label: "Progress",
+          resize: true,
+          align: "center",
+          template: (task) => {
+            return `<span>${task.progress || 0}</span>`;
+          }})
+          ZT_Gantt.render();
+        }
+
+        function removeCol(){
+          ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length-1, 1);
+          ZT_Gantt.render();
+        }
     </script>
     <script></script>
   </body>
