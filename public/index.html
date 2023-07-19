@@ -120,6 +120,8 @@
       <input type="checkbox" id="toggle" onchange="changeTheme(event)" class="toggle--checkbox">
       <label for="toggle" class="toggle-theme">
       </label>
+      <!-- <button onclick="ZT_Gantt.destroy()">destroy</button>
+      <button onclick="ZT_Gantt.render()">render</button> -->
       <input
         type="search"
         placeholder="Search Task"
@@ -613,8 +615,10 @@
       });
       ZT_Gantt.attachEvent("onTaskDrag", (event) => {
         // console.log("onTaskDrag: ", event);
+        // ZT_Gantt.render();
       });
       ZT_Gantt.attachEvent("onAfterTaskDrag", (event) => {
+        // console.log(event);
         // console.log("onAfterTaskDrag: ", event);
       });
       ZT_Gantt.attachEvent("onBeforeTaskDrop", (event) => {
