@@ -4711,8 +4711,21 @@
         (totalWidth, col) => totalWidth + col.width,
         0
       );
+
+      let sidebarWidth = 0
+      if(sidebar){
+        let headCell = document.querySelectorAll(".head-cell");
+        if(headCell.length !== this.options.columns.length){
+          sidebarWidth = totalWidth;
+        }else{
+          sidebarWidth = sidebar.offsetWidth;
+        }
+      }else{
+        sidebarWidth = totalWidth;
+      }
+
       let elementWidth =
-        this.element.scrollWidth - (sidebar?.offsetWidth || totalWidth);
+        this.element.scrollWidth - sidebarWidth;
 
       if (this.options.rightGrid) {
         const totalWidth = this.options.rightGrid.reduce(
@@ -5995,7 +6008,7 @@
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
-          let hourWidth = this.getPxByTime(end_date);
+          let hourWidth = this.getPxByTime(end_date, "width");
           taskWidth -= hourWidth;
 
           ztGanttBarTask.style.width = taskWidth + "px";
