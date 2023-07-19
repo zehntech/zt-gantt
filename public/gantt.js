@@ -4764,7 +4764,7 @@
           break;
       }
       const gridWidth = Math.max(
-        elementWidth / (level === "hour" ? colCount * 24 : colCount),
+        elementWidth / (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
