@@ -1986,6 +1986,14 @@
       this.element.removeEventListener("mousemove", handleMouseMove);
       this.element.addEventListener("mousemove", handleMouseMove);
 
+      if(!tooltip){
+      tooltip = document.createElement("div");
+      tooltip.classList.add("zt-gantt-tooltip");
+      tooltip.id = "zt-gantt-tooltip";
+      tooltip.style.display = "none";
+      document.body.append(tooltip);
+      }
+
       function handleMouseMove(e) {
         tooltip.style.top = e.y + 25 + window.scrollY + "px";
         tooltip.style.left = e.x + 10 + window.scrollX + "px";
@@ -8762,6 +8770,17 @@
       this.options.currentLanguage = this.options.i18n[language];
       this.updateBody();
     },
+
+    destroy: function(){
+      let layout = document.querySelector("#zt-gantt-layout");
+      let tooltip = document.querySelector("#zt-gantt-tooltip");
+      if(layout){
+        layout.remove();
+      }
+      if(tooltip){
+        tooltip.remove();
+      }
+    }
   };
 
   global.ztGantt = ZTGantt;
