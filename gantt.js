@@ -1931,7 +1931,6 @@
       if (!this.options.endDate) {
         this.options.endDate = startAndEndDate.endDate;
       }
-
       this.dates = this.getDates(options.startDate, options.endDate);
       let dates = this.dates;
       const weekday = this.options.dateFormat.day_short;
@@ -8014,7 +8013,9 @@
       }
 
       if (type !== "initial") {
-        this.updateBody();
+        // this.dates = this.getDates(this.options.startDate, this.options.endDate);
+        // this.updateBody();
+        this.render();
 
         sidebarDataHead = document.querySelector(
           ".sidebar-head-cell-container"
