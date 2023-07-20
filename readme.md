@@ -146,4 +146,7 @@ To render the updated data call `gantt.render();`
     <img src="./images/theme.gif">
   </a>  
   
-  You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf) 
+  You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf)   
+    
+        
+  [Try it Yourself](https://stackblitz.com/edit/js-bdaa47?file=index.js)  
