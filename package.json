@@ -1,29 +1,31 @@
 {
-    "name": "zt-gantt",
-    "version": "2.0.0",
-    "description": "An open source JavaScript Gantt. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management.",
-    "main": "public/gantt.js",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/zehntech/zt-gantt"
-    },
-    "keywords": [
-      "gantt",
-      "chart",
-      "gantt chart",
-      "scheduler",
-      "timeline",
-      "zehntech"
-    ],
-    "author": "Zehntech",
-    "license": "MIT",
-    "bugs": {
-      "url": "https://github.com/zehntech/zt-gantt/issues"
-    },
-    "homepage": "https://github.com/zehntech/zt-gantt#readme",
-    
-    "devDependencies": {
-      "jspdf": "2.5.1",
-      "html2canvas": "1.4.1" 
-    }
+  "name": "zt-gantt",
+  "version": "2.1.0",
+  "description": "An open source JavaScript Gantt. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management.",
+  "main": "public/gantt.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zehntech/zt-gantt.git"
+  },
+  "keywords": [
+    "gantt",
+    "chart",
+    "gantt chart",
+    "scheduler",
+    "timeline",
+    "zehntech"
+  ],
+  "author": "Zehntech",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zehntech/zt-gantt/issues"
+  },
+  "homepage": "https://github.com/zehntech/zt-gantt#readme",
+  "devDependencies": {
+    "jspdf": "2.5.1",
+    "html2canvas": "1.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
+}
