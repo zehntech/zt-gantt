@@ -2884,7 +2884,7 @@
         ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(this.options.data[j].taskColor, this.options.data[j].taskOpacity),
+            this.changeOpacity(this.options.data[j].taskColor, that.options.taskOpacity),
             "important"
           );
           ztGanttBarTask.style.setProperty(
@@ -5745,7 +5745,7 @@
         if (taskData[k].taskColor && taskData[k].type !== "milestone") {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(taskData[k].taskColor, taskData[k].taskOpacity),
+            this.changeOpacity(taskData[k].taskColor, this.options.taskOpacity),
             "important"
           );
           ztGanttBarTask.style.setProperty(
@@ -8706,7 +8706,7 @@
         } else {
           taskbar.style.setProperty(
             "background-color",
-            that.changeOpacity(e.target.value, 0.8),
+            that.changeOpacity(e.target.value, that.options.taskOpacity),
             "important"
           );
 
@@ -8746,7 +8746,7 @@
         } else {
           taskbar.style.setProperty(
             "background-color",
-            that.changeOpacity(e.target.value, 0.8),
+            that.changeOpacity(e.target.value, that.options.taskOpacity),
             "important"
           );
 
