@@ -1931,7 +1931,6 @@
       if (!this.options.endDate) {
         this.options.endDate = startAndEndDate.endDate;
       }
-
       this.dates = this.getDates(options.startDate, options.endDate);
       let dates = this.dates;
       const weekday = this.options.dateFormat.day_short;
@@ -2489,6 +2488,9 @@
         let endDate = new Date(0).getTime();
 
         for (let j = 0; j < dates.length; j++) {
+          if(new Date(endDate).getTime() >= new Date(dates[j]).setHours(0, 0, 0, 0)){
+            continue;
+          }
           let dateFormat =
             typeof options.scales[i].format == "function"
               ? options.scales[i].format(new Date(dates[j]))
@@ -2650,6 +2652,9 @@
         let rangeCount = 0;
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
+          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+            continue;
+          }
           let colDates;
           let scaleCell = document.createElement("div");
           scaleCell.classList.add("zt-gantt-task-cell");
@@ -4764,7 +4769,7 @@
           break;
       }
       const gridWidth = Math.max(
-        elementWidth / (level === "hour" ? colCount * 24 : colCount),
+        elementWidth / (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
@@ -5530,6 +5535,9 @@
         // loop through all the dates
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
+          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+            continue;
+          }
           let colDates;
           let scaleCell = document.createElement("div");
           scaleCell.classList.add("zt-gantt-task-cell");
@@ -8014,7 +8022,9 @@
       }
 
       if (type !== "initial") {
-        this.updateBody();
+        // this.dates = this.getDates(this.options.startDate, this.options.endDate);
+        // this.updateBody();
+        this.render();
 
         sidebarDataHead = document.querySelector(
           ".sidebar-head-cell-container"

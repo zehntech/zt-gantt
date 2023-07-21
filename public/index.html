@@ -122,8 +122,8 @@
       </label>
       <!-- <button onclick="ZT_Gantt.destroy()">destroy</button>
       <button onclick="ZT_Gantt.render()">render</button> -->
-      <button onclick="addCol()">Add Column</button>
-      <button onclick="removeCol()">Remove Column</button>
+      <!-- <button onclick="addCol()">Add Column</button>
+      <button onclick="removeCol()">Remove Column</button> -->
       <input
         type="search"
         placeholder="Search Task"
@@ -679,8 +679,8 @@
       function changeZoom(e) {
         ZT_Gantt.options.zoomLevel = e.target.value;
         if(e.target.value === "month" || e.target.value === "quarter"){
-          ZT_Gantt.options.startDate = "2023-05-01T11:46:17.775Z";
-          ZT_Gantt.options.endDate = "2023-07-31T11:46:17.775Z";
+          ZT_Gantt.options.startDate = "2023-01-01T11:46:17.775Z";
+          ZT_Gantt.options.endDate = "2023-12-31T11:46:17.775Z";
         }else if(e.target.value === "year"){
           ZT_Gantt.options.startDate = "2022-01-01T11:46:17.775Z";
           ZT_Gantt.options.endDate = "2024-12-31T11:46:17.775Z";
