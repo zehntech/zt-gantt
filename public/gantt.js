@@ -56,6 +56,7 @@
         customMarker: opt.customMarker || [],
         fullCell: opt.fullCell || true,
         taskColor: opt.taskColor || false,
+        taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         links: opt.links || [],
         arrangeData: true,
@@ -2883,7 +2884,7 @@
         ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(this.options.data[j].taskColor, 0.8),
+            this.changeOpacity(this.options.data[j].taskColor, this.options.data[j].taskOpacity),
             "important"
           );
           ztGanttBarTask.style.setProperty(
@@ -5744,7 +5745,7 @@
         if (taskData[k].taskColor && taskData[k].type !== "milestone") {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(taskData[k].taskColor, 0.8),
+            this.changeOpacity(taskData[k].taskColor, taskData[k].taskOpacity),
             "important"
           );
           ztGanttBarTask.style.setProperty(
