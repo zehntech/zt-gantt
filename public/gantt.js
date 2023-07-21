@@ -2884,7 +2884,7 @@
         ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(this.options.data[j].taskColor, that.options.taskOpacity),
+            this.changeOpacity(this.options.data[j].taskColor, this.options.taskOpacity),
             "important"
           );
           ztGanttBarTask.style.setProperty(
