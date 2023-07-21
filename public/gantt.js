@@ -1985,12 +1985,12 @@
       this.element.removeEventListener("mousemove", handleMouseMove);
       this.element.addEventListener("mousemove", handleMouseMove);
 
-      if(!tooltip){
-      tooltip = document.createElement("div");
-      tooltip.classList.add("zt-gantt-tooltip");
-      tooltip.id = "zt-gantt-tooltip";
-      tooltip.style.display = "none";
-      document.body.append(tooltip);
+      if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.classList.add("zt-gantt-tooltip");
+        tooltip.id = "zt-gantt-tooltip";
+        tooltip.style.display = "none";
+        document.body.append(tooltip);
       }
 
       function handleMouseMove(e) {
@@ -2488,7 +2488,10 @@
         let endDate = new Date(0).getTime();
 
         for (let j = 0; j < dates.length; j++) {
-          if(new Date(endDate).getTime() >= new Date(dates[j]).setHours(0, 0, 0, 0)){
+          if (
+            new Date(endDate).getTime() >=
+            new Date(dates[j]).setHours(0, 0, 0, 0)
+          ) {
             continue;
           }
           let dateFormat =
@@ -2652,7 +2655,7 @@
         let rangeCount = 0;
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
-          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+          if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
           let colDates;
@@ -3139,7 +3142,13 @@
           );
         }
 
-        if (this.options.taskColor) {
+        //add custom task color picker
+        let isCustomColor =
+          typeof this.options.taskColor === "function"
+            ? this.options.taskColor(this.options.data[j])
+            : this.options.taskColor;
+
+        if (isCustomColor) {
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
@@ -4717,20 +4726,19 @@
         0
       );
 
-      let sidebarWidth = 0
-      if(sidebar){
+      let sidebarWidth = 0;
+      if (sidebar) {
         let headCell = document.querySelectorAll(".head-cell");
-        if(headCell.length !== this.options.columns.length){
+        if (headCell.length !== this.options.columns.length) {
           sidebarWidth = totalWidth;
-        }else{
+        } else {
           sidebarWidth = sidebar.offsetWidth;
         }
-      }else{
+      } else {
         sidebarWidth = totalWidth;
       }
 
-      let elementWidth =
-        this.element.scrollWidth - sidebarWidth;
+      let elementWidth = this.element.scrollWidth - sidebarWidth;
 
       if (this.options.rightGrid) {
         const totalWidth = this.options.rightGrid.reduce(
@@ -4769,7 +4777,8 @@
           break;
       }
       const gridWidth = Math.max(
-        elementWidth / (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
+        elementWidth /
+          (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
@@ -5535,7 +5544,7 @@
         // loop through all the dates
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
-          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+          if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
           let colDates;
@@ -5979,7 +5988,13 @@
           );
         }
 
-        if (this.options.taskColor) {
+        //add custom task color picker
+        let isCustomColor =
+          typeof this.options.taskColor === "function"
+            ? this.options.taskColor(taskData[k])
+            : this.options.taskColor;
+
+        if (isCustomColor) {
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
@@ -8415,6 +8430,10 @@
           `[zt-gantt-taskbar-id="${link.target}"]`
         );
 
+        if (!source || !target) {
+          return;
+        }
+
         let sourceLeft = source.offsetLeft,
           sourceWidth = source.offsetWidth,
           targetLeft = target.offsetLeft,
@@ -8794,16 +8813,16 @@
       this.updateBody();
     },
 
-    destroy: function(){
+    destroy: function () {
       let layout = document.querySelector("#zt-gantt-layout");
       let tooltip = document.querySelector("#zt-gantt-tooltip");
-      if(layout){
+      if (layout) {
         layout.remove();
       }
-      if(tooltip){
+      if (tooltip) {
         tooltip.remove();
       }
-    }
+    },
   };
 
   global.ztGantt = ZTGantt;

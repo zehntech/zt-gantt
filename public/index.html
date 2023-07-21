@@ -117,9 +117,13 @@
         </select>
       </div>
       <span>Dark Mode</span>
-      <input type="checkbox" id="toggle" onchange="changeTheme(event)" class="toggle--checkbox">
-      <label for="toggle" class="toggle-theme">
-      </label>
+      <input
+        type="checkbox"
+        id="toggle"
+        onchange="changeTheme(event)"
+        class="toggle--checkbox"
+      />
+      <label for="toggle" class="toggle-theme"> </label>
       <!-- <button onclick="ZT_Gantt.destroy()">destroy</button>
       <button onclick="ZT_Gantt.render()">render</button> -->
       <!-- <button onclick="addCol()">Add Column</button>
@@ -324,7 +328,12 @@
       ZT_Gantt.options.fullWeek = true;
       ZT_Gantt.options.todayMarker = true;
       ZT_Gantt.options.addLinks = true;
-      ZT_Gantt.options.taskColor = true;
+      ZT_Gantt.options.taskColor = (task)=>{
+        if(task.parent === 0){
+          return false;
+        }
+        return true;
+      };
       ZT_Gantt.options.links = [
         { id: 1, source: 2, target: 23, type: 1 },
         { id: 2, source: 3, target: 6, type: 2 },
@@ -425,8 +434,8 @@
             min_col_width: 30,
             scales: [
               { unit: "year", step: 3, format: "2022 - 2024" },
-              { unit: "year", step: 1, format: "%Y" }
-          ],
+              { unit: "year", step: 1, format: "%Y" },
+            ],
           },
         ],
       };
@@ -678,13 +687,13 @@
 
       function changeZoom(e) {
         ZT_Gantt.options.zoomLevel = e.target.value;
-        if(e.target.value === "month" || e.target.value === "quarter"){
+        if (e.target.value === "month" || e.target.value === "quarter") {
           ZT_Gantt.options.startDate = "2023-01-01T11:46:17.775Z";
           ZT_Gantt.options.endDate = "2023-12-31T11:46:17.775Z";
-        }else if(e.target.value === "year"){
+        } else if (e.target.value === "year") {
           ZT_Gantt.options.startDate = "2022-01-01T11:46:17.775Z";
           ZT_Gantt.options.endDate = "2024-12-31T11:46:17.775Z";
-        }else{
+        } else {
           ZT_Gantt.options.startDate = "2023-06-01T11:46:17.775Z";
           ZT_Gantt.options.endDate = "2023-06-30T11:46:17.775Z";
         }
@@ -771,22 +780,21 @@
       // ZT_Gantt.eachTask((task)=>{
       //   console.log(task._id,"task _id ?????????????????????????????????");
       // })
-        let cssStyle;
-        let root = document.querySelector(":root");
-      function changeTheme(event){
-        if(event.target.checked){
-          cssStyle = document.createElement('link');
+      let cssStyle;
+      let root = document.querySelector(":root");
+      function changeTheme(event) {
+        if (event.target.checked) {
+          cssStyle = document.createElement("link");
           cssStyle.setAttribute("rel", "stylesheet");
           cssStyle.setAttribute("href", "./theme/dark.css");
-          document.getElementsByTagName('head')[0].append(cssStyle);
+          document.getElementsByTagName("head")[0].append(cssStyle);
 
           root.style.setProperty("--bg-color", "#333332");
           root.style.setProperty("--text-color", "#fff");
           root.style.setProperty("--text-secondary-color", "#fff");
           root.style.setProperty("--index-primary-color", "#1395BE");
           root.style.setProperty("--index-primary-hover-color", "#0E7595");
-
-        }else{
+        } else {
           cssStyle.remove();
           root.style.setProperty("--bg-color", "#fff");
           root.style.setProperty("--text-color", "#000");
@@ -806,7 +814,7 @@
           return task.text.toLowerCase().includes(e.target.value.toLowerCase());
         }, isFilter);
       }
-      function addCol(){
+      function addCol() {
         ZT_Gantt.options.columns.push({
           name: "progress",
           width: 245,
@@ -818,9 +826,10 @@
           align: "center",
           template: (task) => {
             return `<span>${task.progress || 0}</span>`;
-          }})
-          ZT_Gantt.render();
-        }
+          },
+        });
+        ZT_Gantt.render();
+      }
 
         function removeCol(){
           ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length-1, 1);
