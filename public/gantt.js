@@ -2253,9 +2253,7 @@
 
           // scroll horizontall scroll
           let horizontalScroll = document.querySelector(".zt-gantt-hor-scroll");
-          let cellBefore =
-            (this.getDates(this.options.startDate, start_date).length - 2) *
-            this.calculateGridWidth();
+          cellBefore = document.querySelector(`[zt-gantt-taskbar-id="${options.data[j].id}"]`).offsetLeft - 80
           if (horizontalScroll) {
             horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
           }
@@ -5276,9 +5274,8 @@
             let horizontalScroll = document.querySelector(
               ".zt-gantt-hor-scroll"
             );
-            let cellBefore =
-              (this.getDates(this.options.startDate, start_date).length - 2) *
-              this.calculateGridWidth();
+            
+            cellBefore = document.querySelector(`[zt-gantt-taskbar-id="${taskData[l].id}"]`).offsetLeft - 80
 
             if (horizontalScroll) {
               horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
@@ -7019,7 +7016,7 @@
     getPxByTime: function (date, type) {
       let hours = new Date(date).getHours();
       if (type === "width") {
-        hours = hours === 0 ? 0 : 24 - hours;
+        hours = hours === 0 ? 0 : 23 - hours;
       }
       let pxPerHour = this.calculateGridWidth(date, "day") / 24;
       let pixels = hours * pxPerHour;
@@ -8129,7 +8126,7 @@
       function handleMouseDown(e) {
         taskBarArea = document.querySelector("#zt-gantt-bars-area");
         timeLineContainer = document.querySelector("#zt-gantt-right-cell");
-        startX = e.clientX + timeLineContainer.scrollLeft;
+        startX = e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft;
         var classesToCheck = ["zt-gantt-task-row", "zt-gantt-task-cell"];
 
         var isClassPresent = false;
@@ -8226,17 +8223,17 @@
       function createTaskArea(e) {
         hasMoved = true;
 
-        if (e.clientX + timeLineContainer.scrollLeft < startX) {
+        if ((e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft) < startX) {
           taskArea.style.left = `${
-            e.clientX - timeLine.offsetLeft + timeLineContainer.scrollLeft
+            e.clientX - timeLine.offsetLeft + timeLineContainer.scrollLeft - that.element.offsetLeft
           }px`;
           taskArea.style.width = `${
-            startX - e.clientX - timeLineContainer.scrollLeft
+            startX - (e.clientX - that.element.offsetLeft) - timeLineContainer.scrollLeft
           }px`;
         } else {
           taskArea.style.left = `${startX - timeLine.offsetLeft}px`;
           taskArea.style.width = `${
-            e.clientX - startX + timeLineContainer.scrollLeft
+            e.clientX - startX + timeLineContainer.scrollLeft - that.element.offsetLeft
           }px`;
         }
         let isTaskAreaExist = document.querySelector("#task-area");
