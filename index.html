@@ -725,8 +725,8 @@
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart");
         } else if (e.target.value === "pdf") {
-          // ZT_Gantt.exportToPDF("ztGanttChart");
-          toPDF();
+          ZT_Gantt.exportToPDF("ztGanttChart");
+          // toPDF();
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
