@@ -3175,6 +3175,8 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           let hourWidth = this.getPxByTime(end_date, "width");
+          let hourLeft = this.getPxByTime(start_date, "left");
+          hourWidth += hourLeft;
           taskWidth -= hourWidth;
 
           ztGanttBarTask.style.width = taskWidth + "px";
@@ -6033,6 +6035,8 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           let hourWidth = this.getPxByTime(end_date, "width");
+          let hourLeft = this.getPxByTime(start_date, "left");
+          hourWidth += hourLeft;
           taskWidth -= hourWidth;
 
           ztGanttBarTask.style.width = taskWidth + "px";
@@ -8603,7 +8607,7 @@
       }
       const format = this.options.date_format;
       const regex = /%([dmyhis])|(\b\w+\b)/gi;
-      const dateTimeParts = dateTimeString.split(/[^\w]+/);
+      const dateTimeParts = dateTimeString.split(/[^\w]+|T/);
 
       let matchedParts = format.match(regex);
       matchedParts = matchedParts.join(",").replaceAll("%", "").split(",");
