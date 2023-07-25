@@ -7019,7 +7019,7 @@
     getPxByTime: function (date, type) {
       let hours = new Date(date).getHours();
       if (type === "width") {
-        hours = hours === 0 ? 0 : 24 - hours;
+        hours = hours === 0 ? 0 : 23 - hours;
       }
       let pxPerHour = this.calculateGridWidth(date, "day") / 24;
       let pixels = hours * pxPerHour;
