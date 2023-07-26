@@ -2253,7 +2253,10 @@
 
           // scroll horizontall scroll
           let horizontalScroll = document.querySelector(".zt-gantt-hor-scroll");
-          cellBefore = document.querySelector(`[zt-gantt-taskbar-id="${options.data[j].id}"]`).offsetLeft - 80
+          cellBefore =
+            document.querySelector(
+              `[zt-gantt-taskbar-id="${options.data[j].id}"]`
+            ).offsetLeft - 80;
           if (horizontalScroll) {
             horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
           }
@@ -2885,7 +2888,10 @@
         ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(this.options.data[j].taskColor, this.options.taskOpacity),
+            this.changeOpacity(
+              this.options.data[j].taskColor,
+              this.options.taskOpacity
+            ),
             "important"
           );
           ztGanttBarTask.style.setProperty(
@@ -3938,7 +3944,8 @@
         originalTask,
         initStartDate,
         initEndDate,
-        scrollSpeed = 5;
+        scrollSpeed = 5,
+        willRender = false;
 
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
@@ -4033,8 +4040,7 @@
                   currentTaskParentId.slice(0, currentTaskParentId.length - 1)
               ) {
                 updateData(taskParentId, task, taskPositionId);
-                // render the chart again
-                that.render();
+                willRender = true;
               } else {
                 taskBar.style.top = startTop + "px";
               }
@@ -4078,6 +4084,12 @@
             taskBar,
             "mouseup"
           );
+
+          if(willRender){
+            // render the chart again
+            that.render();
+            willRender = false;
+          }
 
           // handle custom event
           const onAfterTaskDrag = new CustomEvent("onAfterTaskDrag", {
@@ -4419,7 +4431,6 @@
         );
 
         start = this.dates[taskLeft];
-
         let extraStartPX =
           target.offsetLeft +
           1 -
@@ -4431,18 +4442,12 @@
           Math.floor(
             (target.offsetLeft + target.offsetWidth) /
               this.calculateGridWidth(task.end_date, "day")
-          ) - 1;
-
+          );
         end = this.dates[taskLeftAndWidth];
-        let extraEndPX =
-          target.offsetLeft +
-          target.offsetWidth +
-          1 -
-          taskLeftAndWidth * this.calculateGridWidth(task.end, "day");
+        let extraEndPX = target.offsetWidth - Math.floor(target.offsetWidth/this.calculateGridWidth(task.end, "day")) * this.calculateGridWidth(task.end, "day");
         let taskEndTime = this.getTimeByPx(extraEndPX);
-        end = new Date(new Date(end).setHours(taskEndTime.hours));
+        end = new Date(new Date(end).setHours(taskEndTime.hours-1));
       }
-
       this.updateTaskDate(task, start, end);
       this.updateTaskDuration();
       let start_date;
@@ -5274,8 +5279,11 @@
             let horizontalScroll = document.querySelector(
               ".zt-gantt-hor-scroll"
             );
-            
-            cellBefore = document.querySelector(`[zt-gantt-taskbar-id="${taskData[l].id}"]`).offsetLeft - 80
+
+            cellBefore =
+              document.querySelector(
+                `[zt-gantt-taskbar-id="${taskData[l].id}"]`
+              ).offsetLeft - 80;
 
             if (horizontalScroll) {
               horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
@@ -8126,7 +8134,8 @@
       function handleMouseDown(e) {
         taskBarArea = document.querySelector("#zt-gantt-bars-area");
         timeLineContainer = document.querySelector("#zt-gantt-right-cell");
-        startX = e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft;
+        startX =
+          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft;
         var classesToCheck = ["zt-gantt-task-row", "zt-gantt-task-cell"];
 
         var isClassPresent = false;
@@ -8223,17 +8232,28 @@
       function createTaskArea(e) {
         hasMoved = true;
 
-        if ((e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft) < startX) {
+        if (
+          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft <
+          startX
+        ) {
           taskArea.style.left = `${
-            e.clientX - timeLine.offsetLeft + timeLineContainer.scrollLeft - that.element.offsetLeft
+            e.clientX -
+            timeLine.offsetLeft +
+            timeLineContainer.scrollLeft -
+            that.element.offsetLeft
           }px`;
           taskArea.style.width = `${
-            startX - (e.clientX - that.element.offsetLeft) - timeLineContainer.scrollLeft
+            startX -
+            (e.clientX - that.element.offsetLeft) -
+            timeLineContainer.scrollLeft
           }px`;
         } else {
           taskArea.style.left = `${startX - timeLine.offsetLeft}px`;
           taskArea.style.width = `${
-            e.clientX - startX + timeLineContainer.scrollLeft - that.element.offsetLeft
+            e.clientX -
+            startX +
+            timeLineContainer.scrollLeft -
+            that.element.offsetLeft
           }px`;
         }
         let isTaskAreaExist = document.querySelector("#task-area");
