@@ -695,14 +695,14 @@
 
 .ver-inner-line {
   height: 100%;
-  width: 15px;
-  margin-left: -7px;
+  width: 10px;
+  margin-left: -4px;
 }
 
 .hor-inner-line {
-  height: 15px;
+  height: 10px;
   width: 100%;
-  margin-top: -7px;
+  margin-top: -4px;
 }
 
 .zt-gantt-task-link:hover .zt-gantt-link-line {
