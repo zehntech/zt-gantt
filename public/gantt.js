@@ -1,4 +1,4 @@
-/* =========================================================
+ /* =========================================================
  * Created by Sunil Solanki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5070,10 +5070,11 @@
     //export Gantt as Excel
     exportToExcel: function (name = "ztGantt") {
       let csv = "";
+      const regexIgnorePattern = /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
 
       // Create the header row
       let headerRow = this.options.columns
-        .map((col) => col.label.replaceAll(",", " "))
+        .map((col) => col.label.replaceAll(",", " ").replaceAll(regexIgnorePattern,"").replace(/<[^>]*>/g, ""))
         .join(",");
       let right = this.options.rightGrid;
       if (right) {
@@ -5094,7 +5095,7 @@
           let rowData = columns.map((col) =>
             col
               .template(obj)
-              .replaceAll(",", " ")
+              .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
               .replace(/<[^>]*>/g, "")
           );
           if (right) {
@@ -5102,7 +5103,7 @@
               ...right.map((col) =>
                 col
                   .template(obj)
-                  .replaceAll(",", " ")
+                  .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
                   .replace(/<[^>]*>/g, "")
               )
             );
@@ -5123,7 +5124,7 @@
         "href",
         "data:application/vnd.ms-excel," + encodeURIComponent(csv)
       );
-      link.setAttribute("download", `${name}.xls`); // Set the custom filename
+      link.setAttribute("download", `${name}.xls`);
       // Programmatically trigger the download
       link.click();
     },

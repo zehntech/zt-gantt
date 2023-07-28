@@ -328,12 +328,7 @@
       ZT_Gantt.options.fullWeek = true;
       ZT_Gantt.options.todayMarker = true;
       ZT_Gantt.options.addLinks = true;
-      ZT_Gantt.options.taskColor = (task)=>{
-        if(task.parent === 0){
-          return false;
-        }
-        return true;
-      };
+      ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
         { id: 1, source: 2, target: 23, type: 1 },
@@ -837,6 +832,5 @@
           ZT_Gantt.render();
         }
     </script>
-    <script></script>
   </body>
 </html>

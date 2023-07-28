@@ -1034,7 +1034,7 @@
 /* toastr css end  */
 
 .zt-gantt-task-color-picker {
-  display: none;
+  visibility: hidden;
   position: absolute;
   right: 0;
   top: 0;
@@ -1043,14 +1043,16 @@
   margin-right: -50px;
 }
 
-.zt-gantt-bar-task:hover .zt-gantt-task-color-picker {
-  display: block;
+.zt-gantt-bar-task:hover .zt-gantt-task-color-picker,
+.zt-gantt-bar-task:hover .zt-gantt-task-color-picker input {
+  visibility: visible;
 }
 
 .zt-gantt-task-color-picker input {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  visibility: hidden;
   width: 25px;
   height: 100%;
   background-color: transparent;
