@@ -720,8 +720,8 @@
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart");
         } else if (e.target.value === "pdf") {
-          ZT_Gantt.exportToPDF("ztGanttChart");
-          // toPDF();
+          // ZT_Gantt.exportToPDF("ztGanttChart");
+          toPDF();
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
@@ -828,17 +828,55 @@
         ZT_Gantt.render();
       }
 
-        function removeCol(){
-          ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length-1, 1);
-          ZT_Gantt.render();
-        }
+      function removeCol() {
+        ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length - 1, 1);
+        ZT_Gantt.render();
+      }
 
-        function toPDF(){
-          let element = document.querySelector("#zt-gantt-layout");
-          console.log(element,"element??????????????");
-        }
+      function toPDF() {
+        let element = document.querySelector("#ZT-Gantt");
+        const apiUrl = "https://192.168.0.249:8200";
 
+        // Data to be sent in the request body (if required)
+        const postData = {
+          styles: [
+            "https://zehntech.github.io/zt-gantt/gantt.css",
+            "https://zehntech.github.io/zt-gantt/style.css",
+          ],
+          content: element,
+          fileType: "pdf",
+          fileName: "testpdf",
+        };
+
+        // Prepare the request options
+        const requestOptions = {
+          method: "POST", // HTTP method (GET, POST, PUT, DELETE, etc.)
+          headers: {
+            "Content-Type": "application/json", // Set the content type since we are sending JSON data
+            // You can add other headers here if required
+          },
+          body: JSON.stringify(postData), // Convert the data to a JSON string before sending
+        };
+
+        // Fetch data from the API
+        fetch(apiUrl, requestOptions)
+          .then((response) => {
+            // Check if the request was successful
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            // Parse the response data as JSON
+            return response.json();
+          })
+          .then((data) => {
+            // Use the response data here
+            console.log(data);
+          })
+          .catch((error) => {
+            // Handle any errors that occurred during the fetch
+            console.error("Fetch error:", error);
+          });
+      }
     </script>
-    <script></script>
   </body>
 </html>
