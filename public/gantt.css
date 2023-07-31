@@ -344,9 +344,9 @@
   /* border-left: 1px solid #ebebeb; */
 }
 
-.zt-gantt-selected {
+/* .zt-gantt-selected {
   background-color: var(--selected-background);
-}
+} */
 
 .zt-gantt-selected > div {
   background-color: var(--selected-background);
@@ -603,6 +603,10 @@
   z-index: 1;
 }
 
+.zt-gantt-hor-scroll > div {
+  height: 1px;
+}
+
 .zt-gantt-ver-scroll {
   width: 100%;
   overflow-y: auto;
@@ -695,14 +699,14 @@
 
 .ver-inner-line {
   height: 100%;
-  width: 15px;
-  margin-left: -7px;
+  width: 10px;
+  margin-left: -4px;
 }
 
 .hor-inner-line {
-  height: 15px;
+  height: 10px;
   width: 100%;
-  margin-top: -7px;
+  margin-top: -4px;
 }
 
 .zt-gantt-task-link:hover .zt-gantt-link-line {
@@ -1034,7 +1038,7 @@
 /* toastr css end  */
 
 .zt-gantt-task-color-picker {
-  display: none;
+  visibility: hidden;
   position: absolute;
   right: 0;
   top: 0;
@@ -1043,14 +1047,16 @@
   margin-right: -50px;
 }
 
-.zt-gantt-bar-task:hover .zt-gantt-task-color-picker {
-  display: block;
+.zt-gantt-bar-task:hover .zt-gantt-task-color-picker,
+.zt-gantt-bar-task:hover .zt-gantt-task-color-picker input {
+  visibility: visible;
 }
 
 .zt-gantt-task-color-picker input {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  visibility: hidden;
   width: 25px;
   height: 100%;
   background-color: transparent;

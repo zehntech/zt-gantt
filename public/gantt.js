@@ -1,4 +1,4 @@
-/* =========================================================
+ /* =========================================================
  * Created by Sunil Solanki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1986,12 +1986,12 @@
       this.element.removeEventListener("mousemove", handleMouseMove);
       this.element.addEventListener("mousemove", handleMouseMove);
 
-      if(!tooltip){
-      tooltip = document.createElement("div");
-      tooltip.classList.add("zt-gantt-tooltip");
-      tooltip.id = "zt-gantt-tooltip";
-      tooltip.style.display = "none";
-      document.body.append(tooltip);
+      if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.classList.add("zt-gantt-tooltip");
+        tooltip.id = "zt-gantt-tooltip";
+        tooltip.style.display = "none";
+        document.body.append(tooltip);
       }
 
       function handleMouseMove(e) {
@@ -2253,9 +2253,10 @@
 
           // scroll horizontall scroll
           let horizontalScroll = document.querySelector(".zt-gantt-hor-scroll");
-          let cellBefore =
-            (this.getDates(this.options.startDate, start_date).length - 2) *
-            this.calculateGridWidth();
+          cellBefore =
+            document.querySelector(
+              `[zt-gantt-taskbar-id="${options.data[j].id}"]`
+            ).offsetLeft - 80;
           if (horizontalScroll) {
             horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
           }
@@ -2489,7 +2490,10 @@
         let endDate = new Date(0).getTime();
 
         for (let j = 0; j < dates.length; j++) {
-          if(new Date(endDate).getTime() >= new Date(dates[j]).setHours(0, 0, 0, 0)){
+          if (
+            new Date(endDate).getTime() >=
+            new Date(dates[j]).setHours(0, 0, 0, 0)
+          ) {
             continue;
           }
           let dateFormat =
@@ -2653,7 +2657,7 @@
         let rangeCount = 0;
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
-          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+          if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
           let colDates;
@@ -2884,7 +2888,10 @@
         ) {
           ztGanttBarTask.style.setProperty(
             "background-color",
-            this.changeOpacity(this.options.data[j].taskColor, this.options.taskOpacity),
+            this.changeOpacity(
+              this.options.data[j].taskColor,
+              this.options.taskOpacity
+            ),
             "important"
           );
           ztGanttBarTask.style.setProperty(
@@ -3103,7 +3110,12 @@
         }
 
         // link control pointers
-        if (this.options.addLinks === true) {
+        let isAddLinks =
+        typeof this.options.addLinks === "function"
+          ? this.options.addLinks(this.options.data[j])
+          : this.options.addLinks;
+
+        if (isAddLinks === true) {
           // left point
           let leftLinkPoint = document.createElement("div");
           leftLinkPoint.classList.add(
@@ -3140,7 +3152,13 @@
           );
         }
 
-        if (this.options.taskColor) {
+        //add custom task color picker
+        let isCustomColor =
+          typeof this.options.taskColor === "function"
+            ? this.options.taskColor(this.options.data[j])
+            : this.options.taskColor;
+
+        if (isCustomColor) {
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
@@ -3166,6 +3184,8 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           let hourWidth = this.getPxByTime(end_date, "width");
+          let hourLeft = this.getPxByTime(start_date, "left");
+          hourWidth += hourLeft;
           taskWidth -= hourWidth;
 
           ztGanttBarTask.style.width = taskWidth + "px";
@@ -3929,7 +3949,8 @@
         originalTask,
         initStartDate,
         initEndDate,
-        scrollSpeed = 5;
+        scrollSpeed = 5,
+        willRender = false;
 
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
@@ -4024,8 +4045,7 @@
                   currentTaskParentId.slice(0, currentTaskParentId.length - 1)
               ) {
                 updateData(taskParentId, task, taskPositionId);
-                // render the chart again
-                that.render();
+                willRender = true;
               } else {
                 taskBar.style.top = startTop + "px";
               }
@@ -4069,6 +4089,12 @@
             taskBar,
             "mouseup"
           );
+
+          if(willRender){
+            // render the chart again
+            that.render();
+            willRender = false;
+          }
 
           // handle custom event
           const onAfterTaskDrag = new CustomEvent("onAfterTaskDrag", {
@@ -4410,30 +4436,27 @@
         );
 
         start = this.dates[taskLeft];
-
         let extraStartPX =
           target.offsetLeft +
           1 -
           taskLeft * this.calculateGridWidth(task.start_date, "day");
-        let taskStartTime = this.getTimeByPx(extraStartPX);
+          let taskStartTime = this.getTimeByPx(extraStartPX,new Date(start));
         start = new Date(new Date(start).setHours(taskStartTime.hours));
 
         let taskLeftAndWidth =
           Math.floor(
             (target.offsetLeft + target.offsetWidth) /
               this.calculateGridWidth(task.end_date, "day")
-          ) - 1;
-
+          );
         end = this.dates[taskLeftAndWidth];
-        let extraEndPX =
-          target.offsetLeft +
+        let extraEndPX = target.offsetLeft +
           target.offsetWidth +
           1 -
           taskLeftAndWidth * this.calculateGridWidth(task.end, "day");
-        let taskEndTime = this.getTimeByPx(extraEndPX);
-        end = new Date(new Date(end).setHours(taskEndTime.hours));
+       
+        let taskEndTime = this.getTimeByPx(extraEndPX,new Date(end));
+        end = new Date(new Date(end).setHours(taskEndTime.hours-1));
       }
-
       this.updateTaskDate(task, start, end);
       this.updateTaskDuration();
       let start_date;
@@ -4718,20 +4741,19 @@
         0
       );
 
-      let sidebarWidth = 0
-      if(sidebar){
+      let sidebarWidth = 0;
+      if (sidebar) {
         let headCell = document.querySelectorAll(".head-cell");
-        if(headCell.length !== this.options.columns.length){
+        if (headCell.length !== this.options.columns.length) {
           sidebarWidth = totalWidth;
-        }else{
+        } else {
           sidebarWidth = sidebar.offsetWidth;
         }
-      }else{
+      } else {
         sidebarWidth = totalWidth;
       }
 
-      let elementWidth =
-        this.element.scrollWidth - sidebarWidth;
+      let elementWidth = this.element.scrollWidth - sidebarWidth;
 
       if (this.options.rightGrid) {
         const totalWidth = this.options.rightGrid.reduce(
@@ -4770,7 +4792,8 @@
           break;
       }
       const gridWidth = Math.max(
-        elementWidth / (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
+        elementWidth /
+          (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
         minWidth
       );
       return gridWidth;
@@ -5052,10 +5075,11 @@
     //export Gantt as Excel
     exportToExcel: function (name = "ztGantt") {
       let csv = "";
+      const regexIgnorePattern = /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
 
       // Create the header row
       let headerRow = this.options.columns
-        .map((col) => col.label.replaceAll(",", " "))
+        .map((col) => col.label.replaceAll(",", " ").replaceAll(regexIgnorePattern,"").replace(/<[^>]*>/g, ""))
         .join(",");
       let right = this.options.rightGrid;
       if (right) {
@@ -5076,7 +5100,7 @@
           let rowData = columns.map((col) =>
             col
               .template(obj)
-              .replaceAll(",", " ")
+              .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
               .replace(/<[^>]*>/g, "")
           );
           if (right) {
@@ -5084,7 +5108,7 @@
               ...right.map((col) =>
                 col
                   .template(obj)
-                  .replaceAll(",", " ")
+                  .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
                   .replace(/<[^>]*>/g, "")
               )
             );
@@ -5105,7 +5129,7 @@
         "href",
         "data:application/vnd.ms-excel," + encodeURIComponent(csv)
       );
-      link.setAttribute("download", `${name}.xls`); // Set the custom filename
+      link.setAttribute("download", `${name}.xls`);
       // Programmatically trigger the download
       link.click();
     },
@@ -5265,9 +5289,11 @@
             let horizontalScroll = document.querySelector(
               ".zt-gantt-hor-scroll"
             );
-            let cellBefore =
-              (this.getDates(this.options.startDate, start_date).length - 2) *
-              this.calculateGridWidth();
+
+            cellBefore =
+              document.querySelector(
+                `[zt-gantt-taskbar-id="${taskData[l].id}"]`
+              ).offsetLeft - 80;
 
             if (horizontalScroll) {
               horizontalScroll.scrollLeft = cellBefore < 0 ? 0 : cellBefore;
@@ -5536,7 +5562,7 @@
         // loop through all the dates
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
-          if(new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)){
+          if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
           let colDates;
@@ -5910,7 +5936,12 @@
         }
 
         // link control pointers
-        if (this.options.addLinks === true) {
+        let isAddLinks =
+        typeof this.options.addLinks === "function"
+          ? this.options.addLinks(taskData[k])
+          : this.options.addLinks;
+
+        if (isAddLinks === true) {
           // left point
           let leftLinkPoint = document.createElement("div");
           leftLinkPoint.classList.add(
@@ -5980,7 +6011,13 @@
           );
         }
 
-        if (this.options.taskColor) {
+        //add custom task color picker
+        let isCustomColor =
+          typeof this.options.taskColor === "function"
+            ? this.options.taskColor(taskData[k])
+            : this.options.taskColor;
+
+        if (isCustomColor) {
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
@@ -6018,6 +6055,8 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           let hourWidth = this.getPxByTime(end_date, "width");
+          let hourLeft = this.getPxByTime(start_date, "left");
+          hourWidth += hourLeft;
           taskWidth -= hourWidth;
 
           ztGanttBarTask.style.width = taskWidth + "px";
@@ -7000,7 +7039,7 @@
     getPxByTime: function (date, type) {
       let hours = new Date(date).getHours();
       if (type === "width") {
-        hours = hours === 0 ? 0 : 24 - hours;
+        hours = hours === 0 ? 0 : 23 - hours;
       }
       let pxPerHour = this.calculateGridWidth(date, "day") / 24;
       let pixels = hours * pxPerHour;
@@ -8110,7 +8149,8 @@
       function handleMouseDown(e) {
         taskBarArea = document.querySelector("#zt-gantt-bars-area");
         timeLineContainer = document.querySelector("#zt-gantt-right-cell");
-        startX = e.clientX + timeLineContainer.scrollLeft;
+        startX =
+          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft;
         var classesToCheck = ["zt-gantt-task-row", "zt-gantt-task-cell"];
 
         var isClassPresent = false;
@@ -8207,17 +8247,28 @@
       function createTaskArea(e) {
         hasMoved = true;
 
-        if (e.clientX + timeLineContainer.scrollLeft < startX) {
+        if (
+          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft <
+          startX
+        ) {
           taskArea.style.left = `${
-            e.clientX - timeLine.offsetLeft + timeLineContainer.scrollLeft
+            e.clientX -
+            timeLine.offsetLeft +
+            timeLineContainer.scrollLeft -
+            that.element.offsetLeft
           }px`;
           taskArea.style.width = `${
-            startX - e.clientX - timeLineContainer.scrollLeft
+            startX -
+            (e.clientX - that.element.offsetLeft) -
+            timeLineContainer.scrollLeft
           }px`;
         } else {
           taskArea.style.left = `${startX - timeLine.offsetLeft}px`;
           taskArea.style.width = `${
-            e.clientX - startX + timeLineContainer.scrollLeft
+            e.clientX -
+            startX +
+            timeLineContainer.scrollLeft -
+            that.element.offsetLeft
           }px`;
         }
         let isTaskAreaExist = document.querySelector("#task-area");
@@ -8416,6 +8467,10 @@
           `[zt-gantt-taskbar-id="${link.target}"]`
         );
 
+        if (!source || !target) {
+          return;
+        }
+
         let sourceLeft = source.offsetLeft,
           sourceWidth = source.offsetWidth,
           targetLeft = target.offsetLeft,
@@ -8584,7 +8639,7 @@
       }
       const format = this.options.date_format;
       const regex = /%([dmyhis])|(\b\w+\b)/gi;
-      const dateTimeParts = dateTimeString.split(/[^\w]+/);
+      const dateTimeParts = dateTimeString.split(/[^\w]+|T/);
 
       let matchedParts = format.match(regex);
       matchedParts = matchedParts.join(",").replaceAll("%", "").split(",");
@@ -8795,16 +8850,16 @@
       this.updateBody();
     },
 
-    destroy: function(){
+    destroy: function () {
       let layout = document.querySelector("#zt-gantt-layout");
       let tooltip = document.querySelector("#zt-gantt-tooltip");
-      if(layout){
+      if (layout) {
         layout.remove();
       }
-      if(tooltip){
+      if (tooltip) {
         tooltip.remove();
       }
-    }
+    },
   };
 
   global.ztGantt = ZTGantt;
