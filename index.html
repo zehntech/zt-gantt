@@ -13,8 +13,6 @@
       type="image/x-icon"
     />
     <script src="./gantt.js"></script>
-    <script src="./html2canvas.js"></script>
-    <script src="./jsPDF.js"></script>
   </head>
   <body>
     <div class="d-flex action-container">
@@ -333,7 +331,7 @@
         }
         return true;
       };
-      // ZT_Gantt.options.exportApi = "http://192.168.0.163:8200";
+      ZT_Gantt.options.exportApi = "http://192.168.0.163:8200";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
