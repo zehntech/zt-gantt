@@ -3110,7 +3110,12 @@
         }
 
         // link control pointers
-        if (this.options.addLinks === true) {
+        let isAddLinks =
+        typeof this.options.addLinks === "function"
+          ? this.options.addLinks(this.options.data[j])
+          : this.options.addLinks;
+
+        if (isAddLinks === true) {
           // left point
           let leftLinkPoint = document.createElement("div");
           leftLinkPoint.classList.add(
@@ -5931,7 +5936,12 @@
         }
 
         // link control pointers
-        if (this.options.addLinks === true) {
+        let isAddLinks =
+        typeof this.options.addLinks === "function"
+          ? this.options.addLinks(taskData[k])
+          : this.options.addLinks;
+
+        if (isAddLinks === true) {
           // left point
           let leftLinkPoint = document.createElement("div");
           leftLinkPoint.classList.add(
