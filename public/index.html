@@ -512,7 +512,7 @@
           var tracker_name = task.hasOwnProperty("tracker")
             ? task.tracker.name
             : " ";
-          issue_id = task.id;
+          let issue_id = task.id;
           return `<div class='gantt_file ${tracker_name}'><a  class="link-issue ${tracker_name}" href='http://127.0.0.1:5500//issues/${issue_id}'>#${issue_id}</a></div>`;
         }
       };
@@ -720,7 +720,8 @@
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart");
         } else if (e.target.value === "pdf") {
-          ZT_Gantt.exportToPDF("ztGanttChart");
+          // ZT_Gantt.exportToPDF("ztGanttChart");
+          toPDF();
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
@@ -800,7 +801,7 @@
         }
       }
 
-      getScale = () => {
+      let getScale = () => {
         console.log(ZT_Gantt.getScale());
       };
 
@@ -827,10 +828,68 @@
         ZT_Gantt.render();
       }
 
-        function removeCol(){
-          ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length-1, 1);
-          ZT_Gantt.render();
-        }
+      function removeCol() {
+        ZT_Gantt.options.columns.splice(ZT_Gantt.options.columns.length - 1, 1);
+        ZT_Gantt.render();
+      }
+
+      function toPDF() {
+        let element = document.querySelector("#ZT-Gantt");
+        const apiUrl = "http://192.168.0.163:8200";
+
+        // Data to be sent in the request body (if required)
+        const postData = {
+          styles: [
+            "https://zehntech.github.io/zt-gantt/gantt.css",
+            "https://zehntech.github.io/zt-gantt/style.css",
+          ],
+          content: element.outerHTML,
+          fileType: "pdf",
+          fileName: "test5",
+        };
+
+        // Prepare the request options
+        const requestOptions = {
+          method: "POST", // HTTP method (GET, POST, PUT, DELETE, etc.)
+          headers: {
+            "Content-Type": "application/json", // Set the content type since we are sending JSON data
+            // You can add other headers here if required
+          },
+          body: JSON.stringify(postData), // Convert the data to a JSON string before sending
+        };
+
+        // Fetch data from the API
+        fetch(apiUrl, requestOptions)
+          .then((response) => {
+            // Check if the request was successful
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            // Parse the response data as JSON
+            return response.json();
+          })
+          .then((data) => {
+            // Use the response data here
+            console.log(data);
+            const blob = new Blob([new Uint8Array(data.data.data)], {
+              type: "application/pdf",
+            });
+            blobToSaveAs("gantt", blob);
+          })
+          .catch((error) => {
+            // Handle any errors that occurred during the fetch
+            console.error("Fetch error:", error);
+          });
+      }
+
+      function blobToSaveAs(fileName, blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName+".pdf";
+        link.click();
+        URL.revokeObjectURL(url);
+      }
     </script>
   </body>
 </html>

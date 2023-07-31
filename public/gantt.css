@@ -603,6 +603,10 @@
   z-index: 1;
 }
 
+.zt-gantt-hor-scroll > div {
+  height: 1px;
+}
+
 .zt-gantt-ver-scroll {
   width: 100%;
   overflow-y: auto;
