@@ -512,7 +512,7 @@
           var tracker_name = task.hasOwnProperty("tracker")
             ? task.tracker.name
             : " ";
-          issue_id = task.id;
+          let issue_id = task.id;
           return `<div class='gantt_file ${tracker_name}'><a  class="link-issue ${tracker_name}" href='http://127.0.0.1:5500//issues/${issue_id}'>#${issue_id}</a></div>`;
         }
       };
@@ -801,7 +801,7 @@
         }
       }
 
-      getScale = () => {
+      let getScale = () => {
         console.log(ZT_Gantt.getScale());
       };
 
@@ -843,9 +843,9 @@
             "https://zehntech.github.io/zt-gantt/gantt.css",
             "https://zehntech.github.io/zt-gantt/style.css",
           ],
-          content: element,
+          content: element.outerHTML,
           fileType: "pdf",
-          fileName: "testpdf",
+          fileName: "test5",
         };
 
         // Prepare the request options
@@ -871,11 +871,24 @@
           .then((data) => {
             // Use the response data here
             console.log(data);
+            const blob = new Blob([new Uint8Array(data.data.data)], {
+              type: "application/pdf",
+            });
+            blobToSaveAs("gantt", blob);
           })
           .catch((error) => {
             // Handle any errors that occurred during the fetch
             console.error("Fetch error:", error);
           });
+      }
+
+      function blobToSaveAs(fileName, blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName+".pdf";
+        link.click();
+        URL.revokeObjectURL(url);
       }
     </script>
   </body>
