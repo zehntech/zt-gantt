@@ -2225,12 +2225,16 @@
             start_date = startAndEndDate.startDate;
             end_date = startAndEndDate.endDate;
           }
-          tooltip.innerHTML = that.templates.tooltip_text(
+          let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
             options.data[j]
           );
+
+          if(tooltipContent !== false){
+          tooltip.innerHTML = tooltipContent;
           tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -3004,7 +3008,8 @@
           }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
-          tooltip.innerHTML = that.templates.tooltip_text(
+
+          let tooltipContent = that.templates.tooltip_text(
             that.options.data[j].type === "milestone"
               ? that.options.data[j].start_date
               : start_date,
@@ -3013,7 +3018,11 @@
               : end_date || start_date,
             that.options.data[j]
           );
+
+          if(tooltipContent !== false){
+          tooltip.innerHTML = tooltipContent;
           tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -3616,7 +3625,7 @@
 
         daysDiff = daysDiff.length - 1 || 0;
         todayFlag.style.left =
-          this.calculateGridWidth(new Date(), "day") * daysDiff + 15 + "px";
+          this.calculateGridWidth(new Date(), "day") * daysDiff + 1 + "px";
 
         if (calendarContainer) {
           calendarContainer.append(todayFlag);
@@ -5094,6 +5103,7 @@
         })
         .catch((error) => {
           console.error("Fetch error:", error);
+          this.toastr("Export Error", error, "error");
           this.hideLoader();
         });
     },
@@ -5231,13 +5241,16 @@
               start_date = new Date(Math.min(...dates));
               end_date = new Date(Math.max(...dates));
             }
-
-            tooltip.innerHTML = that.templates.tooltip_text(
+            let tooltipContent = that.templates.tooltip_text(
               start_date,
               end_date,
               taskData[l]
             );
-            tooltip.style.display = "block";
+
+            if(tooltipContent !== false){
+              tooltip.innerHTML = 
+              tooltip.style.display = "block";
+            }
           }
 
           // Handle mouseleave event
@@ -5855,7 +5868,7 @@
             end_date = new Date(Math.max(...dates));
           }
 
-          tooltip.innerHTML = that.templates.tooltip_text(
+          let tooltipContent = that.templates.tooltip_text(
             taskData[k].type === "milestone"
               ? taskData[k].start_date
               : start_date,
@@ -5864,7 +5877,11 @@
               : end_date || start_date,
             taskData[k]
           );
-          tooltip.style.display = "block";
+          
+          if(tooltipContent !== false){
+            tooltip.innerHTML = 
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -6266,12 +6283,17 @@
             start_date = startAndEndDate.startDate;
             end_date = startAndEndDate.endDate;
           }
-          tooltip.innerHTML = that.templates.tooltip_text(
+
+          let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
             options.data[j]
           );
-          tooltip.style.display = "block";
+
+          if(tooltipContent !== false){
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -6836,7 +6858,7 @@
       }
 
       flag.style.left =
-        this.calculateGridWidth(data.start_date, "day") * daysDiff + 15 + "px";
+        this.calculateGridWidth(data.start_date, "day") * daysDiff + 1 + "px";
 
       if (calendarContainer) {
         markerArea.append(flag);
