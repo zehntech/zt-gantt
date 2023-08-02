@@ -5248,7 +5248,7 @@
             );
 
             if(tooltipContent !== false){
-              tooltip.innerHTML = 
+              tooltip.innerHTML = tooltipContent;
               tooltip.style.display = "block";
             }
           }
@@ -5879,7 +5879,7 @@
           );
           
           if(tooltipContent !== false){
-            tooltip.innerHTML = 
+            tooltip.innerHTML = tooltipContent;
             tooltip.style.display = "block";
           }
         }
