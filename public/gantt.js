@@ -1,4 +1,4 @@
- /* =========================================================
+/* =========================================================
  * Created by Sunil Solanki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2225,12 +2225,16 @@
             start_date = startAndEndDate.startDate;
             end_date = startAndEndDate.endDate;
           }
-          tooltip.innerHTML = that.templates.tooltip_text(
+          let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
             options.data[j]
           );
-          tooltip.style.display = "block";
+
+          if (tooltipContent !== false) {
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -3004,7 +3008,8 @@
           }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
-          tooltip.innerHTML = that.templates.tooltip_text(
+
+          let tooltipContent = that.templates.tooltip_text(
             that.options.data[j].type === "milestone"
               ? that.options.data[j].start_date
               : start_date,
@@ -3013,7 +3018,11 @@
               : end_date || start_date,
             that.options.data[j]
           );
-          tooltip.style.display = "block";
+
+          if (tooltipContent !== false) {
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -3112,9 +3121,9 @@
 
         // link control pointers
         let isAddLinks =
-        typeof this.options.addLinks === "function"
-          ? this.options.addLinks(this.options.data[j])
-          : this.options.addLinks;
+          typeof this.options.addLinks === "function"
+            ? this.options.addLinks(this.options.data[j])
+            : this.options.addLinks;
 
         if (isAddLinks === true) {
           // left point
@@ -3616,7 +3625,7 @@
 
         daysDiff = daysDiff.length - 1 || 0;
         todayFlag.style.left =
-          this.calculateGridWidth(new Date(), "day") * daysDiff + 15 + "px";
+          this.calculateGridWidth(new Date(), "day") * daysDiff + 1 + "px";
 
         if (calendarContainer) {
           calendarContainer.append(todayFlag);
@@ -4091,7 +4100,7 @@
             "mouseup"
           );
 
-          if(willRender){
+          if (willRender) {
             // render the chart again
             that.render();
             willRender = false;
@@ -4441,22 +4450,22 @@
           target.offsetLeft +
           1 -
           taskLeft * this.calculateGridWidth(task.start_date, "day");
-          let taskStartTime = this.getTimeByPx(extraStartPX,new Date(start));
+        let taskStartTime = this.getTimeByPx(extraStartPX, new Date(start));
         start = new Date(new Date(start).setHours(taskStartTime.hours));
 
-        let taskLeftAndWidth =
-          Math.floor(
-            (target.offsetLeft + target.offsetWidth) /
-              this.calculateGridWidth(task.end_date, "day")
-          );
+        let taskLeftAndWidth = Math.floor(
+          (target.offsetLeft + target.offsetWidth) /
+            this.calculateGridWidth(task.end_date, "day")
+        );
         end = this.dates[taskLeftAndWidth];
-        let extraEndPX = target.offsetLeft +
+        let extraEndPX =
+          target.offsetLeft +
           target.offsetWidth +
           1 -
           taskLeftAndWidth * this.calculateGridWidth(task.end, "day");
-       
-        let taskEndTime = this.getTimeByPx(extraEndPX,new Date(end));
-        end = new Date(new Date(end).setHours(taskEndTime.hours-1));
+
+        let taskEndTime = this.getTimeByPx(extraEndPX, new Date(end));
+        end = new Date(new Date(end).setHours(taskEndTime.hours - 1));
       }
       this.updateTaskDate(task, start, end);
       this.updateTaskDuration();
@@ -4994,11 +5003,17 @@
     //export Gantt as Excel
     exportToExcel: function (name = "ztGantt") {
       let csv = "";
-      const regexIgnorePattern = /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
+      const regexIgnorePattern =
+        /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
 
       // Create the header row
       let headerRow = this.options.columns
-        .map((col) => col.label.replaceAll(",", " ").replaceAll(regexIgnorePattern,"").replace(/<[^>]*>/g, ""))
+        .map((col) =>
+          col.label
+            .replaceAll(",", " ")
+            .replaceAll(regexIgnorePattern, "")
+            .replace(/<[^>]*>/g, "")
+        )
         .join(",");
       let right = this.options.rightGrid;
       if (right) {
@@ -5019,7 +5034,8 @@
           let rowData = columns.map((col) =>
             col
               .template(obj)
-              .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
+              .replaceAll(",", " ")
+              .replaceAll(regexIgnorePattern, "")
               .replace(/<[^>]*>/g, "")
           );
           if (right) {
@@ -5027,7 +5043,8 @@
               ...right.map((col) =>
                 col
                   .template(obj)
-                  .replaceAll(",", " ").replaceAll(regexIgnorePattern,"")
+                  .replaceAll(",", " ")
+                  .replaceAll(regexIgnorePattern, "")
                   .replace(/<[^>]*>/g, "")
               )
             );
@@ -5052,20 +5069,19 @@
       // Programmatically trigger the download
       link.click();
     },
-      
-    // function for calling api 
-    getFile: function(filename = "ztGantt", type, styleSheet) {
-      let element = document.querySelector("#ZT-Gantt");
+
+    // function for calling api
+    getFile: function (filename = "ztGantt", type, styleSheet) {
       const apiUrl = this.options.exportApi;
-      
-      if(!this.options.exportApi){
+
+      if (!this.options.exportApi) {
         this.toastr("Add export url", "Please add an export url!!", "error");
         return;
       }
 
       const postData = {
         styles: styleSheet,
-        content: element.outerHTML,
+        content: this.element.outerHTML,
         fileType: type,
         fileName: filename,
       };
@@ -5094,6 +5110,7 @@
         })
         .catch((error) => {
           console.error("Fetch error:", error);
+          this.toastr("Export Error", error, "error");
           this.hideLoader();
         });
     },
@@ -5103,7 +5120,7 @@
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = fileName+"."+type;
+      link.download = fileName + "." + type;
       link.click();
       URL.revokeObjectURL(url);
     },
@@ -5231,13 +5248,16 @@
               start_date = new Date(Math.min(...dates));
               end_date = new Date(Math.max(...dates));
             }
-
-            tooltip.innerHTML = that.templates.tooltip_text(
+            let tooltipContent = that.templates.tooltip_text(
               start_date,
               end_date,
               taskData[l]
             );
-            tooltip.style.display = "block";
+
+            if (tooltipContent !== false) {
+              tooltip.innerHTML = tooltipContent;
+              tooltip.style.display = "block";
+            }
           }
 
           // Handle mouseleave event
@@ -5855,7 +5875,7 @@
             end_date = new Date(Math.max(...dates));
           }
 
-          tooltip.innerHTML = that.templates.tooltip_text(
+          let tooltipContent = that.templates.tooltip_text(
             taskData[k].type === "milestone"
               ? taskData[k].start_date
               : start_date,
@@ -5864,7 +5884,11 @@
               : end_date || start_date,
             taskData[k]
           );
-          tooltip.style.display = "block";
+
+          if (tooltipContent !== false) {
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -5911,9 +5935,9 @@
 
         // link control pointers
         let isAddLinks =
-        typeof this.options.addLinks === "function"
-          ? this.options.addLinks(taskData[k])
-          : this.options.addLinks;
+          typeof this.options.addLinks === "function"
+            ? this.options.addLinks(taskData[k])
+            : this.options.addLinks;
 
         if (isAddLinks === true) {
           // left point
@@ -6266,12 +6290,17 @@
             start_date = startAndEndDate.startDate;
             end_date = startAndEndDate.endDate;
           }
-          tooltip.innerHTML = that.templates.tooltip_text(
+
+          let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
             options.data[j]
           );
-          tooltip.style.display = "block";
+
+          if (tooltipContent !== false) {
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.display = "block";
+          }
         }
 
         // Handle mouseleave event
@@ -6633,7 +6662,8 @@
       let timeLineResizing = false,
         that = this,
         startX,
-        timeLine;
+        timeLine,
+        resizerLeft;
 
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
@@ -6641,6 +6671,7 @@
       function handleMouseDown(event) {
         timeLine = document.querySelector("#zt-gantt-right-cell");
         startX = event.x;
+        resizerLeft = resizer.offsetLeft;
         resizerLine.style.backgroundColor = "#218eed";
 
         // mouse move event
@@ -6656,13 +6687,6 @@
           let resizerLeft = 0,
             headerCell = document.getElementsByClassName("right-head-cell");
 
-          // rerender the calendar and scale
-          if (
-            that.calculateTimeLineWidth("updated") !==
-            that.calculateTimeLineWidth("current")
-          ) {
-            that.updateBody();
-          }
           for (let j = 0; j < headerCell.length; j++) {
             let columns = document.querySelectorAll(
               `[data-column-index="r-${j}"]`
@@ -6698,10 +6722,10 @@
             "#zt-gantt-grid-right-data"
           );
 
-          rightSideBar.style.width =
-            rightSideBar.offsetWidth + (startX - e.x) + "px";
-          rightSideBar.style.minWidth =
-            rightSideBar.offsetWidth + (startX - e.x) + "px";
+          let widthSize = rightSideBar.offsetWidth + (startX - e.x) + "px";
+
+          rightSideBar.style.width = widthSize;
+          rightSideBar.style.minWidth = widthSize;
 
           that.options.rightGridWidth = rightSideBar.offsetWidth;
 
@@ -6711,6 +6735,9 @@
           ) {
             let mainContainer = document.querySelector(".zt-gantt-layout");
             that.createScrollbar(mainContainer, that.options);
+          } else {
+            // rerender the calendar and scale
+            that.updateBody();
           }
         }
         resizerLine.style.backgroundColor = "#cecece";
@@ -6720,9 +6747,7 @@
       // resize the sidebar
       function resize(e) {
         timeLineResizing = true;
-        let size = `${
-          timeLine.offsetLeft + timeLine.offsetWidth + (e.x - startX)
-        }px`;
+        let size = `${resizerLeft + (e.x - startX)}px`;
         resizer.style.left = size;
       }
     },
@@ -6836,7 +6861,7 @@
       }
 
       flag.style.left =
-        this.calculateGridWidth(data.start_date, "day") * daysDiff + 15 + "px";
+        this.calculateGridWidth(data.start_date, "day") * daysDiff + 1 + "px";
 
       if (calendarContainer) {
         markerArea.append(flag);

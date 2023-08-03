@@ -331,7 +331,7 @@
         }
         return true;
       };
-      ZT_Gantt.options.exportApi = "http://192.168.0.163:8200";
+      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -454,6 +454,19 @@
       //     min_width: 80,
       //     max_width: 300,
       //     tree: true,
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      //   {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 300,
+      //     tree: false,
+      //     align: "center",
       //     label: "Task Name",
       //     resize: true,
       //     template: (task) => {
