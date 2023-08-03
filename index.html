@@ -447,33 +447,33 @@
       ZT_Gantt.options.taskProgress = true;
 
       // Gantt layout to implement columns in right side
-      ZT_Gantt.options.rightGrid = [
-      {
-          name: "text",
-          width: 245,
-          min_width: 80,
-          max_width: 300,
-          tree: true,
-          label: "Task Name",
-          resize: true,
-          template: (task) => {
-            return `<span>${task.text}</span>`;
-          },
-        },
-        {
-          name: "text",
-          width: 245,
-          min_width: 80,
-          max_width: 300,
-          tree: false,
-          align: "center",
-          label: "Task Name",
-          resize: true,
-          template: (task) => {
-            return `<span>${task.text}</span>`;
-          },
-        },
-      ];
+      // ZT_Gantt.options.rightGrid = [
+      // {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 300,
+      //     tree: true,
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      //   {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 300,
+      //     tree: false,
+      //     align: "center",
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      // ];
 
       function weekStartAndEnd(t) {
         const e = t.getDay();
