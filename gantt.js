@@ -5072,7 +5072,6 @@
 
     // function for calling api
     getFile: function (filename = "ztGantt", type, styleSheet) {
-      let element = document.querySelector("#ZT-Gantt");
       const apiUrl = this.options.exportApi;
 
       if (!this.options.exportApi) {
@@ -5082,7 +5081,7 @@
 
       const postData = {
         styles: styleSheet,
-        content: element.outerHTML,
+        content: this.element.outerHTML,
         fileType: type,
         fileName: filename,
       };
