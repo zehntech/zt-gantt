@@ -3379,13 +3379,14 @@
         if (colResizing) {
           let columns = document.querySelectorAll(`[${attr}]`);
           let colWidth = columns[0].offsetWidth + (e.x - startX);
+          colWidth =
+            colWidth < (minWidth || 80)
+              ? minWidth || 80
+              : colWidth > maxWidth
+              ? maxWidth
+              : colWidth;
           for (let col of columns) {
-            col.style.width =
-              (colWidth < (minWidth || 80)
-                ? minWidth || 80
-                : colWidth > maxWidth
-                ? maxWidth
-                : colWidth) + "px";
+            col.style.width = colWidth + "px";
           }
 
           if (!isRight) {
@@ -3407,16 +3408,6 @@
             sidebar.style.minWidth = totalHeadWidth + 1 + "px";
 
             that.options.sidebarWidth = sidebar.offsetWidth;
-          }
-          // rerender the calendar and scale
-          if (
-            that.calculateTimeLineWidth("updated") !==
-            that.calculateTimeLineWidth("current")
-          ) {
-            that.updateBody();
-          } else {
-            let mainContainer = document.querySelector(".zt-gantt-layout");
-            that.createScrollbar(mainContainer, that.options);
           }
 
           let resizerLeft = 0;
@@ -3457,13 +3448,17 @@
             let resizerLeft = sidebar.offsetLeft - rightResizer.offsetLeft;
             rightResizer.style.left =
               rightResizer.offsetLeft + resizerLeft + "px";
-            if (
-              that.calculateTimeLineWidth("updated") ===
-              that.calculateTimeLineWidth("current")
-            ) {
-              let mainContainer = document.querySelector(".zt-gantt-layout");
-              that.createScrollbar(mainContainer, that.options);
-            }
+            that.options.rightGridWidth = sidebar.offsetWidth;
+          }
+          // rerender the calendar and scale
+          if (
+            that.calculateTimeLineWidth("updated") !==
+            that.calculateTimeLineWidth("current")
+          ) {
+            that.updateBody();
+          } else {
+            let mainContainer = document.querySelector(".zt-gantt-layout");
+            that.createScrollbar(mainContainer, that.options);
           }
         }
         colResizing = false;
@@ -6716,6 +6711,13 @@
               ? widthSize - (leftResizer.offsetLeft + 80 - size)
               : widthSize;
 
+          const totalMinWidth = options.columns.reduce(
+            (totalWidth, col) => totalWidth + (col.min_width || 80),
+            0
+          );
+
+          widthSize = widthSize < totalMinWidth ? totalMinWidth : widthSize;
+
           rightSideBar.style.width = widthSize + "px";
           rightSideBar.style.minWidth = widthSize + "px";
 
@@ -6727,23 +6729,27 @@
               `[data-column-index="r-${j}"]`
             );
 
-            let incrasedWidth = widthSize / options.columns.length;
+            // let incrasedWidth = widthSize / options.columns.length;
 
             let resizerWrap = document.getElementById(
               `zt-gantt-col-resizer-wrap-r-${j}`
             );
 
-            incrasedWidth =
-              incrasedWidth > (options.columns[j]?.min_width || 80)
-                ? incrasedWidth
-                : options.columns[j]?.min_width || 80;
+            let colWidth =
+              headerCell[j].offsetWidth +
+              (startX - e.x) / options.columns.length;
+
+            colWidth =
+              colWidth < (options.columns[j]?.min_width || 80)
+                ? options.columns[j]?.min_width || 80
+                : colWidth;
 
             // set the sidebar columns width
             for (let col of columns) {
-              col.style.width = incrasedWidth + "px";
+              col.style.width = colWidth + "px";
             }
 
-            that.options.rightGrid[j].width = incrasedWidth;
+            that.options.rightGrid[j].width = colWidth;
 
             // set the sidebar columns resizer left
             resizerLeft += headerCell[j].offsetWidth;
