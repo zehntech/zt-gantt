@@ -3446,6 +3446,24 @@
             ).style.left =
               document.getElementById("zt-gantt-grid-left-data").offsetWidth +
               "px";
+          } else {
+            let rightResizer = document.querySelector(
+              "#zt-gantt-timeline-resizer-wrap"
+            );
+            headCellContainer.style.width = totalHeadWidth + "px";
+            sidebar.style.width = totalHeadWidth + "px";
+            sidebar.style.minWidth = totalHeadWidth + "px";
+            sidebar.style.width = totalHeadWidth + "px";
+            let resizerLeft = sidebar.offsetLeft - rightResizer.offsetLeft;
+            rightResizer.style.left =
+              rightResizer.offsetLeft + resizerLeft + "px";
+            if (
+              that.calculateTimeLineWidth("updated") ===
+              that.calculateTimeLineWidth("current")
+            ) {
+              let mainContainer = document.querySelector(".zt-gantt-layout");
+              that.createScrollbar(mainContainer, that.options);
+            }
           }
         }
         colResizing = false;
@@ -6662,15 +6680,18 @@
       let timeLineResizing = false,
         that = this,
         startX,
-        timeLine,
-        resizerLeft;
+        resizerLeft,
+        size,
+        leftResizer;
 
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
 
       function handleMouseDown(event) {
-        timeLine = document.querySelector("#zt-gantt-right-cell");
         startX = event.x;
+        leftResizer = document.querySelector(
+          "#zt-gantt-left-layout-resizer-wrap"
+        );
         resizerLeft = resizer.offsetLeft;
         resizerLine.style.backgroundColor = "#218eed";
 
@@ -6684,6 +6705,20 @@
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
         if (timeLineResizing) {
+          let rightSideBar = document.querySelector(
+            "#zt-gantt-grid-right-data"
+          );
+
+          let widthSize = rightSideBar.offsetWidth + (startX - e.x);
+
+          widthSize =
+            leftResizer.offsetLeft + 80 >= size
+              ? widthSize - (leftResizer.offsetLeft + 80 - size)
+              : widthSize;
+
+          rightSideBar.style.width = widthSize + "px";
+          rightSideBar.style.minWidth = widthSize + "px";
+
           let resizerLeft = 0,
             headerCell = document.getElementsByClassName("right-head-cell");
 
@@ -6691,9 +6726,8 @@
             let columns = document.querySelectorAll(
               `[data-column-index="r-${j}"]`
             );
-            let incrasedWidth =
-              headerCell[j].offsetWidth +
-              Math.floor((startX - e.x) / options.columns.length);
+
+            let incrasedWidth = widthSize / options.columns.length;
 
             let resizerWrap = document.getElementById(
               `zt-gantt-col-resizer-wrap-r-${j}`
@@ -6718,15 +6752,6 @@
             }
           }
 
-          let rightSideBar = document.querySelector(
-            "#zt-gantt-grid-right-data"
-          );
-
-          let widthSize = rightSideBar.offsetWidth + (startX - e.x) + "px";
-
-          rightSideBar.style.width = widthSize;
-          rightSideBar.style.minWidth = widthSize;
-
           that.options.rightGridWidth = rightSideBar.offsetWidth;
 
           if (
@@ -6747,8 +6772,8 @@
       // resize the sidebar
       function resize(e) {
         timeLineResizing = true;
-        let size = `${resizerLeft + (e.x - startX)}px`;
-        resizer.style.left = size;
+        size = resizerLeft + (e.x - startX);
+        resizer.style.left = `${size}px`;
       }
     },
 

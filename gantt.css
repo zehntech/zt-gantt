@@ -1,7 +1,7 @@
 :root {
   /* -------- Background Colors Start ----------- */
   --body-background: #fff;
-  --header-background: #b6d6f2;
+  --header-background: #FAFAFA;
   --header-cell-background: #FAFAFA;
   --timeline-cell-background: #f8f8f8;
   --timeline-scale-background: #FAFAFA;
@@ -63,7 +63,7 @@
   
   /* loader color  */
   --loader-color: #d1ebfa;
-  --loader-after-color: #ff3d00;
+  --loader-after-color: #0093ff;
   
   /* toastr color  */
   --toastr-color: #fff;

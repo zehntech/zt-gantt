@@ -63,7 +63,7 @@
 
 /* loader color  */
 --loader-color: #d1ebfa;
---loader-after-color: #ff3d00;
+--loader-after-color: #0093ff;
 
 /* toastr color  */
 --toastr-color: rgb(255, 255, 255, .85);
