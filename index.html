@@ -447,33 +447,33 @@
       ZT_Gantt.options.taskProgress = true;
 
       // Gantt layout to implement columns in right side
-      ZT_Gantt.options.rightGrid = [
-      {
-          name: "text",
-          width: 245,
-          min_width: 80,
-          max_width: 120,
-          tree: true,
-          label: "Task Name",
-          resize: true,
-          template: (task) => {
-            return `<span>${task.text}</span>`;
-          },
-        },
-        {
-          name: "text",
-          width: 245,
-          min_width: 80,
-          max_width: 120,
-          tree: false,
-          align: "center",
-          label: "Task Name",
-          resize: true,
-          template: (task) => {
-            return `<span>${task.text}</span>`;
-          },
-        },
-      ];
+      // ZT_Gantt.options.rightGrid = [
+      // {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 120,
+      //     tree: true,
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      //   {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 120,
+      //     tree: false,
+      //     align: "center",
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      // ];
 
       function weekStartAndEnd(t) {
         const e = t.getDay();
@@ -490,7 +490,7 @@
       }
 
       ZT_Gantt.options.startDate = "2023-06-01T11:46:17.775Z";
-      ZT_Gantt.options.endDate = "2023-06-06T11:46:17.775Z";
+      ZT_Gantt.options.endDate = "2023-06-30T11:46:17.775Z";
 
       ZT_Gantt.templates.tooltip_text = function (start, end, task) {
         return `<b>${task.parent === 0 ? "Project" : "Task"}:</b>
