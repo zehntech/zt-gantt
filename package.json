@@ -20,11 +20,6 @@
     "bugs": {
       "url": "https://github.com/zehntech/zt-gantt/issues"
     },
-    "homepage": "https://github.com/zehntech/zt-gantt#readme",
-    
-    "devDependencies": {
-      "jspdf": "2.5.1",
-      "html2canvas": "1.4.1" 
-    }
+    "homepage": "https://github.com/zehntech/zt-gantt#readme"
 }
 

@@ -14,7 +14,7 @@ Welcome to the documentation for [ztGantt](https://zehntech.github.io/zt-gantt/)
 <a name="installation"></a>
 ### 1. Installation ###
 To use the Gantt Chart Library, follow these steps:  
-Download the library files from our website or repository. Include the library files (gantt.js and gantt.css) in your project. Add the necessary dependencies, such as jsPDF (V. 2.5.1) and html2canvas (V. 1.4.1) if you are using the export for the pdf or PNG. Link the library files in your HTML file.
+Download the library files from our website or repository. Include the library files (gantt.js and gantt.css) in your project. Link the library files in your HTML file.
 You're now ready to start using the Gantt Chart Library!    
 
 <a href="https://zehntech.github.io/zt-gantt/">

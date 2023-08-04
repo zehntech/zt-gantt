@@ -13,8 +13,6 @@
       type="image/x-icon"
     />
     <script src="./gantt.js"></script>
-    <script src="./html2canvas.js"></script>
-    <script src="./jsPDF.js"></script>
   </head>
   <body>
     <div class="d-flex action-container">
@@ -333,6 +331,7 @@
         }
         return true;
       };
+      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -455,6 +454,19 @@
       //     min_width: 80,
       //     max_width: 300,
       //     tree: true,
+      //     label: "Task Name",
+      //     resize: true,
+      //     template: (task) => {
+      //       return `<span>${task.text}</span>`;
+      //     },
+      //   },
+      //   {
+      //     name: "text",
+      //     width: 245,
+      //     min_width: 80,
+      //     max_width: 300,
+      //     tree: false,
+      //     align: "center",
       //     label: "Task Name",
       //     resize: true,
       //     template: (task) => {
@@ -722,11 +734,11 @@
       }
 
       function exportChange(e) {
+        let stylesheet = ['https://zehntech.github.io/zt-gantt/gantt.css','https://zehntech.github.io/zt-gantt/style.css']
         if (e.target.value === "png") {
-          ZT_Gantt.exportToPNG("ztGanttChart");
+          ZT_Gantt.exportToPNG("ztGanttChart", stylesheet);
         } else if (e.target.value === "pdf") {
-          // ZT_Gantt.exportToPDF("ztGanttChart");
-          toPDF();
+          ZT_Gantt.exportToPDF("ztGanttChart", stylesheet);
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
@@ -838,63 +850,6 @@
         ZT_Gantt.render();
       }
 
-      function toPDF() {
-        let element = document.querySelector("#ZT-Gantt");
-        const apiUrl = "https://192.168.0.249:8200";
-
-        // Data to be sent in the request body (if required)
-        const postData = {
-          styles: [
-            "https://zehntech.github.io/zt-gantt/gantt.css",
-            "https://zehntech.github.io/zt-gantt/style.css",
-          ],
-          content: element.outerHTML,
-          fileType: "pdf",
-          fileName: "test5",
-        };
-
-        // Prepare the request options
-        const requestOptions = {
-          method: "POST", // HTTP method (GET, POST, PUT, DELETE, etc.)
-          headers: {
-            "Content-Type": "application/json", // Set the content type since we are sending JSON data
-            // You can add other headers here if required
-          },
-          body: JSON.stringify(postData), // Convert the data to a JSON string before sending
-        };
-
-        // Fetch data from the API
-        fetch(apiUrl, requestOptions)
-          .then((response) => {
-            // Check if the request was successful
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            // Parse the response data as JSON
-            return response.json();
-          })
-          .then((data) => {
-            // Use the response data here
-            console.log(data);
-            const blob = new Blob([new Uint8Array(data.data.data)], {
-              type: "application/pdf",
-            });
-            blobToSaveAs("gantt", blob);
-          })
-          .catch((error) => {
-            // Handle any errors that occurred during the fetch
-            console.error("Fetch error:", error);
-          });
-      }
-
-      function blobToSaveAs(fileName, blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName+".pdf";
-        link.click();
-        URL.revokeObjectURL(url);
-      }
     </script>
   </body>
 </html>
