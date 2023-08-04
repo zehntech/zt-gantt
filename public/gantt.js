@@ -3506,11 +3506,25 @@
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
         if (sidebarResizing) {
+          let rightResizer = document.querySelector(
+            "#zt-gantt-timeline-resizer-wrap"
+          );
           // add the all columns minWidth
           const totalMinWidth = that.options.columns.reduce(
             (totalMinWidth, column) => totalMinWidth + column.min_width,
             0
           );
+
+          let left = e.x;
+          if(rightResizer){
+            let x = e.x;
+            x =
+            rightResizer.offsetLeft - 80 <= resizer.offsetLeft
+            ? rightResizer.offsetLeft - resizer.offsetLeft
+            : 80;
+            
+            left = e.x - (80 - x);
+          }
 
           let resizerLeft = 0,
             headerCell = document.getElementsByClassName("head-cell"),
@@ -3522,7 +3536,7 @@
             );
             let incrasedWidth =
               headerCell[j].offsetWidth +
-              Math.floor((e.x - startX) / that.options.columns.length);
+              (left - startX) / that.options.columns.length;
 
             let resizerWrap = document.getElementById(
               `zt-gantt-col-resizer-wrap-${j}`
