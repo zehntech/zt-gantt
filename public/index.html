@@ -331,7 +331,7 @@
         }
         return true;
       };
-      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net";
+      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -452,7 +452,7 @@
       //     name: "text",
       //     width: 245,
       //     min_width: 80,
-      //     max_width: 300,
+      //     max_width: 120,
       //     tree: true,
       //     label: "Task Name",
       //     resize: true,
@@ -464,7 +464,7 @@
       //     name: "text",
       //     width: 245,
       //     min_width: 80,
-      //     max_width: 300,
+      //     max_width: 120,
       //     tree: false,
       //     align: "center",
       //     label: "Task Name",
@@ -580,7 +580,7 @@
         css: "tomorrow", //a CSS class applied to the marker
         text: "Tomorrow", //the marker title
         title: ZT_Gantt.formatDateToString(
-          "%d %M %y",
+          "%d %F %y",
           ZT_Gantt.add(new Date(), 1, "day")
         ), // the marker's tooltip
       });
@@ -589,7 +589,7 @@
       //   start_date: ZT_Gantt.add(new Date(),-1, "day"), //a Date object that sets the marker's date
       //   css: "yesterday", //a CSS class applied to the marker
       //   text: "Yesterday", //the marker title
-      //   title: ZT_Gantt.formatDateToString("%d %M %y", ZT_Gantt.add(new Date(),-1, "day")), // the marker's tooltip
+      //   title: ZT_Gantt.formatDateToString("%d %F %Y", ZT_Gantt.add(new Date(),-1, "day")), // the marker's tooltip
       // });
 
       // render gantt

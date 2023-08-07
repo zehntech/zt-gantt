@@ -1,10 +1,10 @@
 :root {
   /* -------- Background Colors Start ----------- */
   --body-background: #fff;
-  --header-background: #FAFAFA;
-  --header-cell-background: #FAFAFA;
+  --header-background: #fafafa;
+  --header-cell-background: #fafafa;
   --timeline-cell-background: #f8f8f8;
-  --timeline-scale-background: #FAFAFA;
+  --timeline-scale-background: #fafafa;
   --resizer-background: #cecece;
   --grid-resize-area-background: #a2a2a24f;
   --row-item-background: #fff;
@@ -19,77 +19,79 @@
   /* lightbox backgrounds  */
   --lightbox-background: #fff;
   --textarea-background: #fff;
-  
+
   /* tooltip background */
   --tooltip-background: #fff;
-  
+
   /* taskbar background */
   --taskbar-background: #7fbbfff2;
   --taskbar-child-background: #56a4fdf2;
   --task-area-background: #0094ff4d;
   --task-progress-background: #0094ff4d;
   --child-task-progress-background: #298dfff2;
-  
+
   /* milestone content */
   --milestone-content-background: #e84855;
-  
+
   /* backdrop background */
   --backdrop-background: #0000004d;
   --loder-backdrop-background: #000000cc;
-  
+
   /* btn background  */
   --btn-primary-background: #0094ff;
   --btn-normal-background: #fff;
   --btn-danger-background: #c11d1d;
-  
+
   /* link backgrounds */
   --link-background: #ffa011;
   --link-control-background: #f0f0f0;
   --link-control-hover-background: #fff;
   --selected-link-control-background: #ffa011;
   /* -------- Background Colors End ----------- */
-  
+
   /* -------- Text Colors Start ----------- */
   --primary-color: #1d273c;
   --marker-color: #fff;
   --tooltip-color: #454545;
   --task-content-color: #fff;
   --milestone-content-color: #333232;
-  
+
   /* btn colors  */
   --btn-primary-color: #fff;
   --btn-normal-color: #000;
   --btn-danger-color: #c11d1d;
-  
+
   /* loader color  */
   --loader-color: #d1ebfa;
   --loader-after-color: #0093ff;
-  
+
   /* toastr color  */
   --toastr-color: #fff;
   --toastr-p-color: #fff;
   /* -------- Text Colors End ----------- */
-  
+
   /* -------- Border Colors Start ----------- */
   --primary-border: #dddddd;
-  
+
   /* taskbar border  */
   --taskbar-border: #4e89cdf2;
   --task-area-border: #0094ff;
   --milestone-content-border: #e84855;
-  
+
   /* lightbox textarea  */
   --lightbox-border: #cecece;
-  
+
   /* link border  */
   --link-border: #ffa011;
   --link-control-border: #929292;
-  
-  }
+}
 
 .zt-gantt-layout * {
   box-sizing: border-box;
   color: var(--primary-color);
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
   user-select: none;
 }
 
@@ -126,6 +128,9 @@
 }
 
 .user-select-none {
+  -webkit-user-select: none !important; /* Safari */
+  -moz-user-select: none !important; /* Firefox */
+  -ms-user-select: none !important; /* Internet Explorer */
   user-select: none !important;
 }
 
@@ -398,7 +403,7 @@
   box-shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
 }
 
-.zt-gantt-tooltip *{
+.zt-gantt-tooltip * {
   color: var(--tooltip-color);
 }
 
@@ -497,11 +502,12 @@
   z-index: 1060;
 }
 
-.zt-gantt-lightbox .zt-gantt-task-title{
+.zt-gantt-lightbox .zt-gantt-task-title {
   margin-bottom: 5px;
 }
 
-.zt-gantt-lightbox span, .zt-gantt-lightbox p {
+.zt-gantt-lightbox span,
+.zt-gantt-lightbox p {
   color: var(--primary-color);
 }
 
@@ -645,6 +651,14 @@
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
 
+.zt-gantt-bar-milestone.zt-gantt-selected-task-bar{
+  box-shadow: none;
+}
+
+.zt-gantt-bar-milestone.zt-gantt-selected-task-bar .zt-gantt-bar-task-content{
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
 /* arrow links to connect tasks  */
 .zt-gantt-links-area {
   position: absolute;
@@ -783,9 +797,9 @@
   color: var(--loader-color);
   z-index: 1100;
   position: absolute;
-  top: 51%;
+  top: 50%;
   left: 50%;
-  transform: rotateZ(45deg) translate(-50%, 0);
+  transform: rotateZ(45deg) translate(-50%, -50%);
 }
 .zt-gantt-loader:before,
 .zt-gantt-loader:after {
