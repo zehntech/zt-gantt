@@ -651,6 +651,14 @@
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
 
+.zt-gantt-bar-milestone.zt-gantt-selected-task-bar{
+  box-shadow: none;
+}
+
+.zt-gantt-bar-milestone.zt-gantt-selected-task-bar .zt-gantt-bar-task-content{
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
 /* arrow links to connect tasks  */
 .zt-gantt-links-area {
   position: absolute;

@@ -4800,8 +4800,10 @@
         elementWidth -= totalWidth;
       }
 
-      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
+      if (sidebar?.offsetHeight < sidebar?.scrollHeight || this.hasScroll) {
         elementWidth -= 20;
+      }else{
+        elementWidth -= 2;
       }
 
       let minWidth = this.options.minColWidth;
@@ -6550,6 +6552,14 @@
       const isHorScrollExist = document.querySelectorAll(
         ".zt-gantt-hor-scroll-cell"
       );
+
+      if(timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll){
+        this.hasScroll = true;
+        this.updateBody();
+        return;
+      }else{
+        this.hasScroll = false;
+      }
 
       // Create vertical custom scroll
       const verticalScrollContainer = createCustomScrollContainer(
