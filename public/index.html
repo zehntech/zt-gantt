@@ -63,12 +63,12 @@
           placeholder="Zoom to"
           onchange="changeZoom(event)"
         >
-          <option value="" disabled="" selected="">Zoom to:</option>
+          <option value="" disabled="">Zoom to:</option>
           <option value="year">Years</option>
           <option value="quarter">Quarters</option>
           <option value="month">Months</option>
           <option value="week">Weeks</option>
-          <option value="day">Days</option>
+          <option value="day" selected="day">Days</option>
           <option value="hour">Hour</option>
         </select>
       </div>
@@ -82,7 +82,7 @@
           <option value="" disabled="" selected="">Select Language:</option>
           <option value="ar">Arabic</option>
           <option value="be">Belarusian</option>
-          <option value="en">English</option>
+          <option value="en" selected="en">English</option>
           <option value="ca">Catalan</option>
           <option value="cn">Chinese</option>
           <option value="hr">Croatian</option>
@@ -331,7 +331,7 @@
         }
         return true;
       };
-      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net";
+      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -452,7 +452,7 @@
       //     name: "text",
       //     width: 245,
       //     min_width: 80,
-      //     max_width: 300,
+      //     max_width: 120,
       //     tree: true,
       //     label: "Task Name",
       //     resize: true,
@@ -464,7 +464,7 @@
       //     name: "text",
       //     width: 245,
       //     min_width: 80,
-      //     max_width: 300,
+      //     max_width: 120,
       //     tree: false,
       //     align: "center",
       //     label: "Task Name",
@@ -580,7 +580,7 @@
         css: "tomorrow", //a CSS class applied to the marker
         text: "Tomorrow", //the marker title
         title: ZT_Gantt.formatDateToString(
-          "%d %M %y",
+          "%d %F %y",
           ZT_Gantt.add(new Date(), 1, "day")
         ), // the marker's tooltip
       });
@@ -589,7 +589,7 @@
       //   start_date: ZT_Gantt.add(new Date(),-1, "day"), //a Date object that sets the marker's date
       //   css: "yesterday", //a CSS class applied to the marker
       //   text: "Yesterday", //the marker title
-      //   title: ZT_Gantt.formatDateToString("%d %M %y", ZT_Gantt.add(new Date(),-1, "day")), // the marker's tooltip
+      //   title: ZT_Gantt.formatDateToString("%d %F %Y", ZT_Gantt.add(new Date(),-1, "day")), // the marker's tooltip
       // });
 
       // render gantt
@@ -742,6 +742,7 @@
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
+        e.target.value = "";
       }
 
       function autoScheduling() {

@@ -2049,14 +2049,13 @@
         this.addTodayFlag();
       }
 
-      // create links if addLinks is true
-      if (this.options.addLinks === true) {
-        let rightDataContainer = document.querySelector("#zt-gantt-scale-data");
-        let linksArea = document.createElement("div");
-        linksArea.classList.add("zt-gantt-links-area");
-        linksArea.id = "zt-gantt-links-area";
-        rightDataContainer.append(linksArea);
-
+      let rightDataContainer = document.querySelector("#zt-gantt-scale-data");
+      let linksArea = document.createElement("div");
+      linksArea.classList.add("zt-gantt-links-area");
+      linksArea.id = "zt-gantt-links-area";
+      rightDataContainer.append(linksArea);
+      
+      // create links 
         for (let i = 0; i < this.options.links.length; i++) {
           this.createLinks(
             this.options.links[i].source,
@@ -2064,7 +2063,6 @@
             this.options.links[i]
           );
         }
-      }
     },
 
     // create left sidebar
@@ -4802,6 +4800,8 @@
 
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 20;
+      }else{
+        elementWidth -= 2;
       }
 
       let minWidth = this.options.minColWidth;
@@ -6550,6 +6550,14 @@
       const isHorScrollExist = document.querySelectorAll(
         ".zt-gantt-hor-scroll-cell"
       );
+
+      // if(timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll){
+      //   this.hasScroll = true;
+      //   this.updateBody();
+      //   return;
+      // }else{
+      //   this.hasScroll = false;
+      // }
 
       // Create vertical custom scroll
       const verticalScrollContainer = createCustomScrollContainer(
