@@ -63,12 +63,12 @@
           placeholder="Zoom to"
           onchange="changeZoom(event)"
         >
-          <option value="" disabled="" selected="">Zoom to:</option>
+          <option value="" disabled="">Zoom to:</option>
           <option value="year">Years</option>
           <option value="quarter">Quarters</option>
           <option value="month">Months</option>
           <option value="week">Weeks</option>
-          <option value="day">Days</option>
+          <option value="day" selected="day">Days</option>
           <option value="hour">Hour</option>
         </select>
       </div>
@@ -82,7 +82,7 @@
           <option value="" disabled="" selected="">Select Language:</option>
           <option value="ar">Arabic</option>
           <option value="be">Belarusian</option>
-          <option value="en">English</option>
+          <option value="en" selected="en">English</option>
           <option value="ca">Catalan</option>
           <option value="cn">Chinese</option>
           <option value="hr">Croatian</option>
@@ -742,6 +742,7 @@
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
+        e.target.value = "";
       }
 
       function autoScheduling() {
