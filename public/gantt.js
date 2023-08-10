@@ -4798,7 +4798,7 @@
         elementWidth -= totalWidth;
       }
 
-      if (sidebar?.offsetHeight < sidebar?.scrollHeight || this.hasScroll) {
+      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 20;
       }else{
         elementWidth -= 2;
@@ -6551,13 +6551,13 @@
         ".zt-gantt-hor-scroll-cell"
       );
 
-      if(timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll){
-        this.hasScroll = true;
-        this.updateBody();
-        return;
-      }else{
-        this.hasScroll = false;
-      }
+      // if(timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll){
+      //   this.hasScroll = true;
+      //   this.updateBody();
+      //   return;
+      // }else{
+      //   this.hasScroll = false;
+      // }
 
       // Create vertical custom scroll
       const verticalScrollContainer = createCustomScrollContainer(
