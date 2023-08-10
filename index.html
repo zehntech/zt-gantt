@@ -63,12 +63,12 @@
           placeholder="Zoom to"
           onchange="changeZoom(event)"
         >
-          <option value="" disabled="" selected="">Zoom to:</option>
+          <option value="" disabled="">Zoom to:</option>
           <option value="year">Years</option>
           <option value="quarter">Quarters</option>
           <option value="month">Months</option>
           <option value="week">Weeks</option>
-          <option value="day">Days</option>
+          <option value="day" selected="day">Days</option>
           <option value="hour">Hour</option>
         </select>
       </div>
@@ -82,7 +82,7 @@
           <option value="" disabled="" selected="">Select Language:</option>
           <option value="ar">Arabic</option>
           <option value="be">Belarusian</option>
-          <option value="en">English</option>
+          <option value="en" selected="en">English</option>
           <option value="ca">Catalan</option>
           <option value="cn">Chinese</option>
           <option value="hr">Croatian</option>
@@ -331,6 +331,7 @@
         }
         return true;
       };
+      
       ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
@@ -490,7 +491,7 @@
       }
 
       ZT_Gantt.options.startDate = "2023-06-01T11:46:17.775Z";
-      ZT_Gantt.options.endDate = "2023-06-06T11:46:17.775Z";
+      ZT_Gantt.options.endDate = "2023-06-30T11:46:17.775Z";
 
       ZT_Gantt.templates.tooltip_text = function (start, end, task) {
         return `<b>${task.parent === 0 ? "Project" : "Task"}:</b>
@@ -742,6 +743,7 @@
         } else {
           ZT_Gantt.exportToExcel("ztGanttChart");
         }
+        e.target.value = "";
       }
 
       function autoScheduling() {
