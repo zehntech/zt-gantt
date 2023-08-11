@@ -2997,7 +2997,13 @@
 
         // Handle mouseover event
         ztGanttBarTask.addEventListener("mouseover", handleMouseOver);
+        let userAgent = navigator.userAgent;
         function handleMouseOver(e) {
+          
+          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+            ztGanttBarTask.classList.add("hovered");
+          }
+
           if (that.options.data[j].children) {
             let taskData = [...that.options.data[j].children];
             let startAndEndDate = that.getStartAndEndDate(taskData);
@@ -3027,6 +3033,11 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave(event) {
+                    
+          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+            ztGanttBarTask.classList.remove("hovered");
+          }
+
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
           tooltip.style.display = "none";
