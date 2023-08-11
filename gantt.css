@@ -767,6 +767,11 @@
   display: block;
 }
 
+.zt-gantt-bar-task.hovered .zt-gantt-link-control div,
+.zt-gantt-bar-milestone.hovered .zt-gantt-link-control div {
+  display: block;
+}
+
 .zt-gantt-link-point:hover {
   background-color: var(--link-control-hover-background);
 }
