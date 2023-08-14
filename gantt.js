@@ -3285,7 +3285,6 @@
       }
       if (!isFromRender) {
         // create links if addLinks is true
-        if (this.options.addLinks === true) {
           let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
           // if lines already exist remove all lines
           if (isLinksAreaExist) {
@@ -3304,7 +3303,6 @@
               this.options.links[i]
             );
           }
-        }
       }
     },
 
