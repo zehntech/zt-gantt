@@ -3285,7 +3285,6 @@
       }
       if (!isFromRender) {
         // create links if addLinks is true
-        if (this.options.addLinks === true) {
           let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
           // if lines already exist remove all lines
           if (isLinksAreaExist) {
@@ -3304,7 +3303,6 @@
               this.options.links[i]
             );
           }
-        }
       }
     },
 
@@ -5883,7 +5881,12 @@
         // Handle mouseover event
         ztGanttBarTask.addEventListener("mouseover", handleMouseOver);
 
-        function handleMouseOver() {
+        let userAgent = navigator.userAgent;
+
+        function handleMouseOver() {    
+            if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+              ztGanttBarTask.classList.add("hovered");
+            }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
 
@@ -5933,6 +5936,9 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave() {
+          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+            ztGanttBarTask.classList.remove("hovered");
+          }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
           tooltip.style.display = "none";
