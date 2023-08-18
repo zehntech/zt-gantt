@@ -2054,15 +2054,15 @@
       linksArea.classList.add("zt-gantt-links-area");
       linksArea.id = "zt-gantt-links-area";
       rightDataContainer.append(linksArea);
-      
-      // create links 
-        for (let i = 0; i < this.options.links.length; i++) {
-          this.createLinks(
-            this.options.links[i].source,
-            this.options.links[i].target,
-            this.options.links[i]
-          );
-        }
+
+      // create links
+      for (let i = 0; i < this.options.links.length; i++) {
+        this.createLinks(
+          this.options.links[i].source,
+          this.options.links[i].target,
+          this.options.links[i]
+        );
+      }
     },
 
     // create left sidebar
@@ -2999,8 +2999,7 @@
         ztGanttBarTask.addEventListener("mouseover", handleMouseOver);
         let userAgent = navigator.userAgent;
         function handleMouseOver(e) {
-          
-          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
             ztGanttBarTask.classList.add("hovered");
           }
 
@@ -3033,8 +3032,7 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave(event) {
-                    
-          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
             ztGanttBarTask.classList.remove("hovered");
           }
 
@@ -3285,24 +3283,24 @@
       }
       if (!isFromRender) {
         // create links if addLinks is true
-          let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
-          // if lines already exist remove all lines
-          if (isLinksAreaExist) {
-            isLinksAreaExist.innerHTML = "";
-          } else if (barContainer) {
-            let linksArea = document.createElement("div");
-            linksArea.classList.add("zt-gantt-links-area");
-            linksArea.id = "zt-gantt-links-area";
-            barContainer.append(linksArea);
-          }
+        let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
+        // if lines already exist remove all lines
+        if (isLinksAreaExist) {
+          isLinksAreaExist.innerHTML = "";
+        } else if (barContainer) {
+          let linksArea = document.createElement("div");
+          linksArea.classList.add("zt-gantt-links-area");
+          linksArea.id = "zt-gantt-links-area";
+          barContainer.append(linksArea);
+        }
 
-          for (let i = 0; i < this.options.links.length; i++) {
-            this.createLinks(
-              this.options.links[i].source,
-              this.options.links[i].target,
-              this.options.links[i]
-            );
-          }
+        for (let i = 0; i < this.options.links.length; i++) {
+          this.createLinks(
+            this.options.links[i].source,
+            this.options.links[i].target,
+            this.options.links[i]
+          );
+        }
       }
     },
 
@@ -3523,13 +3521,13 @@
           );
 
           let left = e.x;
-          if(rightResizer){
+          if (rightResizer) {
             let x = e.x;
             x =
-            rightResizer.offsetLeft - 80 <= resizer.offsetLeft
-            ? rightResizer.offsetLeft - resizer.offsetLeft
-            : 80;
-            
+              rightResizer.offsetLeft - 80 <= resizer.offsetLeft
+                ? rightResizer.offsetLeft - resizer.offsetLeft
+                : 80;
+
             left = e.x - (80 - x);
           }
 
@@ -5119,7 +5117,6 @@
         styles: styleSheet,
         content: this.element.outerHTML,
         fileType: type,
-        fileName: filename,
       };
 
       const requestOptions = {
@@ -5883,10 +5880,10 @@
 
         let userAgent = navigator.userAgent;
 
-        function handleMouseOver() {    
-            if(/^((?!chrome|android).)*safari/i.test(userAgent)){
-              ztGanttBarTask.classList.add("hovered");
-            }
+        function handleMouseOver() {
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
+            ztGanttBarTask.classList.add("hovered");
+          }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
 
@@ -5936,7 +5933,7 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave() {
-          if(/^((?!chrome|android).)*safari/i.test(userAgent)){
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
             ztGanttBarTask.classList.remove("hovered");
           }
           let tooltip = document.getElementById("zt-gantt-tooltip");
@@ -8686,20 +8683,48 @@
     },
 
     toastr: function (title, message, type) {
-      let toastr = document.createElement("div");
-      toastr.classList.add("zt-gantt-toastr", type);
-      let titleDiv = document.createElement("p");
-      let messageDiv = document.createElement("p");
+      let toastrArea = document.querySelector(".zt-gantt-toastr-area");
+      if (!toastrArea) {
+        toastrArea = document.createElement("div");
+        toastrArea.classList.add("zt-gantt-toastr-area");
+        document.body.append(toastrArea);
+      }
+
+      const newToastr = document.createElement("div");
+      newToastr.classList.add("zt-gantt-toastr", type);
+
+      const titleDiv = document.createElement("p");
+      const messageDiv = document.createElement("p");
       titleDiv.innerHTML = title;
       messageDiv.innerHTML = message;
-      toastr.append(titleDiv, messageDiv);
-      toastr.classList.add("show", type);
-      document.body.append(toastr);
 
-      setTimeout(function () {
-        toastr.classList.remove("show");
-        toastr.remove();
-      }, 3000);
+      newToastr.append(titleDiv, messageDiv);
+      newToastr.classList.add("show", type);
+
+      toastrArea.append(newToastr);
+
+      const removeToastr = () => {
+        newToastr.classList.remove("show");
+        newToastr.classList.add("hide");
+        setTimeout(()=>{
+          newToastr.remove();
+        }, 500);
+      };
+
+      let removeTimer = setTimeout(removeToastr, 3000);
+
+      newToastr.addEventListener("click", () => {
+        clearTimeout(removeTimer);
+        removeToastr();
+      });
+
+      newToastr.addEventListener("mouseenter", () => {
+        clearTimeout(removeTimer); // Clear the timeout when mouse enters
+      });
+
+      newToastr.addEventListener("mouseleave", () => {
+        removeTimer = setTimeout(removeToastr, 3000); // Start the timeout again when mouse leaves
+      });
     },
 
     getDateTimeComponents: function (dateTimeString) {
