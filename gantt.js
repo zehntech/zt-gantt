@@ -2882,7 +2882,6 @@
         } else {
           cellBefore = -(cellBefore.length - 1);
         }
-
         let ztGanttBarTask = document.createElement("div");
 
         if (
@@ -2975,6 +2974,12 @@
         ) {
           ztGanttBarTaskContent.style.setProperty(
             "background-color",
+            this.options.data[j].taskColor,
+            "important"
+          );
+
+          ztGanttBarTaskContent.style.setProperty(
+            "border-color",
             this.options.data[j].taskColor,
             "important"
           );
@@ -3199,12 +3204,15 @@
         if (this.options.data[j].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
+          
+          if (taskWidth === 0) {
+            ztGanttBarTask.classList.add("d-none");
+          }
 
           let hourWidth = this.getPxByTime(end_date, "width");
           let hourLeft = this.getPxByTime(start_date, "left");
           hourWidth += hourLeft;
           taskWidth -= hourWidth;
-
           ztGanttBarTask.style.width = taskWidth + "px";
         }
 
@@ -5742,9 +5750,9 @@
           };
 
           const dates = [
-            setDate(start_date),
+            setDate(start_date || start),
             setDate(start),
-            setDate(end_date),
+            setDate(end_date || end),
             setDate(end),
           ];
 
@@ -5855,6 +5863,12 @@
         if (taskData[k].type === "milestone" && taskData[k].taskColor) {
           ztGanttBarTaskContent.style.setProperty(
             "background-color",
+            taskData[k].taskColor,
+            "important"
+          );
+
+          ztGanttBarTaskContent.style.setProperty(
+            "border-color",
             taskData[k].taskColor,
             "important"
           );
@@ -6092,6 +6106,10 @@
         if (taskData[k].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
+          
+          if (taskWidth === 0) {
+            ztGanttBarTask.classList.add("d-none");
+          }
 
           let hourWidth = this.getPxByTime(end_date, "width");
           let hourLeft = this.getPxByTime(start_date, "left");
@@ -7125,13 +7143,9 @@
 
       let linkType = link.type || 0;
 
-      if (
-        source == undefined ||
-        source == null ||
-        target == undefined ||
-        target == null ||
-        source == target
-      ) {
+      let createLink = this.isTaskExist(source, target);
+      
+      if (!createLink) {
         return;
       }
 
@@ -8706,7 +8720,7 @@
       const removeToastr = () => {
         newToastr.classList.remove("show");
         newToastr.classList.add("hide");
-        setTimeout(()=>{
+        setTimeout(() => {
           newToastr.remove();
         }, 500);
       };
@@ -8852,6 +8866,12 @@
             e.target.value,
             "important"
           );
+
+          taskbarContent.style.setProperty(
+            "border-color",
+            e.target.value,
+            "important"
+          );
         } else {
           taskbar.style.setProperty(
             "background-color",
@@ -8889,6 +8909,12 @@
         if (task.type === "milestone") {
           taskbarContent.style.setProperty(
             "background-color",
+            e.target.value,
+            "important"
+          );
+
+          taskbarContent.style.setProperty(
+            "border-color",
             e.target.value,
             "important"
           );
@@ -8952,6 +8978,28 @@
       }
       if (tooltip) {
         tooltip.remove();
+      }
+    },
+
+    isTaskExist: function (source, target) {
+      let sourceStyle = window.getComputedStyle(source);
+      let targetStyle = window.getComputedStyle(target);
+
+      let isSourceHidden = sourceStyle.display === "none";
+      let isTargetHidden = targetStyle.display === "none";
+
+      if (
+        source == undefined ||
+        source == null ||
+        target == undefined ||
+        target == null ||
+        source == target ||
+        isTargetHidden ||
+        isSourceHidden
+      ) {
+        return false;
+      } else {
+        return true;
       }
     },
   };
