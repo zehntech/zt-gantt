@@ -3184,7 +3184,6 @@
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
-          colorInput.id = `color-${this.options.data[j].id}`;
           colorInput.type = "color";
           colorInput.value =
             this.options.data[j].taskColor ||
@@ -6074,7 +6073,6 @@
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
-          colorInput.id = `color-${taskData[k].id}`;
           colorInput.type = "color";
           colorInput.setAttribute(
             "value",
@@ -8982,11 +8980,11 @@
     },
 
     isTaskExist: function (source, target) {
-      let sourceStyle = window.getComputedStyle(source);
-      let targetStyle = window.getComputedStyle(target);
+      let sourceStyle = source ? window.getComputedStyle(source) : null;
+      let targetStyle = target ? window.getComputedStyle(target) : null;
 
-      let isSourceHidden = sourceStyle.display === "none";
-      let isTargetHidden = targetStyle.display === "none";
+      let isSourceHidden = sourceStyle ? sourceStyle.display === "none" : false;
+      let isTargetHidden = targetStyle ? targetStyle.display === "none" : false;
 
       if (
         source == undefined ||
