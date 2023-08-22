@@ -59,6 +59,7 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
+        updateLinkOnDrag: opt.updateLinkOnDrag,
         links: opt.links || [],
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
@@ -2054,15 +2055,15 @@
       linksArea.classList.add("zt-gantt-links-area");
       linksArea.id = "zt-gantt-links-area";
       rightDataContainer.append(linksArea);
-      
-      // create links 
-        for (let i = 0; i < this.options.links.length; i++) {
-          this.createLinks(
-            this.options.links[i].source,
-            this.options.links[i].target,
-            this.options.links[i]
-          );
-        }
+
+      // create links
+      for (let i = 0; i < this.options.links.length; i++) {
+        this.createLinks(
+          this.options.links[i].source,
+          this.options.links[i].target,
+          this.options.links[i]
+        );
+      }
     },
 
     // create left sidebar
@@ -2882,7 +2883,6 @@
         } else {
           cellBefore = -(cellBefore.length - 1);
         }
-
         let ztGanttBarTask = document.createElement("div");
 
         if (
@@ -2978,6 +2978,12 @@
             this.options.data[j].taskColor,
             "important"
           );
+
+          ztGanttBarTaskContent.style.setProperty(
+            "border-color",
+            this.options.data[j].taskColor,
+            "important"
+          );
         }
 
         let that = this;
@@ -2997,7 +3003,12 @@
 
         // Handle mouseover event
         ztGanttBarTask.addEventListener("mouseover", handleMouseOver);
+        let userAgent = navigator.userAgent;
         function handleMouseOver(e) {
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
+            ztGanttBarTask.classList.add("hovered");
+          }
+
           if (that.options.data[j].children) {
             let taskData = [...that.options.data[j].children];
             let startAndEndDate = that.getStartAndEndDate(taskData);
@@ -3027,6 +3038,10 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave(event) {
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
+            ztGanttBarTask.classList.remove("hovered");
+          }
+
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
           tooltip.style.display = "none";
@@ -3170,7 +3185,6 @@
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
-          colorInput.id = `color-${this.options.data[j].id}`;
           colorInput.type = "color";
           colorInput.value =
             this.options.data[j].taskColor ||
@@ -3190,12 +3204,15 @@
         if (this.options.data[j].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
+          
+          if (taskWidth === 0) {
+            ztGanttBarTask.classList.add("d-none");
+          }
 
           let hourWidth = this.getPxByTime(end_date, "width");
           let hourLeft = this.getPxByTime(start_date, "left");
           hourWidth += hourLeft;
           taskWidth -= hourWidth;
-
           ztGanttBarTask.style.width = taskWidth + "px";
         }
 
@@ -3274,25 +3291,23 @@
       }
       if (!isFromRender) {
         // create links if addLinks is true
-        if (this.options.addLinks === true) {
-          let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
-          // if lines already exist remove all lines
-          if (isLinksAreaExist) {
-            isLinksAreaExist.innerHTML = "";
-          } else if (barContainer) {
-            let linksArea = document.createElement("div");
-            linksArea.classList.add("zt-gantt-links-area");
-            linksArea.id = "zt-gantt-links-area";
-            barContainer.append(linksArea);
-          }
+        let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
+        // if lines already exist remove all lines
+        if (isLinksAreaExist) {
+          isLinksAreaExist.innerHTML = "";
+        } else if (barContainer) {
+          let linksArea = document.createElement("div");
+          linksArea.classList.add("zt-gantt-links-area");
+          linksArea.id = "zt-gantt-links-area";
+          barContainer.append(linksArea);
+        }
 
-          for (let i = 0; i < this.options.links.length; i++) {
-            this.createLinks(
-              this.options.links[i].source,
-              this.options.links[i].target,
-              this.options.links[i]
-            );
-          }
+        for (let i = 0; i < this.options.links.length; i++) {
+          this.createLinks(
+            this.options.links[i].source,
+            this.options.links[i].target,
+            this.options.links[i]
+          );
         }
       }
     },
@@ -3514,13 +3529,13 @@
           );
 
           let left = e.x;
-          if(rightResizer){
+          if (rightResizer) {
             let x = e.x;
             x =
-            rightResizer.offsetLeft - 80 <= resizer.offsetLeft
-            ? rightResizer.offsetLeft - resizer.offsetLeft
-            : 80;
-            
+              rightResizer.offsetLeft - 80 <= resizer.offsetLeft
+                ? rightResizer.offsetLeft - resizer.offsetLeft
+                : 80;
+
             left = e.x - (80 - x);
           }
 
@@ -5110,7 +5125,6 @@
         styles: styleSheet,
         content: this.element.outerHTML,
         fileType: type,
-        fileName: filename,
       };
 
       const requestOptions = {
@@ -5736,9 +5750,9 @@
           };
 
           const dates = [
-            setDate(start_date),
+            setDate(start_date || start),
             setDate(start),
-            setDate(end_date),
+            setDate(end_date || end),
             setDate(end),
           ];
 
@@ -5852,6 +5866,12 @@
             taskData[k].taskColor,
             "important"
           );
+
+          ztGanttBarTaskContent.style.setProperty(
+            "border-color",
+            taskData[k].taskColor,
+            "important"
+          );
         }
 
         let that = this;
@@ -5872,7 +5892,12 @@
         // Handle mouseover event
         ztGanttBarTask.addEventListener("mouseover", handleMouseOver);
 
+        let userAgent = navigator.userAgent;
+
         function handleMouseOver() {
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
+            ztGanttBarTask.classList.add("hovered");
+          }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
 
@@ -5922,6 +5947,9 @@
         ztGanttBarTask.addEventListener("mouseleave", handleMouseLeave);
 
         function handleMouseLeave() {
+          if (/^((?!chrome|android).)*safari/i.test(userAgent)) {
+            ztGanttBarTask.classList.remove("hovered");
+          }
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
           tooltip.style.display = "none";
@@ -6046,7 +6074,6 @@
           let colorPicker = document.createElement("div");
           colorPicker.classList.add("zt-gantt-task-color-picker");
           let colorInput = document.createElement("input");
-          colorInput.id = `color-${taskData[k].id}`;
           colorInput.type = "color";
           colorInput.setAttribute(
             "value",
@@ -6078,6 +6105,10 @@
         if (taskData[k].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
+          
+          if (taskWidth === 0) {
+            ztGanttBarTask.classList.add("d-none");
+          }
 
           let hourWidth = this.getPxByTime(end_date, "width");
           let hourLeft = this.getPxByTime(start_date, "left");
@@ -7111,13 +7142,9 @@
 
       let linkType = link.type || 0;
 
-      if (
-        source == undefined ||
-        source == null ||
-        target == undefined ||
-        target == null ||
-        source == target
-      ) {
+      let createLink = this.isTaskExist(source, target);
+      
+      if (!createLink) {
         return;
       }
 
@@ -7430,10 +7457,12 @@
         taskLink.append(endLine);
       }
 
+      if(this.options.updateLinkOnDrag){
       // call updateLinkPosition function onTaskDrag
       this.attachEvent("onTaskDrag", (e) => {
         this.updateLinkPosition(source, target, taskLink, rowHeight, link);
       });
+    }
 
       // call updateLinkPosition function onAfterTaskDrag
       this.attachEvent("onAfterTaskDrag", (e) => {
@@ -8669,20 +8698,48 @@
     },
 
     toastr: function (title, message, type) {
-      let toastr = document.createElement("div");
-      toastr.classList.add("zt-gantt-toastr", type);
-      let titleDiv = document.createElement("p");
-      let messageDiv = document.createElement("p");
+      let toastrArea = document.querySelector(".zt-gantt-toastr-area");
+      if (!toastrArea) {
+        toastrArea = document.createElement("div");
+        toastrArea.classList.add("zt-gantt-toastr-area");
+        document.body.append(toastrArea);
+      }
+
+      const newToastr = document.createElement("div");
+      newToastr.classList.add("zt-gantt-toastr", type);
+
+      const titleDiv = document.createElement("p");
+      const messageDiv = document.createElement("p");
       titleDiv.innerHTML = title;
       messageDiv.innerHTML = message;
-      toastr.append(titleDiv, messageDiv);
-      toastr.classList.add("show", type);
-      document.body.append(toastr);
 
-      setTimeout(function () {
-        toastr.classList.remove("show");
-        toastr.remove();
-      }, 3000);
+      newToastr.append(titleDiv, messageDiv);
+      newToastr.classList.add("show", type);
+
+      toastrArea.append(newToastr);
+
+      const removeToastr = () => {
+        newToastr.classList.remove("show");
+        newToastr.classList.add("hide");
+        setTimeout(() => {
+          newToastr.remove();
+        }, 500);
+      };
+
+      let removeTimer = setTimeout(removeToastr, 3000);
+
+      newToastr.addEventListener("click", () => {
+        clearTimeout(removeTimer);
+        removeToastr();
+      });
+
+      newToastr.addEventListener("mouseenter", () => {
+        clearTimeout(removeTimer); // Clear the timeout when mouse enters
+      });
+
+      newToastr.addEventListener("mouseleave", () => {
+        removeTimer = setTimeout(removeToastr, 3000); // Start the timeout again when mouse leaves
+      });
     },
 
     getDateTimeComponents: function (dateTimeString) {
@@ -8810,6 +8867,12 @@
             e.target.value,
             "important"
           );
+
+          taskbarContent.style.setProperty(
+            "border-color",
+            e.target.value,
+            "important"
+          );
         } else {
           taskbar.style.setProperty(
             "background-color",
@@ -8847,6 +8910,12 @@
         if (task.type === "milestone") {
           taskbarContent.style.setProperty(
             "background-color",
+            e.target.value,
+            "important"
+          );
+
+          taskbarContent.style.setProperty(
+            "border-color",
             e.target.value,
             "important"
           );
@@ -8910,6 +8979,28 @@
       }
       if (tooltip) {
         tooltip.remove();
+      }
+    },
+
+    isTaskExist: function (source, target) {
+      let sourceStyle = source ? window.getComputedStyle(source) : null;
+      let targetStyle = target ? window.getComputedStyle(target) : null;
+
+      let isSourceHidden = sourceStyle ? sourceStyle.display === "none" : false;
+      let isTargetHidden = targetStyle ? targetStyle.display === "none" : false;
+
+      if (
+        source == undefined ||
+        source == null ||
+        target == undefined ||
+        target == null ||
+        source == target ||
+        isTargetHidden ||
+        isSourceHidden
+      ) {
+        return false;
+      } else {
+        return true;
       }
     },
   };

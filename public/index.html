@@ -325,12 +325,14 @@
       ZT_Gantt.options.weekends = ["Sat", "Sun"];
       ZT_Gantt.options.fullWeek = true;
       ZT_Gantt.options.todayMarker = true;
+      ZT_Gantt.options.updateLinkOnDrag = true;
       ZT_Gantt.options.addLinks = (task)=>{
         if(task.parent === 0){
           return false;
         }
         return true;
       };
+      
       ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
