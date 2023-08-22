@@ -59,6 +59,7 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
+        updateLinkOnDrag: opt.updateLinkOnDrag,
         links: opt.links || [],
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
@@ -7456,10 +7457,12 @@
         taskLink.append(endLine);
       }
 
+      if(this.options.updateLinkOnDrag){
       // call updateLinkPosition function onTaskDrag
       this.attachEvent("onTaskDrag", (e) => {
         this.updateLinkPosition(source, target, taskLink, rowHeight, link);
       });
+    }
 
       // call updateLinkPosition function onAfterTaskDrag
       this.attachEvent("onAfterTaskDrag", (e) => {
