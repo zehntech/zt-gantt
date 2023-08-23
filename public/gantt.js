@@ -3204,7 +3204,7 @@
         if (this.options.data[j].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
-          
+
           if (taskWidth === 0) {
             ztGanttBarTask.classList.add("d-none");
           }
@@ -4815,7 +4815,7 @@
 
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 20;
-      }else{
+      } else {
         elementWidth -= 2;
       }
 
@@ -6105,7 +6105,7 @@
         if (taskData[k].type !== "milestone") {
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
-          
+
           if (taskWidth === 0) {
             ztGanttBarTask.classList.add("d-none");
           }
@@ -6582,11 +6582,11 @@
         ".zt-gantt-hor-scroll-cell"
       );
 
-      // if(timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll){
+      // if (timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll) {
       //   this.hasScroll = true;
       //   this.updateBody();
       //   return;
-      // }else{
+      // } else {
       //   this.hasScroll = false;
       // }
 
@@ -7143,7 +7143,7 @@
       let linkType = link.type || 0;
 
       let createLink = this.isTaskExist(source, target);
-      
+
       if (!createLink) {
         return;
       }
@@ -7457,12 +7457,12 @@
         taskLink.append(endLine);
       }
 
-      if(this.options.updateLinkOnDrag){
-      // call updateLinkPosition function onTaskDrag
-      this.attachEvent("onTaskDrag", (e) => {
-        this.updateLinkPosition(source, target, taskLink, rowHeight, link);
-      });
-    }
+      if (this.options.updateLinkOnDrag) {
+        // call updateLinkPosition function onTaskDrag
+        this.attachEvent("onTaskDrag", (e) => {
+          this.updateLinkPosition(source, target, taskLink, rowHeight, link);
+        });
+      }
 
       // call updateLinkPosition function onAfterTaskDrag
       this.attachEvent("onAfterTaskDrag", (e) => {
@@ -8697,7 +8697,7 @@
       throw new Error(error);
     },
 
-    toastr: function (title, message, type) {
+    toastr: function (title = null, message, type) {
       let toastrArea = document.querySelector(".zt-gantt-toastr-area");
       if (!toastrArea) {
         toastrArea = document.createElement("div");
@@ -8706,21 +8706,23 @@
       }
 
       const newToastr = document.createElement("div");
-      newToastr.classList.add("zt-gantt-toastr", type);
-
+      newToastr.classList.add("zt-gantt-toastr", `zt-gantt-toastr-${type}`);
       const titleDiv = document.createElement("p");
       const messageDiv = document.createElement("p");
-      titleDiv.innerHTML = title;
       messageDiv.innerHTML = message;
+      if (title) {
+        titleDiv.innerHTML = title;
+        newToastr.append(titleDiv);
+      }
 
-      newToastr.append(titleDiv, messageDiv);
-      newToastr.classList.add("show", type);
+      newToastr.append(messageDiv);
+      newToastr.classList.add("zt-gantt-toastr-show");
 
       toastrArea.append(newToastr);
 
       const removeToastr = () => {
-        newToastr.classList.remove("show");
-        newToastr.classList.add("hide");
+        newToastr.classList.remove("zt-gantt-toastr-show");
+        newToastr.classList.add("zt-gantt-toastr-hide");
         setTimeout(() => {
           newToastr.remove();
         }, 500);
