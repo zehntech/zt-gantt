@@ -1,11 +1,11 @@
-# ztGantt Chart Library Documentation # 
+# ztGantt Chart Library Documentation  
   
 
-## Introduction  ##
+## Introduction  
 Welcome to the documentation for [ztGantt](https://zehntech.github.io/zt-gantt/) Chart Library. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management. This documentation will guide you through the installation process, usage instructions, and available features of the library.   
   
 
-## Table of Contents ##
+## Table of Contents 
 - [Installation](#installation)
 - [Getting Started](#getting-started) 
 - [Features](#features)   
@@ -13,7 +13,7 @@ Welcome to the documentation for [ztGantt](https://zehntech.github.io/zt-gantt/)
 ---  
   
 <a name="installation"></a>
-## Installation ##  
+## Installation   
   
 To integrate the Gantt Chart Library, adhere to the steps below:  
   
@@ -172,7 +172,7 @@ gantt.render();
   ---  
   
 <a name="features"></a>
-## 3. Features ##    
+## 3. Features     
 
   * **Task Linking:** Four types - finish-to-start, start-to-start, finish-to-finish, start-to-finish.      
 
@@ -215,4 +215,4 @@ gantt.render();
         
   [Try it Yourself:](https://stackblitz.com/edit/js-bdaa47?file=index.js): Dive into hands-on examples and truly understand the potential of the library.    
     
-    ---
+  ---
