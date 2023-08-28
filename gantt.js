@@ -5033,13 +5033,13 @@
     },
 
     // export Gantt as PNG
-    exportToPNG: function (name = "ztGantt", styleSheet) {
-      this.getFile(name, "png", styleSheet);
+    exportToPNG: async function (name = "ztGantt", styleSheet) {
+      await this.getFile(name, "png", styleSheet);
     },
 
     // export Gantt as PDF
-    exportToPDF: function (name = "ztGantt", styleSheet) {
-      this.getFile(name, "pdf", styleSheet);
+    exportToPDF: async function (name = "ztGantt", styleSheet) {
+      await this.getFile(name, "pdf", styleSheet);
     },
 
     //export Gantt as Excel
@@ -5113,7 +5113,7 @@
     },
 
     // function for calling api
-    getFile: function (filename = "ztGantt", type, styleSheet) {
+    getFile: async function (filename = "ztGantt", type, styleSheet) {
       const apiUrl = this.options.exportApi;
 
       if (!this.options.exportApi) {
@@ -5136,7 +5136,7 @@
         body: JSON.stringify(postData),
       };
       this.showLoader();
-      fetch(apiUrl, requestOptions)
+      await fetch(apiUrl, requestOptions)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
