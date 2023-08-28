@@ -985,7 +985,7 @@
   margin: 5px;
   font-size: 14px;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.9;
   transition: all 0.3s ease-in;
 }
 
@@ -1041,7 +1041,7 @@
   }
   to {
     margin-top: 5px;
-    opacity: 0.85;
+    opacity: 0.9;
   }
 }
 
@@ -1052,14 +1052,14 @@
   }
   to {
     margin-top: 5px;
-    opacity: 0.85;
+    opacity: 0.9;
   }
 }
 
 @-webkit-keyframes fadeout {
   from {
     margin-top: 5px;
-    opacity: 0.85;
+    opacity: 0.9;
   }
   to {
     margin-top: 0;
@@ -1070,7 +1070,7 @@
 @keyframes fadeout {
   from {
     margin-top: 5px;
-    opacity: 0.85;
+    opacity: 0.9;
   }
   to {
     margin-top: 0;

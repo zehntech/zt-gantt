@@ -5125,6 +5125,7 @@
         styles: styleSheet,
         content: this.element.outerHTML,
         fileType: type,
+        zoom: this.options.zoomLevel
       };
 
       const requestOptions = {
