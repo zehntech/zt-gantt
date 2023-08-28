@@ -23,7 +23,7 @@ To integrate the Gantt Chart Library, adhere to the steps below:
   4. You're now ready to start using the ztGantt Chart Library!    
 
 <a href="https://zehntech.github.io/zt-gantt/">
-  <img src="./images/zt-gantt-screenshot.png">
+  <img src="./public/images/zt-gantt-screenshot.png">
 </a>    
   
 ---  
@@ -167,7 +167,7 @@ gantt.render();
 
 [Live demo](https://zehntech.github.io/zt-gantt/)      
 
-**Complete Documentation:** [ztGantt Documentation](./Documentaion/Gantt-Chart-Documentation.pdf)  
+**Complete Documentation:** [ztGantt Documentation](./public/Documentaion/Gantt-Chart-Documentation.pdf)  
   
   ---  
   
@@ -177,7 +177,7 @@ gantt.render();
   * **Task Linking:** Four types - finish-to-start, start-to-start, finish-to-finish, start-to-finish.      
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/links.gif">
+    <img src="./public/images/links.gif">
   </a>  
 
   * **Drag and Drop:** Shift multiple tasks horizontally and vertically.    
@@ -187,7 +187,7 @@ gantt.render();
   * **Customization:** Modify the time scale, task edit form, and much more.    
     
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/popup.gif">
+    <img src="./public/images/popup.gif">
   </a>   
 
   * **Task Progress:** Update task progress via dragging or manually set the percentage.    
@@ -200,17 +200,17 @@ gantt.render();
   * **Aesthetics:** Customize the task colors via a color picker.   
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/taskColor.gif">
+    <img src="./public/images/taskColor.gif">
   </a>       
     
   * **Localization:** Multilingual support to cater to a global audience.   
   * **Themes:** Dark mode for those late-night work sessions.  
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/theme.gif">
+    <img src="./public/images/theme.gif">
   </a>  
   
-  You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf)   
+  You can see the full list of features in the [documentation](./public/Documentaion/Gantt-Chart-Documentation.pdf)   
     
         
   [Try it Yourself:](https://stackblitz.com/edit/js-bdaa47?file=index.js): Dive into hands-on examples and truly understand the potential of the library.    
