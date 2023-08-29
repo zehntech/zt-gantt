@@ -1965,7 +1965,7 @@
       }
 
       let mainContainer = document.createElement("div");
-      mainContainer.classList.add("zt-gantt-layout", "d-flex");
+      mainContainer.classList.add("zt-gantt-layout", "zt-gantt-d-flex");
       mainContainer.id = "zt-gantt-layout";
 
       this.createSidebar(options, mainContainer);
@@ -2161,7 +2161,7 @@
         let dataItem = document.createElement("div");
         dataItem.classList.add(
           "zt-gantt-row-item",
-          "d-flex",
+          "zt-gantt-d-flex",
           this.options.selectedRow === `${options.data[j].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-row-item"
@@ -2316,7 +2316,7 @@
           let content = document.createElement("div");
           content.classList.add(
             "zt-gantt-cell-data",
-            `${k == 0 ? "d-block" : "zt-gantt-data"}`
+            `${k == 0 ? "zt-gantt-d-block" : "zt-gantt-data"}`
           );
           cell.setAttribute("data-column-index", k);
 
@@ -2359,7 +2359,7 @@
           });
 
           if (options.columns[k].tree) {
-            cell.classList.add("d-flex");
+            cell.classList.add("zt-gantt-d-flex");
 
             // folder icon
             let folderIcon = document.createElement("div");
@@ -2417,8 +2417,8 @@
 
                 that.createTaskBars();
                 for (let i = 0; i < children.length; i++) {
-                  children[i].classList.toggle("d-none");
-                  children[i].classList.toggle("d-flex");
+                  children[i].classList.toggle("zt-gantt-d-none");
+                  children[i].classList.toggle("zt-gantt-d-flex");
                 }
 
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
@@ -2674,7 +2674,7 @@
               options.weekends.includes(weekday[date.getDay()])
                 ? "zt-gantt-weekend-cell"
                 : "zt-gantt-weekday-cell",
-              k == 0 ? "border-left-none" : "zt-gantt-task-cell"
+              k == 0 ? "zt-gantt-border-left-none" : "zt-gantt-task-cell"
             );
           }
 
@@ -3206,7 +3206,7 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           if (taskWidth === 0) {
-            ztGanttBarTask.classList.add("d-none");
+            ztGanttBarTask.classList.add("zt-gantt-d-none");
           }
 
           let hourWidth = this.getPxByTime(end_date, "width");
@@ -3915,9 +3915,9 @@
       }
 
       for (let row of childRows) {
-        if (row.classList.contains("d-none")) {
-          row.classList.add("d-flex");
-          row.classList.remove("d-none");
+        if (row.classList.contains("zt-gantt-d-none")) {
+          row.classList.add("zt-gantt-d-flex");
+          row.classList.remove("zt-gantt-d-none");
         }
       }
 
@@ -3944,8 +3944,8 @@
 
       // Hide all the child rows
       for (let row of childRows) {
-        row.classList.add("d-none");
-        row.classList.remove("d-flex");
+        row.classList.add("zt-gantt-d-none");
+        row.classList.remove("zt-gantt-d-flex");
       }
 
       // Again create all taskBars
@@ -5189,7 +5189,7 @@
             "zt-gantt-row-item",
             "zt-gantt-child-row",
             `zt-gantt-child-${taskData[l].parent}`,
-            !isOpened ? "d-none" : "d-flex",
+            !isOpened ? "zt-gantt-d-none" : "zt-gantt-d-flex",
             this.options.selectedRow === `${taskData[l].id}`
               ? "zt-gantt-selected"
               : "zt-gantt-row-item"
@@ -5392,7 +5392,7 @@
             content.classList.add(
               "zt-gantt-cell-data",
               "zt-gantt-child-cell",
-              `${k == 0 ? "d-block" : "zt-gantt-child-data"}`
+              `${k == 0 ? "zt-gantt-d-block" : "zt-gantt-child-data"}`
             );
             if (isRight) {
               cell.setAttribute("data-column-index", "r-" + k);
@@ -5448,7 +5448,7 @@
                 indent.classList.add("zt-gantt-indent");
                 cell.append(indent);
               }
-              cell.classList.add("d-flex");
+              cell.classList.add("zt-gantt-d-flex");
 
               if (taskData[l].children && taskData[l].children.length > 0) {
                 // tree icon
@@ -5506,8 +5506,8 @@
                     toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
                     toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
                     for (let i = 0; i < children.length; i++) {
-                      children[i].classList.toggle("d-none");
-                      children[i].classList.toggle("d-flex");
+                      children[i].classList.toggle("zt-gantt-d-none");
+                      children[i].classList.toggle("zt-gantt-d-flex");
                     }
                     let mainContainer =
                       document.querySelector("#zt-gantt-layout");
@@ -5562,7 +5562,7 @@
           "zt-gantt-task-row",
           "zt-gantt-child-row",
           `zt-gantt-child-${taskData[l].parent}`,
-          isCollapsed || !isOpened ? "d-none" : "zt-gantt-task-row",
+          isCollapsed || !isOpened ? "zt-gantt-d-none" : "zt-gantt-task-row",
           options.selectedRow === `${taskData[l].id}`
             ? "zt-gantt-selected"
             : "zt-gantt-task-row"
@@ -5612,7 +5612,7 @@
             const isFirstCell = k === 0;
             scaleCell.classList.add(
               isWeekend ? "zt-gantt-weekend-cell" : "zt-gantt-weekday-cell",
-              isFirstCell ? "border-left-none" : "zt-gantt-task-cell"
+              isFirstCell ? "zt-gantt-border-left-none" : "zt-gantt-task-cell"
             );
           }
 
@@ -6108,7 +6108,7 @@
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
           if (taskWidth === 0) {
-            ztGanttBarTask.classList.add("d-none");
+            ztGanttBarTask.classList.add("zt-gantt-d-none");
           }
 
           let hourWidth = this.getPxByTime(end_date, "width");
@@ -6203,10 +6203,10 @@
 
       Array.from(children).forEach((child) => {
         if (type === "collapse") {
-          child.classList.add("d-none");
+          child.classList.add("zt-gantt-d-none");
         } else {
           if (this.options.openedTasks.includes(parentId)) {
-            child.classList.remove("d-none");
+            child.classList.remove("zt-gantt-d-none");
           }
         }
       });
@@ -6308,7 +6308,7 @@
       // loop through all the data
       for (let j = 0; j < options.data.length; j++) {
         let dataItem = document.createElement("div");
-        dataItem.classList.add("zt-gantt-row-item", "d-flex");
+        dataItem.classList.add("zt-gantt-row-item", "zt-gantt-d-flex");
 
         //add custom classes from user
         if (typeof this.templates.grid_row_class === "function") {
@@ -6432,7 +6432,7 @@
           let content = document.createElement("div");
           content.classList.add(
             "zt-gantt-cell-data",
-            `${k == 0 ? "d-block" : "zt-gantt-data"}`
+            `${k == 0 ? "zt-gantt-d-block" : "zt-gantt-data"}`
           );
           cell.setAttribute("data-column-index", `r-${k}`);
 
@@ -6446,7 +6446,7 @@
             " ";
 
           if (options.columns[k].tree) {
-            cell.classList.add("d-flex");
+            cell.classList.add("zt-gantt-d-flex");
 
             // folder icon
             let folderIcon = document.createElement("div");
@@ -6509,8 +6509,8 @@
                   that.createTaskBars();
 
                   for (let i = 0; i < children.length; i++) {
-                    children[i].classList.toggle("d-none");
-                    children[i].classList.toggle("d-flex");
+                    children[i].classList.toggle("zt-gantt-d-none");
+                    children[i].classList.toggle("zt-gantt-d-flex");
                   }
 
                   toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
@@ -7077,8 +7077,8 @@
       this.createTaskBars();
 
       children.forEach((child) => {
-        child.classList.remove("d-none");
-        child.classList.add("d-flex");
+        child.classList.remove("zt-gantt-d-none");
+        child.classList.add("zt-gantt-d-flex");
       });
 
       if (toggleTreeIcon) {

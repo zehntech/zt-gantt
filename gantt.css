@@ -95,43 +95,20 @@
   user-select: none;
 }
 
-.w-100 {
-  width: 100% !important;
-}
-
-.d-flex {
+.zt-gantt-d-flex {
   display: flex !important;
 }
 
-.p-0 {
-  padding: 0 !important;
-}
-
-.mr5 {
-  margin-right: 5px !important;
-}
-
-.c-pointer {
-  cursor: pointer !important;
-}
-
-.d-none {
+.zt-gantt-d-none {
   display: none !important;
 }
 
-.d-block {
+.zt-gantt-d-block {
   display: block !important;
 }
 
-.border-left-none {
+.zt-gantt-border-left-none {
   border-left: none !important;
-}
-
-.user-select-none {
-  -webkit-user-select: none !important; /* Safari */
-  -moz-user-select: none !important; /* Firefox */
-  -ms-user-select: none !important; /* Internet Explorer */
-  user-select: none !important;
 }
 
 .zt-gantt-layout {
@@ -897,6 +874,7 @@
   height: 100%;
   line-height: inherit;
   overflow: hidden;
+  border-radius: 3px;
 }
 
 .zt-gantt-task-progress {

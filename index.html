@@ -15,7 +15,7 @@
     <script src="./gantt.js"></script>
   </head>
   <body>
-    <div class="d-flex action-container">
+    <div class="zt-gantt-d-flex action-container">
       <div class="collapse-container">
         <span>Collapse</span>
         <input
@@ -333,8 +333,8 @@
         return true;
       };
       
-      // ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
-      ZT_Gantt.options.exportApi = "http://localhost:8300/";
+      ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
+      // ZT_Gantt.options.exportApi = "http://localhost:8300/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -737,7 +737,7 @@
       }
 
       function exportChange(e) {
-        let stylesheet = ['https://zehntech.github.io/zt-gantt/gantt.css','https://zehntech.github.io/zt-gantt/style.css']
+        let stylesheet = ['http://127.0.0.1:5500/gantt.css','http://127.0.0.1:5500/style.css']
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart", stylesheet);
         } else if (e.target.value === "pdf") {
