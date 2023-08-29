@@ -737,7 +737,7 @@
       }
 
       function exportChange(e) {
-        let stylesheet = ['http://127.0.0.1:5500/gantt.css','http://127.0.0.1:5500/style.css']
+        let stylesheet = ['https://zehntech.github.io/zt-gantt/gantt.css','https://zehntech.github.io/zt-gantt/style.css']
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart", stylesheet);
         } else if (e.target.value === "pdf") {
