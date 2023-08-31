@@ -2581,6 +2581,7 @@
             let dateStartHour = new Date(dates[j]).getHours();
             let cellDate = new Date(dates[j]);
             let cellWidth = this.calculateGridWidth(dates[j]);
+            const fragment = document.createDocumentFragment();
             for (let k = dateStartHour; k < 24; k++) {
               let hourCell = dateCell.cloneNode(true);
 
@@ -2593,9 +2594,11 @@
               cellDate.setHours(k + 1);
               hourCell.style.width = cellWidth + "px";
               hourCell.style.left = rangeCount + "px";
-              ZTGanttScale.append(hourCell);
+              // ZTGanttScale.append(hourCell);
+              fragment.appendChild(hourCell);
               rangeCount += cellWidth;
             }
+            ZTGanttScale.append(fragment);
           } else if (
             options.scales[i].unit == "day" &&
             options.scales[i].step == 1
@@ -2725,13 +2728,16 @@
           let currentDate = new Date(date).setHours(0);
           if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
+            const fragment = document.createDocumentFragment();
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
               hourCell.style.left = rangeCount + "px";
               hourCell.style.width = cellWidth + "px";
               rangeCount += cellWidth;
-              scaleRow.append(hourCell);
+              // scaleRow.append(hourCell);
+              fragment.appendChild(hourCell);
             }
+            scaleRow.append(fragment);
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -3205,7 +3211,7 @@
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
-          if (taskWidth === 0) {
+          if (taskWidth === 0 || !taskWidth) {
             ztGanttBarTask.classList.add("zt-gantt-d-none");
           }
 
@@ -4131,6 +4137,9 @@
                 "px";
             }
           }
+          if (task.type === "milestone") {
+            task.end_date = new Date(task.start_date).setHours(23, 59, 59);
+          }
 
           that.updateTask(
             task,
@@ -4420,6 +4429,9 @@
           );
         }
 
+        if (task.type === "milestone") {
+          taskEndDate = new Date(taskStartDate).setHours(23, 59, 59);
+        }
         that.updateTask(
           task,
           new Date(taskStartDate),
@@ -4460,11 +4472,10 @@
       let endDateTime = this.getTimeByPx(endTimePixel, end);
       taskCurrentEnd = new Date(taskCurrentEnd);
       taskCurrentEnd.setHours(endDateTime.hours, endDateTime.minutes);
-
       // update the task content innerHTML
       if (task.type === "milestone") {
         target.querySelector(".zt-gantt-side-content").innerHTML =
-          this.templates.taskbar_text(taskCurrentStart, taskCurrentEnd, task);
+          this.templates.taskbar_text(start, end, task);
       } else {
         target.querySelector(".zt-gantt-bar-task-content").innerHTML =
           this.templates.taskbar_text(taskCurrentStart, taskCurrentEnd, task);
@@ -4507,11 +4518,11 @@
         let taskEndTime = this.getTimeByPx(extraEndPX, new Date(end));
         end = new Date(new Date(end).setHours(taskEndTime.hours - 1));
       }
+
       this.updateTaskDate(task, start, end);
       this.updateTaskDuration();
       let start_date;
       let end_date;
-      let hasProperty = false;
       if (target.classList.contains("zt-gantt-bar-parent-task")) {
         return;
       }
@@ -4530,13 +4541,11 @@
             currentLevel[allParents[i]].hasOwnProperty("start_date") &&
             currentLevel[allParents[i]].hasOwnProperty("end_date")
           ) {
-            hasProperty = true;
             start_date = currentLevel[allParents[i]].start_date;
+
             end_date =
               currentLevel[allParents[i]].end_date ||
               currentLevel[allParents[i]].start_date;
-          } else {
-            hasProperty = false;
           }
 
           currentTask = currentLevel[allParents[i]];
@@ -4550,11 +4559,29 @@
           }`;
 
           if (currentLevel) {
+            start_date = new Date(
+              that.dates[
+                Math.floor(
+                  currentParent.offsetLeft /
+                    that.calculateGridWidth(taskCurrentStart, "day")
+                )
+              ]
+            );
+
+            end_date = new Date(
+              that.dates[
+                Math.floor(
+                  currentParent.offsetLeft +
+                    currentParent.offsetWidth /
+                      that.calculateGridWidth(taskCurrentEnd, "day")
+                )
+              ]
+            );
+
             let cellStartDate = that.options.startDate;
             let isCellGreater = true;
             let cellBefore = that.getDates(cellStartDate, new Date(start_date));
             let taskDates = that.getDates(start_date, new Date(end_date));
-
             if (cellBefore.length === 0) {
               cellBefore = that.getDates(start_date, cellStartDate);
               isCellGreater = false;
@@ -4576,12 +4603,34 @@
             if (isCellGreater) {
               cellBefore = cellBefore.length - 1;
             } else {
-              cellBefore = -(cellBefore.length - 1);
+              cellBefore = 0;
             }
 
             if (currentParent) {
               // update parent inner html
               if (currentTask.type === "milestone") {
+                if (currentParent.offsetLeft < 0) {
+                  let beforeDay = Math.floor(
+                    currentParent.offsetLeft /
+                      that.calculateGridWidth(taskCurrentStart, "day")
+                  );
+                  start_date = that.add(
+                    new Date(that.options.startDate),
+                    beforeDay,
+                    "day"
+                  );
+                } else {
+                  start_date = new Date(
+                    that.dates[
+                      Math.floor(
+                        currentParent.offsetLeft /
+                          that.calculateGridWidth(taskCurrentStart, "day")
+                      )
+                    ]
+                  );
+                }
+
+                end_date = new Date(new Date(start_date).setHours(23, 59, 59));
                 currentParent.querySelector(
                   ".zt-gantt-side-content"
                 ).innerHTML = that.templates.taskbar_text(
@@ -4590,14 +4639,6 @@
                   currentTask
                 );
               } else {
-                currentParent.querySelector(
-                  ".zt-gantt-bar-task-content"
-                ).innerHTML = that.templates.taskbar_text(
-                  start_date,
-                  end_date,
-                  currentTask
-                );
-
                 // find All childs of current parent
                 let allChildsLeft = [];
                 let allChildsLeftAndWidth = [];
@@ -4647,7 +4688,69 @@
                   parentLeft = Math.round(parentLeft / gridWidth) * gridWidth;
                   parentWidth = Math.round(parentWidth / gridWidth) * gridWidth;
                 }
+                if (!isCellGreater) {
+                  let beforeDay = Math.floor(
+                    parentLeft /
+                      that.calculateGridWidth(taskCurrentStart, "day")
+                  );
+                  start_date = that.add(
+                    new Date(that.options.startDate),
+                    beforeDay,
+                    "day"
+                  );
+                } else {
+                  start_date = new Date(
+                    that.dates[
+                      Math.floor(
+                        parentLeft /
+                          that.calculateGridWidth(taskCurrentStart, "day")
+                      )
+                    ]
+                  );
+                }
 
+                let afterDay = Math.floor(
+                  (parentLeft + parentWidth) /
+                    that.calculateGridWidth(taskCurrentEnd, "day")
+                );
+
+                if (afterDay > that.dates.length) {
+                  end_date = that.add(
+                    new Date(that.options.endDate),
+                    afterDay - that.dates.length,
+                    "day"
+                  );
+                } else {
+                  let dateIndex = Math.floor(
+                    (parentLeft + parentWidth) /
+                      that.calculateGridWidth(taskCurrentEnd, "day")
+                  );
+
+                  end_date = new Date(that.dates[dateIndex - 1]);
+                }
+
+                currentParent.querySelector(
+                  ".zt-gantt-bar-task-content"
+                ).innerHTML = that.templates.taskbar_text(
+                  start_date,
+                  end_date,
+                  currentTask
+                );
+                if (
+                  parentWidth <
+                    that.calculateGridWidth(taskCurrentEnd, "day") &&
+                  task.type === "milestone"
+                ) {
+                  parentLeft =
+                    that.posFromDate(
+                      eventType === "mouseup" ? start : taskCurrentStart
+                    ) -
+                    (eventType !== "mouseup"
+                      ? that.calculateGridWidth(taskCurrentEnd, "day") -
+                        target.offsetWidth
+                      : 0);
+                  parentWidth = that.calculateGridWidth(taskCurrentEnd, "day");
+                }
                 currentParent.style.left = `${parentLeft}px`;
                 currentParent.style.width = `${parentWidth}px`;
               }
@@ -4814,9 +4917,9 @@
       }
 
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
-        elementWidth -= 20;
+        elementWidth -= 22;
       } else {
-        elementWidth -= 2;
+        elementWidth -= sidebar?.offsetHeight ? 2 : 0;
       }
 
       let minWidth = this.options.minColWidth;
@@ -5125,7 +5228,7 @@
         styles: styleSheet,
         content: this.element.outerHTML,
         fileType: type,
-        zoom: this.options.zoomLevel
+        zoom: this.options.zoomLevel,
       };
 
       const requestOptions = {
@@ -5657,13 +5760,16 @@
           let currentDate = new Date(date).setHours(0);
           if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
+            let fragment = document.createDocumentFragment();
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
               hourCell.style.left = rangeCount + "px";
               hourCell.style.width = cellWidth + "px";
               rangeCount += cellWidth;
-              scaleRow.append(hourCell);
+              // scaleRow.append(hourCell);
+              fragment.appendChild(hourCell);
             }
+            scaleRow.append(fragment);
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -6107,7 +6213,7 @@
           let taskWidth =
             taskDates.length * this.calculateGridWidth(end_date, "day");
 
-          if (taskWidth === 0) {
+          if (taskWidth === 0 || !taskWidth) {
             ztGanttBarTask.classList.add("zt-gantt-d-none");
           }
 
@@ -8144,22 +8250,7 @@
       }
 
       if (type !== "initial") {
-        // this.dates = this.getDates(this.options.startDate, this.options.endDate);
-        // this.updateBody();
         this.render();
-
-        sidebarDataHead = document.querySelector(
-          ".sidebar-head-cell-container"
-        );
-
-        let containerHeight = this.calculateScaleHeight(
-          this.options.scales,
-          this.options.scale_height,
-          "header",
-          0
-        );
-        sidebarDataHead.style.height = containerHeight;
-        sidebarDataHead.style.lineHeight = containerHeight;
       }
     },
 
