@@ -59,7 +59,7 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag: opt.updateLinkOnDrag,
+        updateLinkOnDrag: opt.updateLinkOnDrag || true,
         links: opt.links || [],
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
@@ -3233,8 +3233,8 @@
           ztGanttBarTask.append(sideContent);
         } else {
           ztGanttBarTaskContent.innerHTML = this.templates.taskbar_text(
-            start_date.setHours(0),
-            end_date.setHours(0),
+            new Date(start_date.setHours(0)),
+            new Date(end_date.setHours(0)),
             this.options.data[j]
           );
         }
@@ -4559,29 +4559,29 @@
           }`;
 
           if (currentLevel) {
-            start_date = new Date(
-              that.dates[
-                Math.floor(
-                  currentParent.offsetLeft /
-                    that.calculateGridWidth(taskCurrentStart, "day")
-                )
-              ]
+            let currentTaskDates = that.getStartAndEndDate(
+              currentTask.children
             );
 
-            end_date = new Date(
-              that.dates[
-                Math.floor(
-                  currentParent.offsetLeft +
-                    currentParent.offsetWidth /
-                      that.calculateGridWidth(taskCurrentEnd, "day")
-                )
-              ]
-            );
+            start_date = start_date
+              ? currentTaskDates.startDate.getTime() <
+                new Date(start_date).getTime()
+                ? currentTaskDates.startDate
+                : start_date
+              : currentTaskDates.startDate;
+
+            end_date = end_date
+              ? currentTaskDates.startDate.getTime() >
+                new Date(end_date).getTime()
+                ? currentTaskDates.endDate
+                : end_date
+              : currentTaskDates.endDate;
 
             let cellStartDate = that.options.startDate;
             let isCellGreater = true;
             let cellBefore = that.getDates(cellStartDate, new Date(start_date));
             let taskDates = that.getDates(start_date, new Date(end_date));
+
             if (cellBefore.length === 0) {
               cellBefore = that.getDates(start_date, cellStartDate);
               isCellGreater = false;
@@ -4603,7 +4603,7 @@
             if (isCellGreater) {
               cellBefore = cellBefore.length - 1;
             } else {
-              cellBefore = 0;
+              cellBefore = -(cellBefore.length - 1);
             }
 
             if (currentParent) {
@@ -4661,18 +4661,66 @@
                   }
                 });
 
+                // if parent has startdate and end date
                 if (
-                  currentTask.hasOwnProperty("start_date") &&
+                  currentTask.hasOwnProperty("start_date") ||
                   currentTask.hasOwnProperty("end_date")
                 ) {
-                  allChildsLeft.push(
-                    cellBefore * that.calculateGridWidth(start_date, "day")
+                  let cellStartDate = that.options.startDate;
+                  let isCellGreater = true;
+                  let cellBefore = that.getDates(
+                    cellStartDate,
+                    new Date(currentTask.start_date)
                   );
-                  allChildsLeftAndWidth.push(
-                    cellBefore * that.calculateGridWidth(start_date, "day") +
-                      taskDates.length *
-                        that.calculateGridWidth(start_date, "day")
+                  let taskDates = that.getDates(
+                    currentTask.start_date,
+                    new Date(currentTask.end_date)
                   );
+
+                  if (cellBefore.length === 0) {
+                    cellBefore = that.getDates(
+                      currentTask.start_date,
+                      cellStartDate
+                    );
+                    isCellGreater = false;
+                  }
+
+                  if (!that.options.fullWeek) {
+                    cellBefore = cellBefore.filter((date) => {
+                      return !that.options.weekends.includes(
+                        that.options.dateFormat.day_short[
+                          new Date(date).getDay()
+                        ]
+                      );
+                    });
+                    taskDates = taskDates.filter((date) => {
+                      return !that.options.weekends.includes(
+                        that.options.dateFormat.day_short[
+                          new Date(date).getDay()
+                        ]
+                      );
+                    });
+                  }
+
+                  if (isCellGreater) {
+                    cellBefore = cellBefore.length - 1;
+                  } else {
+                    cellBefore = -(cellBefore.length - 1);
+                  }
+
+                  if (currentTask.start_date) {
+                    allChildsLeft.push(
+                      cellBefore * that.calculateGridWidth(start_date, "day")
+                    );
+                  }
+
+                  if (currentTask.end_date) {
+                    allChildsLeftAndWidth.push(
+                      cellBefore * that.calculateGridWidth(start_date, "day") +
+                        taskDates.length *
+                          that.calculateGridWidth(start_date, "day")
+                    );
+                  }
                 }
 
                 let parentLeft = Math.min(...allChildsLeft);
@@ -4736,6 +4784,7 @@
                   end_date,
                   currentTask
                 );
+
                 if (
                   parentWidth <
                     that.calculateGridWidth(taskCurrentEnd, "day") &&
@@ -4751,6 +4800,7 @@
                       : 0);
                   parentWidth = that.calculateGridWidth(taskCurrentEnd, "day");
                 }
+
                 currentParent.style.left = `${parentLeft}px`;
                 currentParent.style.width = `${parentWidth}px`;
               }
