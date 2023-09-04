@@ -8610,9 +8610,14 @@
           startProgressWidth +
           (e.clientX - startX) +
           timeLineContainer.scrollLeft;
-        if (progressWidth > taskBar.offsetWidth || progressWidth < 0) {
-          return;
-        }
+
+        progressWidth =
+          progressWidth > taskBar.offsetWidth
+            ? taskBar.offsetWidth
+            : progressWidth < 0
+            ? 0
+            : progressWidth;
+
         progress.style.width = `${progressWidth}px`;
         resizer.style.left = `${progressWidth}px`;
 

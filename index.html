@@ -508,7 +508,6 @@
       };
 
       ZT_Gantt.templates.taskbar_text = function (start, end, task) {
-        console.log(start, end , task);
         if (task.parent == 0 && task.type !== "milestone") {
           return `Project : ${task.text}`;
         } else if (task.type === "milestone") {
