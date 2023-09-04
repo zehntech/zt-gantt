@@ -158,7 +158,7 @@
         {
           id: 3,
           text: "Task #3",
-          start_date: "06-06-2023",
+          start_date: "06-03-2023",
           end_date: "06-07-2023",
           parent: 1,
           progress: 60,
@@ -508,7 +508,7 @@
       };
 
       ZT_Gantt.templates.taskbar_text = function (start, end, task) {
-        if (task.parent == 0) {
+        if (task.parent == 0 && task.type !== "milestone") {
           return `Project : ${task.text}`;
         } else if (task.type === "milestone") {
           return task.text;
