@@ -3670,8 +3670,9 @@
         }
 
         daysDiff = daysDiff.length - 1 || 0;
-        todayFlag.style.left =
-          this.calculateGridWidth(new Date(), "day") * daysDiff + 1 + "px";
+
+        let colWidth = this.calculateGridWidth(new Date(), "day");
+        todayFlag.style.left = (colWidth * daysDiff + (colWidth/2)) + "px";
 
         if (calendarContainer) {
           calendarContainer.append(todayFlag);
@@ -6337,12 +6338,16 @@
     },
 
     setAllExpand: function (data, openedTasks) {
-      data.forEach((item) => {
-        openedTasks.push(item.id);
-        if (item.children && item.children.length > 0) {
-          openedTasks = this.setAllExpand(item.children, openedTasks);
+      function expandTasksRecursive(tasks) {
+        for (const item of tasks) {
+          openedTasks.push(item.id);
+          if (item.children && item.children.length > 0) {
+            expandTasksRecursive(item.children);
+          }
         }
-      });
+      }
+
+      expandTasksRecursive(data);
       return openedTasks;
     },
 
@@ -6739,14 +6744,6 @@
         ".zt-gantt-hor-scroll-cell"
       );
 
-      // if (timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll) {
-      //   this.hasScroll = true;
-      //   this.updateBody();
-      //   return;
-      // } else {
-      //   this.hasScroll = false;
-      // }
-
       // Create vertical custom scroll
       const verticalScrollContainer = createCustomScrollContainer(
         "zt-gantt-ver-scroll-cell"
@@ -7010,8 +7007,7 @@
         return null;
       }
 
-      const task = findObjectById(data, id);
-      return task;
+      return findObjectById(data, id);
     },
 
     filterTask: function (condition, isFilter) {
@@ -7101,8 +7097,9 @@
         daysDiff = daysDiff.length - 1 || 0;
       }
 
-      flag.style.left =
-        this.calculateGridWidth(data.start_date, "day") * daysDiff + 1 + "px";
+      let colWidth = this.calculateGridWidth(data.start_date, "day");
+
+      flag.style.left = (colWidth * daysDiff + (colWidth/2)) + "px";
 
       if (calendarContainer) {
         markerArea.append(flag);
