@@ -7170,7 +7170,8 @@
           name === "onBeforeTaskDrag" ||
           name === "onBeforeTaskDrop" ||
           name === "onBeforeProgressDrag" ||
-          name === "onBeforeLinkAdd"
+          name === "onBeforeLinkAdd" || 
+          name === "onBeforeTaskDblClick"
         ) {
           that.eventValue = callback(e.detail);
           that.eventValue = that.eventValue !== false;
