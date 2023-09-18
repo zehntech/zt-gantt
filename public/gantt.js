@@ -8283,6 +8283,8 @@
           (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft);
         var deltaY = mouseY - (startY - rightPanelScroll.scrollTop);
 
+        // Calculate the angle in radians
+        var radians = Math.atan2(deltaY, deltaX);
         linkDirection.style.transform = `rotate(${radians}rad)`;
         if (e.target.classList.contains("zt-gantt-link-point")) {
           targetId = e.target.parentElement.parentElement.getAttribute(
