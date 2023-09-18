@@ -2200,6 +2200,21 @@
           if (e.target.classList.contains("zt-gantt-tree-icon")) {
             return;
           }
+
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+              detail: {
+                  task: taskData[k]
+              },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+              return;
+          }
+
           that.createLightbox(that.options.data[j]);
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
@@ -2998,6 +3013,20 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+              detail: {
+                  task: that.options.data[j],
+              },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+              return;
+          }
+
           that.createLightbox(that.options.data[j]);
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
@@ -3671,7 +3700,7 @@
 
         daysDiff = daysDiff.length - 1 || 0;
         todayFlag.style.left =
-          this.calculateGridWidth(new Date(), "day") * daysDiff + 1 + "px";
+        this.calculateGridWidth(new Date(), "day") * daysDiff + 1 + "px";
 
         if (calendarContainer) {
           calendarContainer.append(todayFlag);
@@ -5402,6 +5431,20 @@
             if (e.target.classList.contains("zt-gantt-tree-icon")) {
               return;
             }
+
+            // custom event handler
+            const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+                detail: {
+                    task: taskData[l]
+                },
+            });
+            that.element.dispatchEvent(onBeforeTaskDblClick);
+
+            // if onBeforeTaskDblClick return false then do not drag the task
+            if (that.eventValue === false) {
+                return;
+            }
+
             that.createLightbox(taskData[l]);
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
@@ -6037,6 +6080,20 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+              detail: {
+                  task: taskData[k]
+              },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+              return;
+          }
+
           that.createLightbox(taskData[k]);
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
@@ -6738,14 +6795,6 @@
       const isHorScrollExist = document.querySelectorAll(
         ".zt-gantt-hor-scroll-cell"
       );
-
-      // if (timeline.scrollHeight > timeline.offsetHeight && !this.hasScroll) {
-      //   this.hasScroll = true;
-      //   this.updateBody();
-      //   return;
-      // } else {
-      //   this.hasScroll = false;
-      // }
 
       // Create vertical custom scroll
       const verticalScrollContainer = createCustomScrollContainer(
@@ -8006,6 +8055,8 @@
       let strech = false,
         startX,
         startY,
+        boundedStartX,
+        boundedStartY,
         targetId,
         targetType,
         that = this,
@@ -8233,8 +8284,6 @@
           (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft);
         var deltaY = mouseY - (startY - rightPanelScroll.scrollTop);
 
-        // Calculate the angle in radians
-        var radians = Math.atan2(deltaY, deltaX);
         linkDirection.style.transform = `rotate(${radians}rad)`;
         if (e.target.classList.contains("zt-gantt-link-point")) {
           targetId = e.target.parentElement.parentElement.getAttribute(
