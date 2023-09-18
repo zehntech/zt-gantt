@@ -8056,8 +8056,6 @@
       let strech = false,
         startX,
         startY,
-        boundedStartX,
-        boundedStartY,
         targetId,
         targetType,
         that = this,
