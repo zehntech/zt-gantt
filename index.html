@@ -6,6 +6,7 @@
     <title>ztGantt</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./gantt.css" />
+    <link rel="stylesheet" href="../zt-tour/zt-tour.css" />
     <!-- <link rel="stylesheet" href="./theme/dark.css" /> -->
     <link
       rel="shortcut icon"
@@ -13,9 +14,10 @@
       type="image/x-icon"
     />
     <script src="./gantt.js"></script>
+    <script src="../zt-tour/zt-tour.js"></script>
   </head>
   <body>
-    <div class="zt-gantt-d-flex action-container">
+    <div class="zt-gantt-d-flex action-container"> 
       <div class="collapse-container">
         <span>Collapse</span>
         <input
@@ -122,6 +124,11 @@
         class="toggle--checkbox"
       />
       <label for="toggle" class="toggle-theme"> </label>
+      <div class="fullscreen">
+        <button class="btn" style="margin-left: 10px" onclick="startTour()">
+          Start Tour
+        </button>
+      </div>
       <!-- <button onclick="ZT_Gantt.destroy()">destroy</button>
       <button onclick="ZT_Gantt.render()">render</button> -->
       <!-- <button onclick="addCol()">Add Column</button>
@@ -136,6 +143,7 @@
       />
     </div>
     <div id="ZT-Gantt"></div>
+  </div>
     <script>
       let data = [
         { id: 1, text: "Project 1", parent: 0, progress: 30 },
@@ -341,13 +349,15 @@
       ZT_Gantt.options.fullWeek = true;
       ZT_Gantt.options.todayMarker = true;
       ZT_Gantt.options.updateLinkOnDrag = true;
-      ZT_Gantt.options.addLinks = (task)=>{
-        if(task.parent === 0){
+      ZT_Gantt.options.splitTask = false;
+      ZT_Gantt.templates.showLightBox = false;
+      ZT_Gantt.options.addLinks = (task) => {
+        if (task.parent === 0) {
           return false;
         }
         return true;
       };
-      
+
       ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
       // ZT_Gantt.options.exportApi = "http://localhost:8300/";
       ZT_Gantt.options.taskColor = true;
@@ -659,7 +669,8 @@
         // console.log("onTaskDrag: ", event);
       });
       ZT_Gantt.attachEvent("onAfterTaskDrag", (event) => {
-        // console.log("onAfterTaskDrag: ", event);
+        console.log("onAfterTaskDrag: ", event);
+        console.log("onAfterTaskDrag: ", ZT_Gantt.options.data);
       });
       ZT_Gantt.attachEvent("onBeforeTaskDrop", (event) => {
         // console.log("onBeforeTaskDrop: ", event);
@@ -752,7 +763,10 @@
       }
 
       function exportChange(e) {
-        let stylesheet = ['https://zehntech.github.io/zt-gantt/gantt.css','https://zehntech.github.io/zt-gantt/style.css']
+        let stylesheet = [
+          "https://zehntech.github.io/zt-gantt/gantt.css",
+          "https://zehntech.github.io/zt-gantt/style.css",
+        ];
         if (e.target.value === "png") {
           ZT_Gantt.exportToPNG("ztGanttChart", stylesheet);
         } else if (e.target.value === "pdf") {
@@ -869,6 +883,85 @@
         ZT_Gantt.render();
       }
 
+      function startTour() {
+        let options = {
+          overlayOpacity: 0.7,
+          stagePadding: 10,
+          stageRadius: 5,
+          overlayColor: "#000",
+          animate: true,
+          smoothScroll: true,
+          allowBackdropClose: true,
+          popupClass: "popupClass",
+          keyboardControl: true,
+          showProgress: true,
+          visibleButtons: ['next', 'previous', 'close'],
+          disableButtons: [],
+          animationDuration: 400,
+          onNextClick: (step)=>{
+            console.log(step, " Next Click");
+          },
+          onClose: ()=>{
+            console.log("Tour Closed");
+          },
+          onPreviousClick: (step)=>{
+            console.log(step, " Previous Click");
+          },
+          steps: [
+            {
+              element: ".collapse-container",
+              popup: {
+                title: "Toggle Collapse",
+                description: "Toggle all the tree!!",
+                side: "bottom",
+                align: "start",
+              },
+            },
+            {
+              element: ".export-data",
+              popup: {
+                title: "Export Chart",
+                description: "Export the gantt chart in pdf, png and excel.",
+                side: "bottom",
+                align: "center",
+              },
+            },
+            {
+              element: ".fullscreen",
+              popup: {
+                title: "Fullscreen",
+                description: "View the gantt chart in fullscreen mode.",
+                side: "bottom",
+                align: "end",
+              },
+            },
+            {
+              element: "#ZT-Gantt",
+              popup: {
+                title: "ztGantt Chart",
+                description: "Gantt Chart",
+                side: "top",
+                align: "start",
+              },
+            },
+            {
+              popup: {
+                title: "That's everything",
+                description: `<div class="finish">
+                  <p>Looks like you're ready to go 🎉</p>
+                  <p>Click anywhere to exit the tour.</p>
+                  <img src="https://media.tenor.com/y2JXkY1pXkwAAAAM/cat-computer.gif">
+                  </div>`,
+                side: "over",
+                align: "over",
+              },
+            },
+          ],
+        };
+        let tour = new ztTour(options);
+        // console.log(ztTour,"ztTour");
+        tour.start();
+      }
     </script>
   </body>
 </html>

@@ -177,3 +177,7 @@ input[type="checkbox"] {
   background-color: var(--bg-color);
   color: var(--text-color);
 }
+
+.finish p:not(:first-child){
+  opacity: 0.5;
+}
