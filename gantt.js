@@ -2215,6 +2215,21 @@
           if (e.target.classList.contains("zt-gantt-tree-icon")) {
             return;
           }
+
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+            detail: {
+              task: taskData[k],
+            },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+            that.eventValue = true;
+            return;
+          }
+
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
               task: that.options.data[j],
@@ -3026,6 +3041,20 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+            detail: {
+              task: that.options.data[j],
+            },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+            that.eventValue = true;
+            return;
+          }
+
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
               task: that.options.data[j],
@@ -5442,6 +5471,23 @@
               return;
             }
 
+            // custom event handler
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
+                detail: {
+                  task: taskData[l],
+                },
+              }
+            );
+            that.element.dispatchEvent(onBeforeTaskDblClick);
+
+            // if onBeforeTaskDblClick return false then do not drag the task
+            if (that.eventValue === false) {
+              that.eventValue = true;
+              return;
+            }
+
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: taskData[l],
@@ -6080,6 +6126,20 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
+          // custom event handler
+          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+            detail: {
+              task: taskData[k],
+            },
+          });
+          that.element.dispatchEvent(onBeforeTaskDblClick);
+
+          // if onBeforeTaskDblClick return false then do not drag the task
+          if (that.eventValue === false) {
+            that.eventValue = true;
+            return;
+          }
+
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
               task: taskData[k],
@@ -7181,6 +7241,7 @@
         "onBeforeTaskDrop",
         "onBeforeProgressDrag",
         "onBeforeLinkAdd",
+        "onBeforeTaskDblClick",
       ];
       let that = this;
       function handleEvent(e) {
@@ -9430,6 +9491,23 @@
           ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
           function handleDblClick(e) {
+            // custom event handler
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
+                detail: {
+                  task: task,
+                },
+              }
+            );
+            that.element.dispatchEvent(onBeforeTaskDblClick);
+
+            // if onBeforeTaskDblClick return false then do not drag the task
+            if (that.eventValue === false) {
+              that.eventValue = true;
+              return;
+            }
+
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: task,

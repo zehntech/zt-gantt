@@ -719,6 +719,12 @@
       ZT_Gantt.attachEvent("onColorChange", (event) => {
         // console.log("onColorChange: ", event);
       });
+      ZT_Gantt.attachEvent("onBeforeTaskDblClick", (event) => {
+        // console.log("onColorChange: ", event);
+        // if(event.task.id === 3){
+        //   return false;
+        // }
+      });
 
       let fullscreen = false;
       function changeScreen() {
