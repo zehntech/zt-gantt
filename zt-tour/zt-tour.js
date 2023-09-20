@@ -40,7 +40,7 @@
       if (opt == null) {
         opt = {};
       }
-        
+
       this.options = {
         steps: opt.steps || [],
         overlayOpacity: opt.overlayOpacity || 0.7,
@@ -48,7 +48,7 @@
         popupOffset: opt.popupOffset || 10,
         stageRadius: opt.stageRadius || 5,
         overlayColor: opt.overlayColor || "#000",
-        animate: opt.animate === true,
+        animate: opt.animate !== undefined ? opt.animate : true,
         smoothScroll: opt.smoothScroll || false,
         visibleButtons: opt.visibleButtons || ["next", "previous", "close"],
         disableButtons: opt.disableButtons || [],
@@ -56,12 +56,12 @@
         nextBtnText: opt.nextBtnText || "Next &rarr;",
         prevBtnText: opt.prevBtnText || "&larr; Previous",
         doneBtnText: opt.doneBtnText || "Done",
-        allowBackdropClose: opt.allowBackdropClose === true,
+        allowBackdropClose: opt.allowBackdropClose !== undefined ? opt.allowBackdropClose : true,
         popupClass: opt.popupClass || false,
-        keyboardControl: opt.keyboardControl === true,
+        keyboardControl: opt.keyboardControl !== undefined ? opt.keyboardControl : true,
         animationDuration: opt.animationDuration || 400,
       };
-    } 
+    }
 
     initializeTemplate(templ) {
       if (templ == null) {
@@ -120,10 +120,11 @@
     highlightStep(currentStep) {
       if (0 > currentStep || currentStep > this.getOption("steps").length - 1) {
         this.destroyTour();
+        return;
       }
 
       let step = this.options.steps[currentStep];
-      let element = document.querySelector(step.element);
+      let element = document.querySelector(step?.element);
 
       if (!element) {
         element = this.addDummyElement();
@@ -302,8 +303,11 @@
       }
 
       popup.nextButton.addEventListener("click", () => {
+        let isOutOfIndex =
+          this.options.currentStep + 1 < 0 ||
+          this.options.currentStep + 1 >= this.getOption("steps").length;
         this.highlightStep(this.options.currentStep + 1);
-        if (typeof this.onNextClick === "function") {
+        if (typeof this.onNextClick === "function" && !isOutOfIndex) {
           this.onNextClick(this.options.currentStep);
         }
       });
@@ -529,8 +533,8 @@
       const popup = this.options.popup;
       let { align = "start", side = "left" } = step?.popup || {};
 
-      align = step.element ? align : 'over';
-      side = step.element ? side : 'over';
+      align = step.element ? align : "over";
+      side = step.element ? side : "over";
 
       // Configure the popup positioning
       const requiredAlignment = align;
@@ -863,11 +867,14 @@
 
     changeHighlight(toElement, toStep, toStepIndex) {
       const duration = this.getOption("animationDuration");
-      let currentStepEle = this.options.steps[this.options.currentStep]?.element
+      let currentStepEle =
+        this.options.steps[this.options.currentStep]?.element;
 
       const start = Date.now();
 
-      const fromElement = currentStepEle ? document.querySelector(currentStepEle) : toElement;
+      const fromElement = currentStepEle
+        ? document.querySelector(currentStepEle)
+        : toElement;
 
       const isFirstHighlight = !fromElement || fromElement === toElement;
 

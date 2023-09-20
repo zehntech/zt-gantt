@@ -20,7 +20,8 @@
     this.initializeOptions(options);
     this.initTemplates(templates);
 
-    this.handleFullScreenChangeSafari = this.handleFullScreenChangeSafari.bind(this);
+    this.handleFullScreenChangeSafari =
+      this.handleFullScreenChangeSafari.bind(this);
     this.handleFullScreenChange = this.handleFullScreenChange.bind(this);
     this.handleResizeWindow = this.handleResizeWindow.bind(this);
 
@@ -64,12 +65,12 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag: opt.updateLinkOnDrag || true,
+        updateLinkOnDrag: opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
         splitTask: opt.splitTask || false,
         links: opt.links || [],
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
-        taskProgress: opt.taskProgress || true,
+        taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
         dateFormat: {
           month_full: [
             "January",
@@ -1765,8 +1766,14 @@
       );
 
       // Listen for the fullscreenchange event
-      document.removeEventListener("fullscreenchange", this.handleFullScreenChange);
-      document.addEventListener("fullscreenchange", this.handleFullScreenChange);
+      document.removeEventListener(
+        "fullscreenchange",
+        this.handleFullScreenChange
+      );
+      document.addEventListener(
+        "fullscreenchange",
+        this.handleFullScreenChange
+      );
 
       window.removeEventListener("resize", this.handleResizeWindow);
       window.addEventListener("resize", this.handleResizeWindow);
@@ -2214,8 +2221,8 @@
             },
           });
           that.element.dispatchEvent(onTaskDblClick);
-          
-          if(this.templates.showLightBox !== false){
+
+          if (this.templates.showLightBox !== false) {
             that.createLightbox(that.options.data[j]);
           }
         }
@@ -3026,7 +3033,7 @@
           });
           that.element.dispatchEvent(onTaskDblClick);
 
-          if(that.templates.showLightBox !== false){
+          if (that.templates.showLightBox !== false) {
             that.createLightbox(that.options.data[j]);
           }
         }
@@ -5434,17 +5441,17 @@
             if (e.target.classList.contains("zt-gantt-tree-icon")) {
               return;
             }
-           
+
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: taskData[l],
               },
             });
             that.element.dispatchEvent(onTaskDblClick);
-                      
-          if(that.templates.showLightBox !== false){
-            that.createLightbox(taskData[l]);
-          }
+
+            if (that.templates.showLightBox !== false) {
+              that.createLightbox(taskData[l]);
+            }
           }
 
           let start_date, end_date;
@@ -6073,15 +6080,14 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
-          
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
             detail: {
               task: taskData[k],
             },
           });
           that.element.dispatchEvent(onTaskDblClick);
-                    
-          if(that.templates.showLightBox !== false){
+
+          if (that.templates.showLightBox !== false) {
             that.createLightbox(taskData[k]);
           }
         }
@@ -7169,18 +7175,16 @@
 
     // attach evnets
     attachEvent: function (name, callback) {
-      this.element.removeEventListener(name, handleEvent);
-      // this.taskEvent.push(callback);
       this.element.addEventListener(name, handleEvent);
-
+      const eventNamesToCheck = [
+        "onBeforeTaskDrag",
+        "onBeforeTaskDrop",
+        "onBeforeProgressDrag",
+        "onBeforeLinkAdd",
+      ];
       let that = this;
       function handleEvent(e) {
-        if (
-          name === "onBeforeTaskDrag" ||
-          name === "onBeforeTaskDrop" ||
-          name === "onBeforeProgressDrag" ||
-          name === "onBeforeLinkAdd"
-        ) {
+        if (eventNamesToCheck.includes(name)) {
           that.eventValue = callback(e.detail);
           that.eventValue = that.eventValue !== false;
         } else {
@@ -9191,9 +9195,14 @@
         "webkitfullscreenchange",
         this.handleFullScreenChangeSafari
       );
-      document.removeEventListener("fullscreenchange", this.handleFullScreenChange);
+      document.removeEventListener(
+        "fullscreenchange",
+        this.handleFullScreenChange
+      );
       window.removeEventListener("resize", this.handleResizeWindow);
-      ZTGantt = null;
+      let newElement = this.element.cloneNode(true);
+      this.element.replaceWith(newElement);
+      this.element = newElement;
     },
 
     isTaskExist: function (source, target) {
@@ -9421,7 +9430,6 @@
           ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
           function handleDblClick(e) {
-            
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: task,
@@ -9429,9 +9437,9 @@
             });
             that.element.dispatchEvent(onTaskDblClick);
 
-          if(that.templates.showLightBox !== false){
-            that.createLightbox(task);
-          }
+            if (that.templates.showLightBox !== false) {
+              that.createLightbox(task);
+            }
           }
 
           // Handle mouseover event
