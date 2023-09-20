@@ -28,7 +28,7 @@
         <label for="collapse-switch">collapse</label>
       </div>
 
-      <div class="collapse-container">
+      <div class="collapse-container today-container">
         <span>Today</span>
         <input
           type="checkbox"
@@ -116,14 +116,17 @@
           <option value="ua">Ukrainian</option>
         </select>
       </div>
-      <span>Dark Mode</span>
-      <input
+
+      <div class="dark-mode">
+        <span>Dark Mode</span>
+        <input
         type="checkbox"
         id="toggle"
         onchange="changeTheme(event)"
         class="toggle--checkbox"
-      />
-      <label for="toggle" class="toggle-theme"> </label>
+        />
+        <label for="toggle" class="toggle-theme"> </label>
+      </div>
       <div class="fullscreen">
         <button class="btn" style="margin-left: 10px" onclick="startTour()">
           Start Tour
@@ -912,7 +915,16 @@
               element: ".collapse-container",
               popup: {
                 title: "Toggle Collapse",
-                description: "Toggle all the tree!!",
+                description: "Toggle all the Tasks!!",
+                side: "bottom",
+                align: "start",
+              },
+            },
+            {
+              element: ".today-container",
+              popup: {
+                title: "Toggle Marker",
+                description: "Toggle Today Marker!!",
                 side: "bottom",
                 align: "start",
               },
@@ -921,7 +933,7 @@
               element: ".export-data",
               popup: {
                 title: "Export Chart",
-                description: "Export the gantt chart in pdf, png and excel.",
+                description: "Get your charts in PDF, PNG, or Excel formats",
                 side: "bottom",
                 align: "center",
               },
@@ -929,8 +941,53 @@
             {
               element: ".fullscreen",
               popup: {
-                title: "Fullscreen",
-                description: "View the gantt chart in fullscreen mode.",
+                title: "Full Screen",
+                description: "View your Gantt in full screen for an immersive experience",
+                side: "bottom",
+                align: "end",
+              },
+            },
+            {
+              element: ".auto-scheduling",
+              popup: {
+                title: "Auto Scheduling",
+                description: "Tasks are automatically scheduled.",
+                side: "bottom",
+                align: "center",
+              },
+            },
+            {
+              element: ".zoom",
+              popup: {
+                title: "Zoom Levels",
+                description: "Multiple timeline views - hour, day, week, month, quarter, and year.",
+                side: "bottom",
+                align: "end",
+              },
+            },
+            {
+              element: ".Language",
+              popup: {
+                title: "Change Language",
+                description: "Change language of the gantt chart.",
+                side: "bottom",
+                align: "end",
+              },
+            },
+            {
+              element: ".dark-mode",
+              popup: {
+                title: "Toggle Dark Mode",
+                description: "Dark mode for those late-night work sessions.",
+                side: "bottom",
+                align: "end",
+              },
+            },
+            {
+              element: ".gantt-search",
+              popup: {
+                title: "Search Tasks",
+                description: "Search Tasks to quickly find and access tasks based on your search criteria. Streamline your workflow by searching for specific tasks with ease.",
                 side: "bottom",
                 align: "end",
               },
@@ -938,8 +995,8 @@
             {
               element: "#ZT-Gantt",
               popup: {
-                title: "ztGantt Chart",
-                description: "Gantt Chart",
+                title: "Gantt Chart",
+                description: "The Gantt Chart view provides a visual representation of project tasks and their timelines, allowing you to efficiently manage project schedules, dependencies, and progress. Easily track and plan tasks, making project management a seamless experience.",
                 side: "top",
                 align: "start",
               },

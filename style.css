@@ -181,3 +181,8 @@ input[type="checkbox"] {
 .finish p:not(:first-child){
   opacity: 0.5;
 }
+
+.dark-mode{
+  display: flex;
+  align-items: center;
+}
