@@ -362,7 +362,7 @@
       };
 
       ZT_Gantt.options.exportApi = "https://zt-gantt.zehntech.net/";
-      // ZT_Gantt.options.exportApi = "http://localhost:8300/";
+      // ZT_Gantt.options.exportApi = "http://192.168.0.155:8300/";
       ZT_Gantt.options.taskColor = true;
       ZT_Gantt.options.taskOpacity = 0.7;
       ZT_Gantt.options.links = [
@@ -868,7 +868,7 @@
         let isFilter = e.target.value.trim() !== "";
         ZT_Gantt.filterTask((task) => {
           return task.text.toLowerCase().includes(e.target.value.toLowerCase());
-        }, isFilter);
+        }, isFilter, true);
       }
       function addCol() {
         ZT_Gantt.options.columns.push({

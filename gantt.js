@@ -65,7 +65,8 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag: opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
+        updateLinkOnDrag:
+          opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
         splitTask: opt.splitTask || false,
         links: opt.links || [],
         arrangeData: true,
@@ -7115,7 +7116,7 @@
       return findObjectById(data, id);
     },
 
-    filterTask: function (condition, isFilter) {
+    filterTask: function (condition, isFilter, findRecursive = false) {
       if (!this.searchedData) {
         this.oldOpenedTasks = [...this.options.openedTasks];
       }
@@ -7124,14 +7125,27 @@
       const allData = [...this.options.data];
       let that = this;
       let parents = [];
+
       const data = filterAndFlatten(allData, condition);
+
+      if (isFilter === true) {
+        this.searchedData = data;
+        this.render();
+      } else {
+        this.searchedData = undefined;
+        this.options.openedTasks = [];
+        this.render();
+      }
+
       function filterAndFlatten(data, condition) {
         return data.reduce((result, item) => {
           if (condition(item)) {
-            if (!that.options.splitTask) {
+            if (!that.options.splitTask && !findRecursive) {
+              // find exact match tasks
               const { children, ...flatItem } = item;
               result.push(flatItem);
             } else {
+              // find recursive parent child tasks
               result.push(item);
               let then = that;
               pushParent(item);
@@ -7143,7 +7157,15 @@
                 ) {
                   parents.push(item.parent);
                   let parentItem = then.getTask(item.parent);
-                  pushParent(parentItem);
+                  if (parentItem) {
+                    parentItem.children = parentItem.children.filter(
+                      (child) => {
+                        return child.id == item.id;
+                      }
+                    );
+                    result.push(parentItem);
+                    pushParent(parentItem);
+                  }
                 }
               }
             }
@@ -7153,20 +7175,8 @@
             const filteredItems = filterAndFlatten(item.children, condition);
             result.push(...filteredItems);
           }
-          for (let i = 0; i < parents.length; i++) {
-            result.push(that.getTask(parents[i]));
-          }
           return result;
         }, []);
-      }
-
-      if (isFilter === true) {
-        this.searchedData = data;
-        this.render();
-      } else {
-        this.searchedData = undefined;
-        this.options.openedTasks = [];
-        this.render();
       }
     },
 
