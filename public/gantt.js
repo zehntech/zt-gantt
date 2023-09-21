@@ -65,7 +65,8 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag: opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
+        updateLinkOnDrag:
+          opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
         splitTask: opt.splitTask || false,
         links: opt.links || [],
         arrangeData: true,
@@ -2218,16 +2219,16 @@
 
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: taskData[k]
-              },
+            detail: {
+              task: taskData[k],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -3041,19 +3042,18 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
-
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: that.options.data[j],
-              },
+            detail: {
+              task: that.options.data[j],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -5473,17 +5473,20 @@
             }
 
             // custom event handler
-            const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
                 detail: {
-                    task: taskData[l]
+                  task: taskData[l],
                 },
-            });
+              }
+            );
             that.element.dispatchEvent(onBeforeTaskDblClick);
 
             // if onBeforeTaskDblClick return false then do not drag the task
             if (that.eventValue === false) {
-                that.eventValue = true;
-                return;
+              that.eventValue = true;
+              return;
             }
 
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -6126,17 +6129,16 @@
         function handleDblClick(e) {
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: taskData[k]
-              },
+            detail: {
+              task: taskData[k],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
-
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -7114,7 +7116,7 @@
       return findObjectById(data, id);
     },
 
-    filterTask: function (condition, isFilter) {
+    filterTask: function (condition, isFilter, findRecursive = false) {
       if (!this.searchedData) {
         this.oldOpenedTasks = [...this.options.openedTasks];
       }
@@ -7123,14 +7125,27 @@
       const allData = [...this.options.data];
       let that = this;
       let parents = [];
+
       const data = filterAndFlatten(allData, condition);
+
+      if (isFilter === true) {
+        this.searchedData = data;
+        this.render();
+      } else {
+        this.searchedData = undefined;
+        this.options.openedTasks = [];
+        this.render();
+      }
+
       function filterAndFlatten(data, condition) {
         return data.reduce((result, item) => {
           if (condition(item)) {
-            if (!that.options.splitTask) {
+            if (!that.options.splitTask && !findRecursive) {
+              // find exact match tasks
               const { children, ...flatItem } = item;
               result.push(flatItem);
             } else {
+              // find recursive parent child tasks
               result.push(item);
               let then = that;
               pushParent(item);
@@ -7142,7 +7157,15 @@
                 ) {
                   parents.push(item.parent);
                   let parentItem = then.getTask(item.parent);
-                  pushParent(parentItem);
+                  if (parentItem) {
+                    parentItem.children = parentItem.children.filter(
+                      (child) => {
+                        return child.id == item.id;
+                      }
+                    );
+                    result.push(parentItem);
+                    pushParent(parentItem);
+                  }
                 }
               }
             }
@@ -7152,20 +7175,8 @@
             const filteredItems = filterAndFlatten(item.children, condition);
             result.push(...filteredItems);
           }
-          for (let i = 0; i < parents.length; i++) {
-            result.push(that.getTask(parents[i]));
-          }
           return result;
         }, []);
-      }
-
-      if (isFilter === true) {
-        this.searchedData = data;
-        this.render();
-      } else {
-        this.searchedData = undefined;
-        this.options.openedTasks = [];
-        this.render();
       }
     },
 
@@ -9490,21 +9501,23 @@
           ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
           function handleDblClick(e) {
-            
-          // custom event handler
-          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: task
-              },
-          });
-          that.element.dispatchEvent(onBeforeTaskDblClick);
+            // custom event handler
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
+                detail: {
+                  task: task,
+                },
+              }
+            );
+            that.element.dispatchEvent(onBeforeTaskDblClick);
 
-          // if onBeforeTaskDblClick return false then do not drag the task
-          if (that.eventValue === false) {
+            // if onBeforeTaskDblClick return false then do not drag the task
+            if (that.eventValue === false) {
               that.eventValue = true;
               return;
-          }
-            
+            }
+
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: task,
