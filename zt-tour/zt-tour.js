@@ -117,6 +117,53 @@
       this.highlightStep(0);
     }
 
+    showHint(hint, isAnnouncement = false){
+      this.removeHint(isAnnouncement);
+
+      let popupType = isAnnouncement ? "announcement" : "hint";
+
+      let hintEle = document.createElement("div");
+      let hintBackdrop = document.createElement("div");
+      hintBackdrop.classList.add(`zt-tour-${popupType}-backdrop`);
+      hintBackdrop.addEventListener('click',()=>{
+        hintEle.remove();
+        hintBackdrop.remove();
+      })
+      hintEle.innerHTML = hint.innerHTML;
+      hintEle.classList.add(`zt-tour-${popupType}`);
+
+      let dimentions;
+      if(!isAnnouncement){
+        dimentions = document.querySelector(hint.element).getBoundingClientRect();
+      } 
+      
+      document.body.appendChild(hintBackdrop);
+      document.body.appendChild(hintEle);
+      
+
+      hintEle.style.top = isAnnouncement ? "50%" : dimentions.top + dimentions.height + 10 + "px";
+      hintEle.style.left = isAnnouncement ? "50%" : dimentions.left + 10 + "px";
+      hintEle.style.transform = isAnnouncement ? "translate(-50%, -50%)" : "";
+    }
+
+    showAnnouncement(announcement){
+      announcement = {innerHTML: announcement};
+      this.showHint(announcement, true);
+    }
+
+    removeHint(isAnnouncement = false){
+      let popupType = isAnnouncement ? "announcement" : "hint";
+      let oldHint = document.querySelectorAll(`.zt-tour-${popupType}`);
+      let oldHintBackdrop = document.querySelectorAll(`.zt-tour-${popupType}-backdrop`);
+
+      Array.from(oldHint).forEach((hint)=>hint.remove())
+      Array.from(oldHintBackdrop).forEach((hintBackdrop)=>hintBackdrop.remove())
+    }
+
+    removeAnnouncement(){
+      removeHint(true);
+    }
+
     highlightStep(currentStep) {
       if (0 > currentStep || currentStep > this.getOption("steps").length - 1) {
         this.destroyTour();

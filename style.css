@@ -36,6 +36,16 @@ body{
   background-color: var(--index-primary-hover-color);
 }
 
+.hint-icon path{
+  cursor: pointer;
+  fill: var(--index-primary-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.hint-icon path:hover{
+  fill: var(--index-primary-hover-color);
+}
+
 .scale-zoom, .lang, .export{
   padding: 8px;
   height: 35px;
