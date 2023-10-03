@@ -38,7 +38,7 @@ To create a basic Gantt Chart, follow these steps:
 <link rel="stylesheet" href="gantt.css" type="text/css">
 ~~~  
 
-**Step 1:** Insert the markup:  
+**Step 2:** Insert the markup:  
 ~~~html
 <div id="gantt_here" style='width:100%; height:100vh;'></div>
 ~~~  
