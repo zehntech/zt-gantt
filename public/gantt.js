@@ -2220,7 +2220,7 @@
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
             detail: {
-              task: taskData[k],
+              task: that.options.data[j],
             },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
