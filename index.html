@@ -682,6 +682,10 @@
           return false;
         }
       });
+      ZT_Gantt.attachEvent("onTaskToggle", (event) => {
+        // console.log("onTaskToggle: ", event);
+      });
+
       ZT_Gantt.attachEvent("onTaskDelete", (event) => {
         // console.log("onTaskDelete: ", event);
       });
