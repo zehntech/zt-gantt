@@ -1718,6 +1718,11 @@
           function (task) {
             return " ";
           },
+        grid_blank:
+          templ.grid_blank ||
+          function (task) {
+            return " ";
+          },
         showLightBox: templ.showLightBox || undefined,
         grid_header_class: templ.grid_header_class || undefined,
         grid_row_class: templ.grid_row_class || undefined,
@@ -2357,6 +2362,8 @@
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
 
+          ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
+
           // content of the column
           content.innerHTML =
             options.columns[k].template(options.data[j]) ||
@@ -2424,6 +2431,10 @@
                   `zt-gantt-child-${options.data[j].id}`
                 );
 
+                const isTaskOpened = toggleTreeIcon.classList.contains(
+                  "zt-gantt-tree-close"
+                );
+
                 if (toggleTreeIcon.classList.contains("zt-gantt-tree-close")) {
                   that.options.openedTasks.push(options.data[j].id);
                   that.options.openedTasks = [
@@ -2459,6 +2470,15 @@
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
                 that.createScrollbar(mainContainer, options);
+
+                // custom event of toggle tree
+                const onTaskToggle = new CustomEvent("onTaskToggle", {
+                  detail: {
+                    task: options.data[j],
+                    isTaskOpened,
+                  },
+                });
+                that.element.dispatchEvent(onTaskToggle);
               });
             } else if (!this.options.splitTask) {
               cell.append(ztGanttBlank);
@@ -4071,6 +4091,7 @@
         scrollSpeed = 5,
         willRender = false;
 
+      const oldParentTask = this.getTask(task.parent);
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
 
@@ -4137,6 +4158,7 @@
                 task: task,
                 mode: type === "move" ? "move" : "resize",
                 parentTask: parentTask,
+                oldParentTask,
               },
             });
             that.element.dispatchEvent(onBeforeTaskDrop);
@@ -5630,6 +5652,8 @@
             let ztGanttBlank = document.createElement("div");
             ztGanttBlank.classList.add("zt-gantt-blank");
 
+            ztGanttBlank.innerHTML = this.templates.grid_blank(taskData[l]);
+
             // content
             let content = document.createElement("div");
             content.classList.add(
@@ -5711,6 +5735,10 @@
                     let children = document.getElementsByClassName(
                       `zt-gantt-child-${taskData[l].id}`
                     );
+
+                    const isTaskOpened = toggleTreeIcon.classList.contains(
+                      "zt-gantt-tree-close"
+                    );
                     if (
                       toggleTreeIcon.classList.contains("zt-gantt-tree-close")
                     ) {
@@ -5755,6 +5783,15 @@
                     let mainContainer =
                       document.querySelector("#zt-gantt-layout");
                     that.createScrollbar(mainContainer, options);
+
+                    // custom event of toggle tree
+                    const onTaskToggle = new CustomEvent("onTaskToggle", {
+                      detail: {
+                        task: taskData[l],
+                        isTaskOpened,
+                      },
+                    });
+                    that.element.dispatchEvent(onTaskToggle);
                   });
                 }, 0);
               } else {
@@ -6705,6 +6742,8 @@
 
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
+          
+          ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
 
           // content
           content.innerHTML =
@@ -6741,6 +6780,10 @@
                 this.addClickListener(toggleTreeIcon, (event) => {
                   let children = document.getElementsByClassName(
                     `zt-gantt-child-${j}`
+                  );
+
+                  const isTaskOpened = toggleTreeIcon.classList.contains(
+                    "zt-gantt-tree-close"
                   );
 
                   if (
@@ -6782,6 +6825,15 @@
 
                   toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
                   toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+
+                  // custom event of toggle tree
+                  const onTaskToggle = new CustomEvent("onTaskToggle", {
+                    detail: {
+                      task: options.data[j],
+                      isTaskOpened,
+                    },
+                  });
+                  that.element.dispatchEvent(onTaskToggle);
                 });
               }, 0);
             } else {
