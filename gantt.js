@@ -4157,7 +4157,7 @@
                 task,
                 mode: type === "move" ? "move" : "resize",
                 parentTask: parentTask,
-                oldParentTask: this.getTask(task.parent),
+                oldParentTask: that.getTask(task.parent),
               },
             });
             that.element.dispatchEvent(onBeforeTaskDrop);
