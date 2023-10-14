@@ -677,7 +677,7 @@
         console.log("onAfterTaskDrag: ", ZT_Gantt.options.data);
       });
       ZT_Gantt.attachEvent("onBeforeTaskDrop", (event) => {
-        // console.log("onBeforeTaskDrop: ", event);
+        console.log("onBeforeTaskDrop: ", event);
         if (event.parentTask.id == 12) {
           return false;
         }
