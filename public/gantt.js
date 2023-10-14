@@ -4091,7 +4091,6 @@
         scrollSpeed = 5,
         willRender = false;
 
-      const oldParentTask = this.getTask(task.parent);
       resizer.removeEventListener("mousedown", handleMouseDown);
       resizer.addEventListener("mousedown", handleMouseDown);
 
@@ -4148,17 +4147,17 @@
             that.originalData.splice(newIndex, 0, task); // Insert the object at the new position
           };
           if (taskId > -1 && taskId < allTaskbars.length) {
-            let task = that.getTask(taskPositionId);
-            parentId = taskParentId.length > 1 ? task.parent : task.id;
+            let currentTask = that.getTask(taskPositionId);
+            parentId = taskParentId.length > 1 ? currentTask.parent : currentTask.id;
             parentTask = that.getTask(parentId);
 
             // handle custom event
             const onBeforeTaskDrop = new CustomEvent("onBeforeTaskDrop", {
               detail: {
-                task: task,
+                task,
                 mode: type === "move" ? "move" : "resize",
                 parentTask: parentTask,
-                oldParentTask,
+                oldParentTask: this.getTask(task.parent),
               },
             });
             that.element.dispatchEvent(onBeforeTaskDrop);
