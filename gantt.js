@@ -1757,8 +1757,6 @@
     },
 
     init: function () {
-      let that = this;
-
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
 
       /*for Safari below v16 */
@@ -2179,11 +2177,17 @@
         if (this.searchedData) {
           this.options.openedTasks.push(options.data[j].id);
         }
+
+        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
+
         let dataItem = document.createElement("div");
         dataItem.classList.add(
           "zt-gantt-row-item",
           "zt-gantt-d-flex",
-          this.options.selectedRow === `${options.data[j].id}`
+          this.options.selectedRow === `${j}`
             ? "zt-gantt-selected"
             : "zt-gantt-row-item"
         );
@@ -2208,7 +2212,7 @@
           }
         }
 
-        dataItem.setAttribute("zt-gantt-data-task-id", j);
+        dataItem.setAttribute("zt-gantt-data-task-id", `${j}`);
         dataItem.setAttribute("zt-gantt-task-id", options.data[j].id);
         dataItem.style.height = options.row_height + "px";
         dataItem.style.lineHeight = options.row_height + "px";
@@ -2427,49 +2431,61 @@
               let that = this;
               let toggleTreeIcon = treeIcon;
               this.addClickListener(toggleTreeIcon, () => {
-                let children = document.getElementsByClassName(
-                  `zt-gantt-child-${options.data[j].id}`
+                // let children = document.getElementsByClassName(
+                //   `zt-gantt-child-${options.data[j].id}`
+                // );
+
+                // const isTaskOpened = toggleTreeIcon.classList.contains(
+                //   "zt-gantt-tree-close"
+                // );
+
+                //   if (toggleTreeIcon.classList.contains("zt-gantt-tree-close")) {
+                //     that.options.openedTasks.push(options.data[j].id);
+                //     that.options.openedTasks = [
+                //       ...new Set(that.options.openedTasks),
+                //     ];
+
+                //     for (const child of that.options.data[j].children) {
+                //       if (child.children && child.children.length > 0) {
+                //         that.setCollapseAll(child.children, child.id, "open");
+                //       }
+                //     }
+                //   } else {
+                //     const openedTasks = that.options.openedTasks.indexOf(
+                //       options.data[j].id
+                //     );
+                //     if (openedTasks > -1) {
+                //       that.options.openedTasks.splice(openedTasks, 1);
+                //     }
+
+                //     for (const child of this.options.data[j].children) {
+                //       if (child.children && child.children.length > 0) {
+                //         that.setCollapseAll(child.children, child.id, "collapse");
+                //       }
+                //     }
+                //   }
+
+                //   that.createTaskBars();
+                //   for (let i = 0; i < children.length; i++) {
+                //     children[i].classList.toggle("zt-gantt-d-none");
+                //     children[i].classList.toggle("zt-gantt-d-flex");
+                //   }
+
+                //   toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
+                //   toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+                //   that.createScrollbar(mainContainer, options);
+
+                const isTaskOpened = that.options.openedTasks.includes(
+                  options.data[j].id
                 );
-
-                const isTaskOpened = toggleTreeIcon.classList.contains(
-                  "zt-gantt-tree-close"
-                );
-
-                if (toggleTreeIcon.classList.contains("zt-gantt-tree-close")) {
-                  that.options.openedTasks.push(options.data[j].id);
-                  that.options.openedTasks = [
-                    ...new Set(that.options.openedTasks),
-                  ];
-
-                  for (const child of that.options.data[j].children) {
-                    if (child.children && child.children.length > 0) {
-                      that.setCollapseAll(child.children, child.id, "open");
-                    }
-                  }
-                } else {
-                  const openedTasks = that.options.openedTasks.indexOf(
-                    options.data[j].id
+                if (isTaskOpened) {
+                  that.options.openedTasks = that.options.openedTasks.filter(
+                    (id) => id != options.data[j].id
                   );
-                  if (openedTasks > -1) {
-                    that.options.openedTasks.splice(openedTasks, 1);
-                  }
-
-                  for (const child of this.options.data[j].children) {
-                    if (child.children && child.children.length > 0) {
-                      that.setCollapseAll(child.children, child.id, "collapse");
-                    }
-                  }
+                } else {
+                  that.options.openedTasks.push(options.data[j].id);
                 }
-
-                that.createTaskBars();
-                for (let i = 0; i < children.length; i++) {
-                  children[i].classList.toggle("zt-gantt-d-none");
-                  children[i].classList.toggle("zt-gantt-d-flex");
-                }
-
-                toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
-                that.createScrollbar(mainContainer, options);
+                that.render();
 
                 // custom event of toggle tree
                 const onTaskToggle = new CustomEvent("onTaskToggle", {
@@ -2489,12 +2505,12 @@
           dataItem.append(cell);
         }
 
-        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
-        if (!this.searchedData || isTaskExist) {
-          leftDataContainer.append(dataItem);
-        }
+        leftDataContainer.append(dataItem);
 
-        if (!this.options.splitTask) {
+        if (
+          !this.options.splitTask &&
+          this.options.openedTasks.includes(options.data[j].id)
+        ) {
           this.createChildTask(
             options.data[j].children,
             options,
@@ -2687,6 +2703,11 @@
 
       // grid data loop
       for (let j = 0; j < options.data.length; j++) {
+        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
+
         let scaleRow = document.createElement("div");
         scaleRow.classList.add(
           "zt-gantt-task-row",
@@ -2715,7 +2736,7 @@
           }
         }
 
-        scaleRow.setAttribute("zt-gantt-data-task-id", j);
+        scaleRow.setAttribute("zt-gantt-data-task-id", `${j}`);
         scaleRow.style.height = options.row_height + "px";
         let cellEndDate = new Date(0);
         let rangeCount = 0;
@@ -2831,16 +2852,14 @@
           });
         }
 
-        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
-        if (!this.searchedData || isTaskExist) {
-          ztGanttTaskData.append(scaleRow);
-        }
+        ztGanttTaskData.append(scaleRow);
 
         // if children exist
         if (
           options.data[j].children &&
           this.options.data[j].children.length > 0 &&
-          !this.options.splitTask
+          !this.options.splitTask &&
+          this.options.openedTasks.includes(options.data[j].id)
         ) {
           this.createBodyChildTask(
             options.data[j].children,
@@ -2913,6 +2932,14 @@
       ztGanttBarsArea.classList.add("zt-gantt-bars-area");
       ztGanttBarsArea.id = "zt-gantt-bars-area";
       for (let j = 0; j < this.options.data.length; j++) {
+        let isTaskExist = this.getTask(
+          this.options.data[j].id,
+          this.searchedData
+        );
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
+
         let start_date = new Date(this.options.data[j].start_date);
         let end_date = new Date(this.options.data[j].end_date);
 
@@ -3337,17 +3364,8 @@
           }
         });
 
-        let isTaskExist = this.getTask(
-          this.options.data[j].id,
-          this.searchedData
-        );
-        if (!this.searchedData || isTaskExist) {
-          ztGanttBarsArea.append(ztGanttBarTask);
-        }
-
-        if (!this.searchedData || isTaskExist) {
-          rowCount += 1;
-        }
+        ztGanttBarsArea.append(ztGanttBarTask);
+        rowCount += 1;
 
         // if children exist
         if (
@@ -3984,8 +4002,8 @@
 
     // expand all tree
     expandAll: function () {
-      const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      const toggleIcons = document.querySelectorAll(".zt-gantt-tree-close");
+      // const childRows = document.querySelectorAll(".zt-gantt-child-row");
+      // const toggleIcons = document.querySelectorAll(".zt-gantt-tree-close");
       let openedTasks = [];
 
       for (let i = 0; i < this.options.data.length; i++) {
@@ -3998,50 +4016,52 @@
         }
       }
 
-      for (let icon of toggleIcons) {
-        icon.classList.remove("zt-gantt-tree-close");
-        icon.classList.add("zt-gantt-tree-open");
-      }
+      // for (let icon of toggleIcons) {
+      //   icon.classList.remove("zt-gantt-tree-close");
+      //   icon.classList.add("zt-gantt-tree-open");
+      // }
 
-      for (let row of childRows) {
-        if (row.classList.contains("zt-gantt-d-none")) {
-          row.classList.add("zt-gantt-d-flex");
-          row.classList.remove("zt-gantt-d-none");
-        }
-      }
+      // for (let row of childRows) {
+      //   if (row.classList.contains("zt-gantt-d-none")) {
+      //     row.classList.add("zt-gantt-d-flex");
+      //     row.classList.remove("zt-gantt-d-none");
+      //   }
+      // }
 
       this.options.openedTasks = [...new Set(openedTasks)];
-      this.createTaskBars();
-      let mainContainer = document.querySelector("#zt-gantt-layout");
-      this.createScrollbar(mainContainer, this.options);
+      // this.createTaskBars();
+      // let mainContainer = document.querySelector("#zt-gantt-layout");
+      // this.createScrollbar(mainContainer, this.options);
       this.options.collapse = false;
+      this.render();
     },
 
     // collapse all tree
     collapseAll: function () {
-      const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      const toggleIcons = document.querySelectorAll(".zt-gantt-tree-icon");
+      // const childRows = document.querySelectorAll(".zt-gantt-child-row");
+      // const toggleIcons = document.querySelectorAll(".zt-gantt-tree-icon");
 
-      // Make the opened task array empty
+      // // Make the opened task array empty
       this.options.openedTasks = [];
 
-      // Change all the toggle icons to close
-      for (let icon of toggleIcons) {
-        icon.classList.remove("zt-gantt-tree-open");
-        icon.classList.add("zt-gantt-tree-close");
-      }
+      // // Change all the toggle icons to close
+      // for (let icon of toggleIcons) {
+      //   icon.classList.remove("zt-gantt-tree-open");
+      //   icon.classList.add("zt-gantt-tree-close");
+      // }
 
-      // Hide all the child rows
-      for (let row of childRows) {
-        row.classList.add("zt-gantt-d-none");
-        row.classList.remove("zt-gantt-d-flex");
-      }
+      // // Hide all the child rows
+      // for (let row of childRows) {
+      //   row.classList.add("zt-gantt-d-none");
+      //   row.classList.remove("zt-gantt-d-flex");
+      // }
 
-      // Again create all taskBars
-      this.createTaskBars();
-      let mainContainer = document.querySelector("#zt-gantt-layout");
-      this.createScrollbar(mainContainer, this.options);
+      // // Again create all taskBars
+      // this.createTaskBars();
+      // let mainContainer = document.querySelector("#zt-gantt-layout");
+      // this.createScrollbar(mainContainer, this.options);
       this.options.collapse = true;
+      this.render();
     },
 
     // get start and end dates from children array
@@ -4148,7 +4168,8 @@
           };
           if (taskId > -1 && taskId < allTaskbars.length) {
             let currentTask = that.getTask(taskPositionId);
-            parentId = taskParentId.length > 1 ? currentTask.parent : currentTask.id;
+            parentId =
+              taskParentId.length > 1 ? currentTask.parent : currentTask.id;
             parentTask = that.getTask(parentId);
 
             // handle custom event
@@ -5426,6 +5447,11 @@
           if (this.searchedData) {
             this.options.openedTasks.push(taskData[l].id);
           }
+          let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
+          if (this.searchedData && !isTaskExist) {
+            continue;
+          }
+
           let taskParents = `${parentIdString}${l}`;
           let dataItem = document.createElement("div");
           dataItem.classList.add(
@@ -5731,57 +5757,70 @@
                 setTimeout(() => {
                   let toggleTreeIcon = treeIcon;
                   this.addClickListener(toggleTreeIcon, (event) => {
-                    let children = document.getElementsByClassName(
-                      `zt-gantt-child-${taskData[l].id}`
+                    // let children = document.getElementsByClassName(
+                    //   `zt-gantt-child-${taskData[l].id}`
+                    // );
+
+                    // const isTaskOpened = toggleTreeIcon.classList.contains(
+                    //   "zt-gantt-tree-close"
+                    // );
+                    // if (
+                    //   toggleTreeIcon.classList.contains("zt-gantt-tree-close")
+                    // ) {
+                    //   that.options.openedTasks.push(taskData[l].id);
+                    //   that.options.openedTasks = [
+                    //     ...new Set(that.options.openedTasks),
+                    //   ];
+
+                    //   let t = 0;
+                    //   for (const child of taskData[l].children) {
+                    //     if (child.children) {
+                    //       that.setCollapseAll(child.children, child.id, "open");
+                    //     }
+                    //     t += 1;
+                    //   }
+                    // } else {
+                    //   const openedTask = that.options.openedTasks.indexOf(
+                    //     taskData[l].id
+                    //   );
+                    //   if (openedTask > -1) {
+                    //     that.options.openedTasks.splice(openedTask, 1);
+                    //   }
+                    //   let t = 0;
+                    //   for (const child of taskData[l].children) {
+                    //     if (child.children) {
+                    //       that.setCollapseAll(
+                    //         child.children,
+                    //         child.id,
+                    //         "collapse"
+                    //       );
+                    //     }
+                    //     t += 1;
+                    //   }
+                    // }
+                    // that.createTaskBars();
+                    // toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
+                    // toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+                    // for (let i = 0; i < children.length; i++) {
+                    //   children[i].classList.toggle("zt-gantt-d-none");
+                    //   children[i].classList.toggle("zt-gantt-d-flex");
+                    // }
+                    // let mainContainer =
+                    //   document.querySelector("#zt-gantt-layout");
+                    // that.createScrollbar(mainContainer, options);
+                    const isTaskOpened = that.options.openedTasks.includes(
+                      taskData[l].id
                     );
 
-                    const isTaskOpened = toggleTreeIcon.classList.contains(
-                      "zt-gantt-tree-close"
-                    );
-                    if (
-                      toggleTreeIcon.classList.contains("zt-gantt-tree-close")
-                    ) {
-                      that.options.openedTasks.push(taskData[l].id);
-                      that.options.openedTasks = [
-                        ...new Set(that.options.openedTasks),
-                      ];
-
-                      let t = 0;
-                      for (const child of taskData[l].children) {
-                        if (child.children) {
-                          that.setCollapseAll(child.children, child.id, "open");
-                        }
-                        t += 1;
-                      }
+                    if (isTaskOpened) {
+                      that.options.openedTasks =
+                        that.options.openedTasks.filter(
+                          (id) => id != taskData[l].id
+                        );
                     } else {
-                      const openedTask = that.options.openedTasks.indexOf(
-                        taskData[l].id
-                      );
-                      if (openedTask > -1) {
-                        that.options.openedTasks.splice(openedTask, 1);
-                      }
-                      let t = 0;
-                      for (const child of taskData[l].children) {
-                        if (child.children) {
-                          that.setCollapseAll(
-                            child.children,
-                            child.id,
-                            "collapse"
-                          );
-                        }
-                        t += 1;
-                      }
+                      that.options.openedTasks.push(taskData[l].id);
                     }
-                    that.createTaskBars();
-                    toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                    toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
-                    for (let i = 0; i < children.length; i++) {
-                      children[i].classList.toggle("zt-gantt-d-none");
-                      children[i].classList.toggle("zt-gantt-d-flex");
-                    }
-                    let mainContainer =
-                      document.querySelector("#zt-gantt-layout");
-                    that.createScrollbar(mainContainer, options);
+                    that.render();
 
                     // custom event of toggle tree
                     const onTaskToggle = new CustomEvent("onTaskToggle", {
@@ -5802,22 +5841,20 @@
             dataItem.append(cell);
           }
 
-          let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
-          if (!this.searchedData || isTaskExist) {
-            leftDataContainer.append(dataItem);
+          leftDataContainer.append(dataItem);
+          if (this.options.openedTasks.includes(taskData[l].id)) {
+            this.createChildTask(
+              taskData[l].children,
+              options,
+              leftDataContainer,
+              nestedLevel + 1,
+              taskParents,
+              isRight,
+              isOpened
+                ? this.options.openedTasks.includes(taskData[l].id)
+                : isOpened
+            );
           }
-
-          this.createChildTask(
-            taskData[l].children,
-            options,
-            leftDataContainer,
-            nestedLevel + 1,
-            taskParents,
-            isRight,
-            isOpened
-              ? this.options.openedTasks.includes(taskData[l].id)
-              : isOpened
-          );
         }
       }
     },
@@ -5834,6 +5871,10 @@
     ) {
       // loop through all the children
       for (let l = 0; l < taskData.length; l++) {
+        let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
         let taskParents = `${parentIdString}${l}`;
         let scaleRow = document.createElement("div");
         const isCollapsed = !options.openedTasks.includes(taskData[l].parent);
@@ -5870,7 +5911,7 @@
           }
         }
 
-        scaleRow.setAttribute("zt-gantt-data-task-id", taskParents);
+        scaleRow.setAttribute("zt-gantt-data-task-id", `${taskParents}`);
         scaleRow.style.height = `${options.row_height}px`;
         let cellEndDate = new Date(0);
         let rangeCount = 0;
@@ -5982,13 +6023,13 @@
           });
         }
 
-        let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
-        if (!this.searchedData || isTaskExist) {
-          ztGanttTaskData.append(scaleRow);
-        }
+        ztGanttTaskData.append(scaleRow);
 
         // if children exist
-        if (taskData[l].children) {
+        if (
+          taskData[l].children &&
+          this.options.openedTasks.includes(taskData[l].id)
+        ) {
           this.createBodyChildTask(
             taskData[l].children,
             options,
@@ -6016,6 +6057,9 @@
       for (let k = 0; k < taskData.length; k++) {
         let taskParents = `${j}${k}`;
         let isTaskExist = this.getTask(taskData[k].id, this.searchedData);
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
 
         let start_date = taskData[k].start_date;
         let end_date = taskData[k].end_date || taskData[k].start_date;
@@ -6455,13 +6499,9 @@
 
         ztGanttBarTask.append(ztGanttBarTaskContent);
 
-        if (!this.searchedData || isTaskExist) {
-          ztGanttBarsArea.append(ztGanttBarTask);
-        }
+        ztGanttBarsArea.append(ztGanttBarTask);
 
-        if (!this.searchedData || isTaskExist) {
-          rowCount += 1;
-        }
+        rowCount += 1;
 
         if (
           taskData[k].children &&
@@ -6610,6 +6650,10 @@
       }, 0);
       // loop through all the data
       for (let j = 0; j < options.data.length; j++) {
+        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
+        if (this.searchedData && !isTaskExist) {
+          continue;
+        }
         let dataItem = document.createElement("div");
         dataItem.classList.add("zt-gantt-row-item", "zt-gantt-d-flex");
 
@@ -6633,7 +6677,7 @@
           }
         }
 
-        dataItem.setAttribute("zt-gantt-data-task-id", j);
+        dataItem.setAttribute("zt-gantt-data-task-id", `${j}`);
         dataItem.setAttribute("zt-gantt-task-id", options.data[j].id);
         dataItem.style.height = options.row_height + "px";
         dataItem.style.lineHeight = options.row_height + "px";
@@ -6741,7 +6785,7 @@
 
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
-          
+
           ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
 
           // content
@@ -6777,53 +6821,65 @@
               setTimeout(() => {
                 let toggleTreeIcon = treeIcon;
                 this.addClickListener(toggleTreeIcon, (event) => {
-                  let children = document.getElementsByClassName(
-                    `zt-gantt-child-${j}`
-                  );
+                  // let children = document.getElementsByClassName(
+                  //   `zt-gantt-child-${j}`
+                  // );
 
-                  const isTaskOpened = toggleTreeIcon.classList.contains(
-                    "zt-gantt-tree-close"
-                  );
+                  // const isTaskOpened = toggleTreeIcon.classList.contains(
+                  //   "zt-gantt-tree-close"
+                  // );
 
-                  if (
-                    toggleTreeIcon.classList.contains("zt-gantt-tree-close")
-                  ) {
-                    that.options.openedTasks.push(options.data[j].id);
-                    that.options.openedTasks = [
-                      ...new Set(that.options.openedTasks),
-                    ];
-                    for (const child of that.options.data[j].children) {
-                      if (child.children) {
-                        that.setCollapseAll(child.children, child.id, "open");
-                      }
-                    }
-                  } else {
-                    const openedTasks = that.options.openedTasks.indexOf(
-                      options.data[j]
+                  // if (
+                  //   toggleTreeIcon.classList.contains("zt-gantt-tree-close")
+                  // ) {
+                  //   that.options.openedTasks.push(options.data[j].id);
+                  //   that.options.openedTasks = [
+                  //     ...new Set(that.options.openedTasks),
+                  //   ];
+                  //   for (const child of that.options.data[j].children) {
+                  //     if (child.children) {
+                  //       that.setCollapseAll(child.children, child.id, "open");
+                  //     }
+                  //   }
+                  // } else {
+                  //   const openedTasks = that.options.openedTasks.indexOf(
+                  //     options.data[j]
+                  //   );
+                  //   if (openedTasks > -1) {
+                  //     that.options.openedTasks.splice(openedTasks, 1);
+                  //   }
+                  //   for (const child of this.options.data[j].children) {
+                  //     if (child.children) {
+                  //       that.setCollapseAll(
+                  //         child.children,
+                  //         child.id,
+                  //         "collapse"
+                  //       );
+                  //     }
+                  //   }
+                  // }
+
+                  // that.createTaskBars();
+
+                  // for (let i = 0; i < children.length; i++) {
+                  //   children[i].classList.toggle("zt-gantt-d-none");
+                  //   children[i].classList.toggle("zt-gantt-d-flex");
+                  // }
+
+                  // toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
+                  // toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+
+                  const isTaskOpened = that.options.openedTasks.includes(
+                    options.data[j].id
+                  );
+                  if (isTaskOpened) {
+                    that.options.openedTasks = that.options.openedTasks.filter(
+                      (id) => id != options.data[j].id
                     );
-                    if (openedTasks > -1) {
-                      that.options.openedTasks.splice(openedTasks, 1);
-                    }
-                    for (const child of this.options.data[j].children) {
-                      if (child.children) {
-                        that.setCollapseAll(
-                          child.children,
-                          child.id,
-                          "collapse"
-                        );
-                      }
-                    }
+                  } else {
+                    that.options.openedTasks.push(options.data[j].id);
                   }
-
-                  that.createTaskBars();
-
-                  for (let i = 0; i < children.length; i++) {
-                    children[i].classList.toggle("zt-gantt-d-none");
-                    children[i].classList.toggle("zt-gantt-d-flex");
-                  }
-
-                  toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                  toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+                  that.render();
 
                   // custom event of toggle tree
                   const onTaskToggle = new CustomEvent("onTaskToggle", {
@@ -6844,20 +6900,19 @@
           dataItem.append(cell);
         }
 
-        let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
-        if (!this.searchedData || isTaskExist) {
-          leftDataContainer.append(dataItem);
-        }
+        leftDataContainer.append(dataItem);
 
-        this.createChildTask(
-          options.data[j].children,
-          options,
-          leftDataContainer,
-          1,
-          j,
-          true,
-          this.options.openedTasks.includes(options.data[j].id)
-        );
+        if (this.options.openedTasks.includes(options.data[j].id)) {
+          this.createChildTask(
+            options.data[j].children,
+            options,
+            leftDataContainer,
+            1,
+            j,
+            true,
+            this.options.openedTasks.includes(options.data[j].id)
+          );
+        }
       }
       sidebar.append(leftDataContainer);
 
@@ -9402,9 +9457,11 @@
           const task = tasksData[j][k];
 
           let isTaskExist = this.getTask(task.id, this.searchedData);
-          if (!this.searchedData || isTaskExist) {
-            rowCount = j;
+          if (this.searchedData && !isTaskExist) {
+            continue;
           }
+
+          rowCount = j;
 
           let start_date = task.start_date;
           let end_date = task.end_date || task.start_date;
@@ -9837,9 +9894,7 @@
             }
           });
 
-          if (!this.searchedData || isTaskExist) {
-            ztGanttBarsArea.append(ztGanttBarTask);
-          }
+          ztGanttBarsArea.append(ztGanttBarTask);
         }
 
         const barsArea = document.getElementById("zt-gantt-bars-area");
