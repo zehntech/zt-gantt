@@ -1676,6 +1676,7 @@
         },
         localLang: opt.localLang || "en",
         currentLanguage: {},
+        isOriginalDataChanged: true,
       };
     },
 
@@ -1824,158 +1825,61 @@
       }
     },
 
-    // render the zt-gantt chart
-    render: function (ele = this.element) {
-      if (
-        this.options.weekStart > 6 ||
-        typeof this.options.weekStart !== "number"
-      ) {
-        let message =
-          this.options.weekStart > 6
-            ? "enter week start between 0 to 6"
-            : "type of week start should be number!";
-        this.toastr("Error", message, "error");
+    // function to validate Options;
+    validateOptions: function (options) {
+      if (options.weekStart > 6 || typeof options.weekStart !== "number") {
+        this.toastr("Error", "Enter week start between 0 to 6", "error");
       }
-      if (!this.options.date_format) {
+      if (!options.date_format) {
         this.toastr(
           "Error",
-          `date_format is ${this.options.date_format}, please provide a valid date format of your data date format`,
+          "Provide a valid date format for your data",
           "error"
         );
       }
+    },
 
+    // render the zt-gantt chart
+    render: function (ele = this.element) {
       this.element = ele || this.element;
-      let options = this.options;
+      const options = this.options;
+
+      // Validate options
+      this.validateOptions(options);
+
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
+
       this.zoomInit("initial");
-      function createNestedTree(
-        flatArray,
-        parentIdKey = "parent",
-        idKey = "id"
-      ) {
-        const tree = [];
-
-        const map = {};
-        flatArray.forEach((item) => {
-          const id = item[idKey];
-          const parentId = item[parentIdKey];
-
-          map[id] = { ...item, children: map[id] ? map[id].children : [] };
-
-          if (!parentId) {
-            tree.push(map[id]);
-          } else {
-            map[parentId] = map[parentId] || { children: [] };
-            map[parentId].children.push(map[id]);
-          }
-        });
-
-        return tree;
-      }
 
       // create a copy of the data and add "_id" key in the all data objects
       if (this.options.arrangeData) {
         this.originalData = [...this.options.data];
-
-        // set _id to all the tasks
-        let count = 0;
-        for (let i = 0; i < this.originalData.length; i++) {
-          this.originalData[i]._id = count;
-          count += 1;
-        }
       }
 
-      for (let i = 0; i < this.originalData.length; i++) {
-        if (
-          this.originalData[i].start_date !== undefined &&
-          isNaN(new Date(this.originalData[i].start_date)) &&
-          this.options.date_format
-        ) {
-          this.originalData[i].start_date = this.getDateTimeComponents(
-            this.originalData[i].start_date
-          );
-        } else {
-          this.hasHours = false;
-          if (
-            this.originalData[i].start_date !== undefined &&
-            isNaN(this.originalData[i].start_date)
-          ) {
-            this.getDateTimeComponents(this.originalData[i].start_date);
-            if (
-              this.hasHours !== true &&
-              !isNaN(new Date(this.originalData[i].start_date))
-            ) {
-              this.originalData[i].start_date = new Date(
-                new Date(this.originalData[i].start_date).setHours(0, 0, 0, 0)
-              );
-            }
-          }
-        }
-        if (
-          this.originalData[i].end_date !== undefined &&
-          isNaN(new Date(this.originalData[i].end_date)) &&
-          this.options.date_format
-        ) {
-          this.originalData[i].end_date = this.getDateTimeComponents(
-            this.originalData[i].end_date
-          );
-        } else {
-          this.hasHours = false;
-          if (
-            this.originalData[i].end_date !== undefined &&
-            isNaN(this.originalData[i].end_date)
-          ) {
-            this.getDateTimeComponents(this.originalData[i].end_date);
-            if (
-              this.hasHours !== true &&
-              !isNaN(new Date(this.originalData[i].end_date))
-            ) {
-              this.originalData[i].end_date = new Date(
-                new Date(this.originalData[i].end_date).setHours(0, 0, 0, 0)
-              );
-            }
-          }
-        }
+      if (this.options.isOriginalDataChanged || this.options.arrangeData) {
+        this.processDates();
+
+        let nestedData = this.createNestedTree(this.originalData);
+        this.options.data = nestedData;
+
+        // calculate and add duration and start and end date in all data objects
+        this.updateTaskDuration();
       }
 
-      let nestedData = createNestedTree(this.originalData);
-      this.options.data = nestedData;
-
-      // calculate and add duration and start and end date in all data objects
-      this.updateTaskDuration();
-
+      this.options.isOriginalDataChanged = false;
       this.options.arrangeData = false;
 
-      let startAndEndDate = this.getStartAndEndDate(options.data);
-      if (!this.options.startDate) {
-        this.options.startDate = startAndEndDate.startDate;
-      }
-      if (!this.options.endDate) {
-        this.options.endDate = startAndEndDate.endDate;
-      }
+      this.setStartAndEndDates(options);
+
       this.dates = this.getDates(options.startDate, options.endDate);
-      let dates = this.dates;
-      const weekday = this.options.dateFormat.day_short;
       if (!options.fullWeek) {
-        dates = dates.filter((date) => {
-          return !options.weekends.includes(weekday[new Date(date).getDay()]);
-        });
-        this.dates = dates;
+        this.filterNonWorkingDays();
       }
 
       // set all task expanded initially if collapse is false
       if (!options.collapse && options.openedTasks.length === 0) {
         let openedTasks = [];
-
-        for (let i = 0; i < this.options.data.length; i++) {
-          openedTasks.push(this.options.data[i].id);
-          if (this.options.data[i].children) {
-            openedTasks = this.setAllExpand(
-              this.options.data[i].children,
-              openedTasks
-            );
-          }
-        }
+        openedTasks = this.setAllExpand(this.options.data, openedTasks);
         this.options.openedTasks = [...new Set(openedTasks)];
       }
 
@@ -1993,8 +1897,15 @@
       calendar.classList.add("zt-gantt-right-cell");
       calendar.id = "zt-gantt-right-cell";
 
-      this.createHeaderScale(dates, calendar, options);
-      this.createBody(options, dates, calendar, mainContainer, weekday, true);
+      this.createHeaderScale(this.dates, calendar, options);
+      this.createBody(
+        options,
+        this.dates,
+        calendar,
+        mainContainer,
+        this.options.dateFormat.day_short,
+        true
+      );
 
       if (options.rightGrid) {
         let newGridOptions = { ...options };
@@ -2085,6 +1996,106 @@
       }
     },
 
+    processDates: function () {
+      for (let i = 0; i < this.originalData.length; i++) {
+        if (
+          this.originalData[i].start_date !== undefined &&
+          isNaN(new Date(this.originalData[i].start_date)) &&
+          this.options.date_format
+        ) {
+          this.originalData[i].start_date = this.getDateTimeComponents(
+            this.originalData[i].start_date
+          );
+        } else {
+          this.hasHours = false;
+          if (
+            this.originalData[i].start_date !== undefined &&
+            isNaN(this.originalData[i].start_date)
+          ) {
+            this.getDateTimeComponents(this.originalData[i].start_date);
+            if (
+              this.hasHours !== true &&
+              !isNaN(new Date(this.originalData[i].start_date))
+            ) {
+              this.originalData[i].start_date = new Date(
+                new Date(this.originalData[i].start_date).setHours(0, 0, 0, 0)
+              );
+            }
+          }
+        }
+        if (
+          this.originalData[i].end_date !== undefined &&
+          isNaN(new Date(this.originalData[i].end_date)) &&
+          this.options.date_format
+        ) {
+          this.originalData[i].end_date = this.getDateTimeComponents(
+            this.originalData[i].end_date
+          );
+        } else {
+          this.hasHours = false;
+          if (
+            this.originalData[i].end_date !== undefined &&
+            isNaN(this.originalData[i].end_date)
+          ) {
+            this.getDateTimeComponents(this.originalData[i].end_date);
+            if (
+              this.hasHours !== true &&
+              !isNaN(new Date(this.originalData[i].end_date))
+            ) {
+              this.originalData[i].end_date = new Date(
+                new Date(this.originalData[i].end_date).setHours(0, 0, 0, 0)
+              );
+            }
+          }
+        }
+      }
+    },
+
+    createNestedTree: function (
+      flatArray,
+      parentIdKey = "parent",
+      idKey = "id"
+    ) {
+      const tree = [];
+
+      const map = {};
+      flatArray.forEach((item) => {
+        const id = item[idKey];
+        const parentId = item[parentIdKey];
+
+        map[id] = { ...item, children: map[id] ? map[id].children : [] };
+
+        if (!parentId) {
+          tree.push(map[id]);
+        } else {
+          map[parentId] = map[parentId] || { children: [] };
+          map[parentId].children.push(map[id]);
+        }
+      });
+
+      return tree;
+    },
+
+    setStartAndEndDates: function (options) {
+      let startAndEndDate;
+      if (!options.startDate || !options.endDate) {
+        startAndEndDate = this.getStartAndEndDate(options.data);
+      }
+      options.startDate = options.startDate || startAndEndDate.startDate;
+      options.endDate = options.endDate || startAndEndDate.endDate;
+    },
+
+    filterNonWorkingDays: function () {
+      let dates = this.dates;
+      const weekday = this.options.dateFormat.day_short;
+      if (!options.fullWeek) {
+        dates = dates.filter((date) => {
+          return !options.weekends.includes(weekday[new Date(date).getDay()]);
+        });
+        this.dates = dates;
+      }
+    },
+
     // create left sidebar
     createSidebar: function (options, mainContainer) {
       // sidebar head cells
@@ -2133,6 +2144,7 @@
         headCell.setAttribute("data-column-index", i);
         headCell.style.width = (options.columns[i].width || 80) + "px";
         headCell.innerHTML = options.columns[i].label;
+
         headCellContainer.append(headCell);
         if (i < options.columns.length) {
           let resizerWrap = document.createElement("div");
@@ -2431,50 +2443,6 @@
               let that = this;
               let toggleTreeIcon = treeIcon;
               this.addClickListener(toggleTreeIcon, () => {
-                // let children = document.getElementsByClassName(
-                //   `zt-gantt-child-${options.data[j].id}`
-                // );
-
-                // const isTaskOpened = toggleTreeIcon.classList.contains(
-                //   "zt-gantt-tree-close"
-                // );
-
-                //   if (toggleTreeIcon.classList.contains("zt-gantt-tree-close")) {
-                //     that.options.openedTasks.push(options.data[j].id);
-                //     that.options.openedTasks = [
-                //       ...new Set(that.options.openedTasks),
-                //     ];
-
-                //     for (const child of that.options.data[j].children) {
-                //       if (child.children && child.children.length > 0) {
-                //         that.setCollapseAll(child.children, child.id, "open");
-                //       }
-                //     }
-                //   } else {
-                //     const openedTasks = that.options.openedTasks.indexOf(
-                //       options.data[j].id
-                //     );
-                //     if (openedTasks > -1) {
-                //       that.options.openedTasks.splice(openedTasks, 1);
-                //     }
-
-                //     for (const child of this.options.data[j].children) {
-                //       if (child.children && child.children.length > 0) {
-                //         that.setCollapseAll(child.children, child.id, "collapse");
-                //       }
-                //     }
-                //   }
-
-                //   that.createTaskBars();
-                //   for (let i = 0; i < children.length; i++) {
-                //     children[i].classList.toggle("zt-gantt-d-none");
-                //     children[i].classList.toggle("zt-gantt-d-flex");
-                //   }
-
-                //   toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                //   toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
-                //   that.createScrollbar(mainContainer, options);
-
                 const isTaskOpened = that.options.openedTasks.includes(
                   options.data[j].id
                 );
@@ -2740,14 +2708,20 @@
         scaleRow.style.height = options.row_height + "px";
         let cellEndDate = new Date(0);
         let rangeCount = 0;
+
+        const fragment = document.createDocumentFragment();
+
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
+
           if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
+
           let colDates;
           let scaleCell = document.createElement("div");
           scaleCell.classList.add("zt-gantt-task-cell");
+
           if (this.options.zoomLevel !== "day") {
             colDates = this.initColSizes(this.options.zoomLevel, 1, date);
           } else {
@@ -2806,16 +2780,19 @@
           let currentDate = new Date(date).setHours(0);
           if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
-            const fragment = document.createDocumentFragment();
+
+            const hourFragment = document.createDocumentFragment();
+
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
               hourCell.style.left = rangeCount + "px";
               hourCell.style.width = cellWidth + "px";
               rangeCount += cellWidth;
-              // scaleRow.append(hourCell);
-              fragment.appendChild(hourCell);
+              hourFragment.appendChild(hourCell);
             }
-            scaleRow.append(fragment);
+
+            fragment.appendChild(hourFragment);
+
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -2823,9 +2800,10 @@
             rangeCount +=
               colDates.dateCount.length * this.calculateGridWidth(date);
             cellEndDate = new Date(colDates.endDate);
-            scaleRow.append(scaleCell);
+            fragment.appendChild(scaleCell);
+
           } else if (this.options.zoomLevel === "day") {
-            scaleRow.append(scaleCell);
+            fragment.appendChild(scaleCell);
           }
 
           // handle cell click event
@@ -2851,7 +2829,7 @@
             that.element.dispatchEvent(onCellClick);
           });
         }
-
+        scaleRow.append(fragment);
         ztGanttTaskData.append(scaleRow);
 
         // if children exist
@@ -2931,11 +2909,13 @@
       let ztGanttBarsArea = document.createElement("div");
       ztGanttBarsArea.classList.add("zt-gantt-bars-area");
       ztGanttBarsArea.id = "zt-gantt-bars-area";
+
       for (let j = 0; j < this.options.data.length; j++) {
         let isTaskExist = this.getTask(
           this.options.data[j].id,
           this.searchedData
         );
+
         if (this.searchedData && !isTaskExist) {
           continue;
         }
@@ -3740,10 +3720,7 @@
         todayFlag.classList.add("zt-gantt-marker-today");
         todayFlag.id = "zt-gantt-marker-today";
         todayFlag.title = this.formatDateToString("%d %F %Y", new Date());
-        let todayFlagText = document.createElement("div");
-        todayFlagText.classList.add("zt-gantt-marker-today-text");
-        todayFlagText.innerHTML = "Today";
-        todayFlag.append(todayFlagText);
+        todayFlag.innerHTML = `<div class="zt-gantt-marker-today-text">Today</div>`;
         let calendarContainer = document.getElementById("zt-gantt-scale-data");
 
         // Calculate the difference in days
@@ -4002,8 +3979,6 @@
 
     // expand all tree
     expandAll: function () {
-      // const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      // const toggleIcons = document.querySelectorAll(".zt-gantt-tree-close");
       let openedTasks = [];
 
       for (let i = 0; i < this.options.data.length; i++) {
@@ -4016,50 +3991,15 @@
         }
       }
 
-      // for (let icon of toggleIcons) {
-      //   icon.classList.remove("zt-gantt-tree-close");
-      //   icon.classList.add("zt-gantt-tree-open");
-      // }
-
-      // for (let row of childRows) {
-      //   if (row.classList.contains("zt-gantt-d-none")) {
-      //     row.classList.add("zt-gantt-d-flex");
-      //     row.classList.remove("zt-gantt-d-none");
-      //   }
-      // }
-
       this.options.openedTasks = [...new Set(openedTasks)];
-      // this.createTaskBars();
-      // let mainContainer = document.querySelector("#zt-gantt-layout");
-      // this.createScrollbar(mainContainer, this.options);
       this.options.collapse = false;
       this.render();
     },
 
     // collapse all tree
     collapseAll: function () {
-      // const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      // const toggleIcons = document.querySelectorAll(".zt-gantt-tree-icon");
-
       // // Make the opened task array empty
       this.options.openedTasks = [];
-
-      // // Change all the toggle icons to close
-      // for (let icon of toggleIcons) {
-      //   icon.classList.remove("zt-gantt-tree-open");
-      //   icon.classList.add("zt-gantt-tree-close");
-      // }
-
-      // // Hide all the child rows
-      // for (let row of childRows) {
-      //   row.classList.add("zt-gantt-d-none");
-      //   row.classList.remove("zt-gantt-d-flex");
-      // }
-
-      // // Again create all taskBars
-      // this.createTaskBars();
-      // let mainContainer = document.querySelector("#zt-gantt-layout");
-      // this.createScrollbar(mainContainer, this.options);
       this.options.collapse = true;
       this.render();
     },
@@ -4153,6 +4093,7 @@
           let currentTaskPosition = +taskBar.getAttribute("data-task-pos");
 
           const updateData = (parentId, task, taskPositionId) => {
+            that.options.isOriginalDataChanged = true;
             let currentIndex = that.originalData.findIndex(
               (obj) => obj.id == task.id
             );
@@ -4553,6 +4494,7 @@
     },
 
     updateTask: function (task, start, end, target, eventType = "mousemove") {
+      this.options.isOriginalDataChanged = true;
       start = new Date(start);
       end = new Date(end);
       // get the current start and end date of the taskbar
@@ -4922,6 +4864,7 @@
     },
 
     updateTaskDate: function (task, start, end) {
+      this.options.isOriginalDataChanged = true;
       task.start_date = start;
       task.end_date = end;
       this.originalData.findIndex((item) => {
@@ -5228,7 +5171,7 @@
           "error"
         );
       }
-
+      this.options.isOriginalDataChanged = true;
       this.originalData.unshift(task);
       this.eachTask((item) => {
         if (item.id == task.parent) {
@@ -5250,6 +5193,7 @@
 
     // delete task
     deleteTask: function (id) {
+      this.options.isOriginalDataChanged = true;
       const task = this.getTask(id);
       for (let i = 0; i < this.originalData.length; i++) {
         if (this.originalData[i].id == id) {
@@ -5269,6 +5213,7 @@
 
     // update task data
     updateTaskData: function (task) {
+      this.options.isOriginalDataChanged = true;
       const updatedTaskIndex = this.originalData.findIndex(
         (item) => item.id === task.id
       );
@@ -5757,57 +5702,6 @@
                 setTimeout(() => {
                   let toggleTreeIcon = treeIcon;
                   this.addClickListener(toggleTreeIcon, (event) => {
-                    // let children = document.getElementsByClassName(
-                    //   `zt-gantt-child-${taskData[l].id}`
-                    // );
-
-                    // const isTaskOpened = toggleTreeIcon.classList.contains(
-                    //   "zt-gantt-tree-close"
-                    // );
-                    // if (
-                    //   toggleTreeIcon.classList.contains("zt-gantt-tree-close")
-                    // ) {
-                    //   that.options.openedTasks.push(taskData[l].id);
-                    //   that.options.openedTasks = [
-                    //     ...new Set(that.options.openedTasks),
-                    //   ];
-
-                    //   let t = 0;
-                    //   for (const child of taskData[l].children) {
-                    //     if (child.children) {
-                    //       that.setCollapseAll(child.children, child.id, "open");
-                    //     }
-                    //     t += 1;
-                    //   }
-                    // } else {
-                    //   const openedTask = that.options.openedTasks.indexOf(
-                    //     taskData[l].id
-                    //   );
-                    //   if (openedTask > -1) {
-                    //     that.options.openedTasks.splice(openedTask, 1);
-                    //   }
-                    //   let t = 0;
-                    //   for (const child of taskData[l].children) {
-                    //     if (child.children) {
-                    //       that.setCollapseAll(
-                    //         child.children,
-                    //         child.id,
-                    //         "collapse"
-                    //       );
-                    //     }
-                    //     t += 1;
-                    //   }
-                    // }
-                    // that.createTaskBars();
-                    // toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                    // toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
-                    // for (let i = 0; i < children.length; i++) {
-                    //   children[i].classList.toggle("zt-gantt-d-none");
-                    //   children[i].classList.toggle("zt-gantt-d-flex");
-                    // }
-                    // let mainContainer =
-                    //   document.querySelector("#zt-gantt-layout");
-                    // that.createScrollbar(mainContainer, options);
                     const isTaskOpened = that.options.openedTasks.includes(
                       taskData[l].id
                     );
@@ -5915,12 +5809,16 @@
         scaleRow.style.height = `${options.row_height}px`;
         let cellEndDate = new Date(0);
         let rangeCount = 0;
+
+        const fragment = document.createDocumentFragment();
+
         // loop through all the dates
         for (let k = 0; k < dates.length; k++) {
           let date = new Date(dates[k]);
           if (new Date(cellEndDate).getTime() >= date.setHours(0, 0, 0, 0)) {
             continue;
           }
+
           let colDates;
           let scaleCell = document.createElement("div");
           scaleCell.classList.add("zt-gantt-task-cell");
@@ -5977,16 +5875,19 @@
           let currentDate = new Date(date).setHours(0);
           if (this.options.zoomLevel === "hour") {
             let cellWidth = this.calculateGridWidth(date);
-            let fragment = document.createDocumentFragment();
+
+            let hourFragment = document.createDocumentFragment();
+
             for (let i = 0; i < 24; i++) {
               let hourCell = scaleCell.cloneNode(true);
               hourCell.style.left = rangeCount + "px";
               hourCell.style.width = cellWidth + "px";
               rangeCount += cellWidth;
-              // scaleRow.append(hourCell);
-              fragment.appendChild(hourCell);
+              hourFragment.appendChild(hourCell);
             }
-            scaleRow.append(fragment);
+
+            fragment.appendChild(hourFragment);
+            
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -5994,9 +5895,10 @@
             rangeCount +=
               colDates.dateCount.length * this.calculateGridWidth(date);
             cellEndDate = new Date(colDates.endDate);
-            scaleRow.append(scaleCell);
+            fragment.appendChild(scaleCell);
+
           } else if (this.options.zoomLevel === "day") {
-            scaleRow.append(scaleCell);
+            fragment.appendChild(scaleCell);
           }
 
           // handle cell click event
@@ -6022,7 +5924,7 @@
             that.element.dispatchEvent(onCellClick);
           });
         }
-
+        scaleRow.append(fragment);
         ztGanttTaskData.append(scaleRow);
 
         // if children exist
@@ -6821,54 +6723,6 @@
               setTimeout(() => {
                 let toggleTreeIcon = treeIcon;
                 this.addClickListener(toggleTreeIcon, (event) => {
-                  // let children = document.getElementsByClassName(
-                  //   `zt-gantt-child-${j}`
-                  // );
-
-                  // const isTaskOpened = toggleTreeIcon.classList.contains(
-                  //   "zt-gantt-tree-close"
-                  // );
-
-                  // if (
-                  //   toggleTreeIcon.classList.contains("zt-gantt-tree-close")
-                  // ) {
-                  //   that.options.openedTasks.push(options.data[j].id);
-                  //   that.options.openedTasks = [
-                  //     ...new Set(that.options.openedTasks),
-                  //   ];
-                  //   for (const child of that.options.data[j].children) {
-                  //     if (child.children) {
-                  //       that.setCollapseAll(child.children, child.id, "open");
-                  //     }
-                  //   }
-                  // } else {
-                  //   const openedTasks = that.options.openedTasks.indexOf(
-                  //     options.data[j]
-                  //   );
-                  //   if (openedTasks > -1) {
-                  //     that.options.openedTasks.splice(openedTasks, 1);
-                  //   }
-                  //   for (const child of this.options.data[j].children) {
-                  //     if (child.children) {
-                  //       that.setCollapseAll(
-                  //         child.children,
-                  //         child.id,
-                  //         "collapse"
-                  //       );
-                  //     }
-                  //   }
-                  // }
-
-                  // that.createTaskBars();
-
-                  // for (let i = 0; i < children.length; i++) {
-                  //   children[i].classList.toggle("zt-gantt-d-none");
-                  //   children[i].classList.toggle("zt-gantt-d-flex");
-                  // }
-
-                  // toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
-                  // toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
-
                   const isTaskOpened = that.options.openedTasks.includes(
                     options.data[j].id
                   );
@@ -9331,6 +9185,7 @@
       });
 
       function setColorToOriginalData(color) {
+        that.options.isOriginalDataChanged = true;
         task.taskColor = color;
         that.originalData.findIndex((item) => {
           if (item.id == task.id) {
