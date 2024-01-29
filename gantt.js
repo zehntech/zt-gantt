@@ -5001,6 +5001,7 @@
       let sidebarWidth = 0;
       if (sidebar) {
         let headCell = document.querySelectorAll(".head-cell");
+        console.log(headCell,"headCell");
         if (headCell.length !== this.options.columns.length) {
           sidebarWidth = totalWidth;
         } else {
@@ -7329,7 +7330,7 @@
       this.options.data = [...this.originalData, ...uniqueData];
       this.options.arrangeData = true;
 
-      if (this.options.collapse === false) {
+      if (this.options.collapse === false && this.options.openedTasks.length > 0) {
         // Set opened tasks
         const uniqueIds = uniqueData.map((task) => task.id);
         this.options.openedTasks.push(...uniqueIds);
