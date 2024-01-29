@@ -3886,6 +3886,14 @@
         }
       }
 
+      // handle custom event
+      const onExpand = new CustomEvent("onExpand", {
+        detail: {
+          type: "requestFullScreen",
+        },
+      });
+      this.element.dispatchEvent(onExpand);
+      
       if (
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
@@ -3900,14 +3908,6 @@
         this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
       }
       resizer.style.left = sidebar.offsetWidth + "px";
-
-      // handle custom event
-      const onExpand = new CustomEvent("onExpand", {
-        detail: {
-          type: "requestFullScreen",
-        },
-      });
-      this.element.dispatchEvent(onExpand);
     },
 
     // exit browser fullscreen
