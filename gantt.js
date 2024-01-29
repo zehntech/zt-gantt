@@ -1745,11 +1745,13 @@
       }
       const dates = [];
       let currentDate = startDate;
+
       const addDays = function (days) {
         const date = new Date(this.valueOf());
         date.setDate(date.getDate() + days);
         return date.setHours(0, 0, 0, 0);
       };
+
       while (currentDate <= endDate) {
         dates.push(currentDate);
         currentDate = addDays.call(currentDate, 1);
@@ -2056,9 +2058,9 @@
       parentIdKey = "parent",
       idKey = "id"
     ) {
+      const map = {};
       const tree = [];
 
-      const map = {};
       flatArray.forEach((item) => {
         const id = item[idKey];
         const parentId = item[parentIdKey];
@@ -2136,7 +2138,7 @@
             i
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             headCell.classList.add(...cssClass);
           }
         }
@@ -2219,7 +2221,7 @@
             options.data[j]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             dataItem.classList.add(...cssClass);
           }
         }
@@ -2355,7 +2357,7 @@
               options.data[j]
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               cell.classList.add(...cssClass);
             }
           }
@@ -2582,7 +2584,7 @@
               i
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               dateCell.classList.add(...cssClass);
             }
           }
@@ -2699,7 +2701,7 @@
             options.data[j]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             scaleRow.classList.add(...cssClass);
           }
         }
@@ -2740,7 +2742,7 @@
               dates[k]
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               scaleCell.classList.add(...cssClass);
             }
           }
@@ -2792,7 +2794,6 @@
             }
 
             fragment.appendChild(hourFragment);
-
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -2801,7 +2802,6 @@
               colDates.dateCount.length * this.calculateGridWidth(date);
             cellEndDate = new Date(colDates.endDate);
             fragment.appendChild(scaleCell);
-
           } else if (this.options.zoomLevel === "day") {
             fragment.appendChild(scaleCell);
           }
@@ -3007,7 +3007,7 @@
             this.options.data[j]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             ztGanttBarTask.classList.add(...cssClass);
           }
         }
@@ -3901,6 +3901,14 @@
         }
       }
 
+      // handle custom event
+      const onExpand = new CustomEvent("onExpand", {
+        detail: {
+          type: "requestFullScreen",
+        },
+      });
+      this.element.dispatchEvent(onExpand);
+      
       if (
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
@@ -3915,14 +3923,6 @@
         this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
       }
       resizer.style.left = sidebar.offsetWidth + "px";
-
-      // handle custom event
-      const onExpand = new CustomEvent("onExpand", {
-        detail: {
-          type: "requestFullScreen",
-        },
-      });
-      this.element.dispatchEvent(onExpand);
     },
 
     // exit browser fullscreen
@@ -3998,7 +3998,7 @@
 
     // collapse all tree
     collapseAll: function () {
-      // // Make the opened task array empty
+      // Make the opened task array empty
       this.options.openedTasks = [];
       this.options.collapse = true;
       this.render();
@@ -5030,6 +5030,7 @@
       const colCount = this.dates.length;
       let level = date !== new Date(0) ? this.options.zoomLevel : "day";
       date = new Date(date);
+
       switch (level) {
         case "hour":
           minWidth = levelType === "day" ? minWidth : minWidth / 24;
@@ -5050,6 +5051,7 @@
           minWidth = minWidth;
           break;
       }
+      
       const gridWidth = Math.max(
         elementWidth /
           (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
@@ -5445,7 +5447,7 @@
               taskData[l]
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               dataItem.classList.add(...cssClass);
             }
           }
@@ -5606,7 +5608,7 @@
                 taskData[l]
               );
               if (cssClass) {
-                cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+                cssClass = cssClass.trim().split(/\s+/);
                 cell.classList.add(...cssClass);
               }
             }
@@ -5800,7 +5802,7 @@
             taskData[l]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             scaleRow.classList.add(...cssClass);
           }
         }
@@ -5841,7 +5843,7 @@
               dates[k]
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               scaleCell.classList.add(...cssClass);
             }
           }
@@ -5887,7 +5889,6 @@
             }
 
             fragment.appendChild(hourFragment);
-            
           } else if (
             this.options.zoomLevel !== "day" &&
             new Date(cellEndDate).getTime() < currentDate
@@ -5896,7 +5897,6 @@
               colDates.dateCount.length * this.calculateGridWidth(date);
             cellEndDate = new Date(colDates.endDate);
             fragment.appendChild(scaleCell);
-
           } else if (this.options.zoomLevel === "day") {
             fragment.appendChild(scaleCell);
           }
@@ -6053,7 +6053,7 @@
             taskData[k]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             ztGanttBarTask.classList.add(...cssClass);
           }
         }
@@ -6501,7 +6501,7 @@
             i
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             headCell.classList.add(...cssClass);
           }
         }
@@ -6574,7 +6574,7 @@
             options.data[j]
           );
           if (cssClass) {
-            cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+            cssClass = cssClass.trim().split(/\s+/);
             dataItem.classList.add(...cssClass);
           }
         }
@@ -6665,7 +6665,7 @@
               options.data[j]
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               cell.classList.add(...cssClass);
             }
           }
@@ -7157,7 +7157,7 @@
       let flag = document.createElement("div");
       flag.classList.add(
         "zt-gantt-marker",
-        ...data.css.trim().replace(/\s+/g, " ").split(" ")
+        ...data.css.trim().split(/\s+/)
       );
       flag.title = data.title;
 
@@ -7310,12 +7310,6 @@
         return;
       }
 
-      const sidebar = document.querySelector("#zt-gantt-left-grid");
-      const taskRow = sidebar.querySelector(`[zt-gantt-task-id="${id}"]`);
-      const children = document.querySelectorAll(`.zt-gantt-child-${id}`);
-      const mainContainer = document.querySelector("#zt-gantt-layout");
-      const toggleTreeIcon = taskRow.querySelector(".zt-gantt-tree-icon");
-
       let task = this.getTask(id);
       if (task.parent !== 0) {
         this.openTask(task.parent);
@@ -7323,19 +7317,9 @@
 
       this.options.openedTasks.push(id);
       this.options.openedTasks = [...new Set(this.options.openedTasks)];
-      this.createTaskBars();
 
-      children.forEach((child) => {
-        child.classList.remove("zt-gantt-d-none");
-        child.classList.add("zt-gantt-d-flex");
-      });
+      this.render();
 
-      if (toggleTreeIcon) {
-        toggleTreeIcon.classList.remove("zt-gantt-tree-close");
-        toggleTreeIcon.classList.add("zt-gantt-tree-open");
-      }
-
-      this.createScrollbar(mainContainer, this.options);
     },
 
     // set the new data to the existing data
@@ -8380,9 +8364,11 @@
 
     // function to initialize zoom options
     zoomInit: function (type = "after") {
-      let zoomLevels = this.options.zoomConfig;
-      for (levels of zoomLevels.levels) {
-        if (this.options.zoomLevel == levels.name) {
+      const zoomLevels = this.options.zoomConfig.levels;
+      const currentZoomLevel = this.options.zoomLevel;
+
+      for (const levels of zoomLevels) {
+        if (currentZoomLevel == levels.name) {
           this.options.scale_height =
             levels.scale_height || this.options.scale_height;
           this.options.minColWidth =
@@ -9407,7 +9393,7 @@
               task
             );
             if (cssClass) {
-              cssClass = cssClass.trim().replace(/\s+/g, " ").split(" ");
+              cssClass = cssClass.trim().split(/\s+/);
               ztGanttBarTask.classList.add(...cssClass);
             }
           }
