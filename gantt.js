@@ -3906,6 +3906,14 @@
         }
       }
 
+      // handle custom event
+      const onExpand = new CustomEvent("onExpand", {
+        detail: {
+          type: "requestFullScreen",
+        },
+      });
+      this.element.dispatchEvent(onExpand);
+
       if (
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
@@ -3920,14 +3928,6 @@
         this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
       }
       resizer.style.left = sidebar.offsetWidth + "px";
-
-      // handle custom event
-      const onExpand = new CustomEvent("onExpand", {
-        detail: {
-          type: "requestFullScreen",
-        },
-      });
-      this.element.dispatchEvent(onExpand);
     },
 
     // exit browser fullscreen
@@ -4148,7 +4148,8 @@
           };
           if (taskId > -1 && taskId < allTaskbars.length) {
             let currentTask = that.getTask(taskPositionId);
-            parentId = taskParentId.length > 1 ? currentTask.parent : currentTask.id;
+            parentId =
+              taskParentId.length > 1 ? currentTask.parent : currentTask.id;
             parentTask = that.getTask(parentId);
 
             // handle custom event
@@ -6741,7 +6742,7 @@
 
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
-          
+
           ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
 
           // content
