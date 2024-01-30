@@ -1676,6 +1676,7 @@
         },
         localLang: opt.localLang || "en",
         currentLanguage: {},
+	ganttHeight: 0,
       };
     },
 
@@ -2523,6 +2524,7 @@
 
     // create header of scale
     createHeaderScale: function (dates, calendar, options) {
+      this.options.ganttHeight = this.calculateGanttHeight();
       let rightScale = document.createElement("div");
       rightScale.classList.add("zt-gantt-scale");
       rightScale.style.height = this.calculateScaleHeight(
@@ -5036,12 +5038,7 @@
 
       let sidebarWidth = 0;
       if (sidebar) {
-        let headCell = document.querySelectorAll(".head-cell");
-        if (headCell.length !== this.options.columns.length) {
-          sidebarWidth = totalWidth;
-        } else {
-          sidebarWidth = sidebar.offsetWidth;
-        }
+        sidebarWidth = sidebar.offsetWidth;
       } else {
         sidebarWidth = totalWidth;
       }
@@ -5058,8 +5055,10 @@
 
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 22;
+      } else if (this.options.ganttHeight > this.element.offsetHeight) {
+        elementWidth -= 22;
       } else {
-        elementWidth -= sidebar?.offsetHeight ? 2 : 0;
+        elementWidth -= 2;
       }
 
       let minWidth = this.options.minColWidth;
@@ -9854,6 +9853,36 @@
           barContainer.append(ztGanttBarsArea);
         }
       }
+    },
+
+    calculateGanttHeight() {
+      let totalGanttHeight = this.calculateScaleHeight(
+        this.options.scales,
+        this.options.scale_height,
+        "scroll",
+        0
+      );
+
+      let that = this;
+      this.options.data.forEach((task) => {
+        totalGanttHeight += 24;
+        if (this.options.openedTasks.includes(task.id)) {
+          totalGanttHeight += calculateVisibleTasksHeight(task);
+        }
+      });
+
+      function calculateVisibleTasksHeight(task) {
+        let childHight = 0;
+        if (that.options.openedTasks.includes(task.id)) {
+          childHight += task.children.length * 24;
+          task.children.forEach((child) => {
+            childHight += calculateVisibleTasksHeight(child);
+          });
+        }
+        return childHight;
+      }
+
+      return totalGanttHeight;
     },
   };
 
