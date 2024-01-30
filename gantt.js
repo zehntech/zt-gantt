@@ -5012,8 +5012,7 @@
         );
         elementWidth -= totalWidth;
       }
-      // console.log(this.element.offsetHeight,"??")
-      // console.log(sidebar?.offsetHeight < sidebar?.scrollHeight,"sidebar?.offsetHeight < sidebar?.scrollHeight");
+     
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 22;
       } else if (this.options.ganttHeight > this.element.offsetHeight) {

@@ -299,20 +299,20 @@
         },
       ];
 
-      let parents = [1]//,8,9,10,11]
-      for(let i = 0; i < parents.length; i++){
-        for(let j = 0; j < 50; j++){
-          let task =  {
-          id: `task-${parents[i]}-${j}`,
-          text: "Test #Task",
-          start_date: "09-09-2023",
-          end_date: "09-09-2023",
-          parent: parents[i],
-          progress: 50,
-        }
-        data.push(task);
-        }
-      }
+      // let parents = [1]//,8,9,10,11]
+      // for(let i = 0; i < parents.length; i++){
+      //   for(let j = 0; j < 50; j++){
+      //     let task =  {
+      //     id: `task-${parents[i]}-${j}`,
+      //     text: "Test #Task",
+      //     start_date: "09-09-2023",
+      //     end_date: "09-09-2023",
+      //     parent: parents[i],
+      //     progress: 50,
+      //   }
+      //   data.push(task);
+      //   }
+      // }
 
       let element = document.getElementById("ZT-Gantt");
       let ZT_Gantt = new ztGantt(element);
