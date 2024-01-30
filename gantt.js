@@ -9758,7 +9758,7 @@
 
       let that = this;
       this.options.data.forEach((task) => {
-        totalGanttHeight += 24;
+        totalGanttHeight += this.options.row_height;
         if (this.options.openedTasks.includes(task.id)) {
           totalGanttHeight += calculateVisibleTasksHeight(task);
         }
@@ -9767,7 +9767,7 @@
       function calculateVisibleTasksHeight(task) {
         let childHight = 0;
         if (that.options.openedTasks.includes(task.id)) {
-          childHight += task.children.length * 24;
+          childHight += task.children.length * that.options.row_height;
           task.children.forEach((child) => {
             childHight += calculateVisibleTasksHeight(child);
           });
