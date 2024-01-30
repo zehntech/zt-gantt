@@ -299,20 +299,20 @@
         },
       ];
 
-      // let parents = [1]//,8,9,10,11]
-      // for(let i = 0; i < parents.length; i++){
-      //   for(let j = 0; j < 100; j++){
-      //     let task =  {
-      //     id: `task-${parents[i]}-${j}`,
-      //     text: "Test #Task",
-      //     start_date: "06-05-2023",
-      //     end_date: "06-05-2023",
-      //     parent: parents[i],
-      //     progress: 50,
-      //   }
-      //   data.push(task);
-      //   }
-      // }
+      let parents = [1]//,8,9,10,11]
+      for(let i = 0; i < parents.length; i++){
+        for(let j = 0; j < 50; j++){
+          let task =  {
+          id: `task-${parents[i]}-${j}`,
+          text: "Test #Task",
+          start_date: "09-09-2023",
+          end_date: "09-09-2023",
+          parent: parents[i],
+          progress: 50,
+        }
+        data.push(task);
+        }
+      }
 
       let element = document.getElementById("ZT-Gantt");
       let ZT_Gantt = new ztGantt(element);
@@ -701,39 +701,39 @@
       ZT_Gantt.attachEvent("onCollapse", (event) => {
         // console.log("onCollapse: ", event);
       });
-      ZT_Gantt.attachEvent("onScroll", (event) => {
-        // console.log("onScroll: ", event);
-        ZT_Gantt.clearAll();
-        let newData=[
-        {
-          id: "n2",
-          text: "new Task #2",
-          start_date: "09-05-2023",
-          end_date: "09-05-2023",
-          parent: 1,
-          progress: 50,
-        },
-        {
-          id: "n23",
-          text: "new Final Milestone",
-          start_date: "09-17-2023",
-          end_date: "09-17-2023",
-          parent: 1,
-          type: "milestone",
-        },
-        {
-          id: 23,
-          text: "Dupli.. Final Milestone",
-          start_date: "09-17-2023",
-          end_date: "09-17-2023",
-          parent: 1,
-          type: "milestone",
-        },
-        ]
-        ZT_Gantt.parse(newData);
-        ZT_Gantt.options.collapse = false
-        ZT_Gantt.render();
-      });
+      // ZT_Gantt.attachEvent("onScroll", (event) => {
+      //   // console.log("onScroll: ", event);
+      //   ZT_Gantt.clearAll();
+      //   let newData=[
+      //   {
+      //     id: "n2",
+      //     text: "new Task #2",
+      //     start_date: "09-05-2023",
+      //     end_date: "09-05-2023",
+      //     parent: 1,
+      //     progress: 50,
+      //   },
+      //   {
+      //     id: "n23",
+      //     text: "new Final Milestone",
+      //     start_date: "09-17-2023",
+      //     end_date: "09-17-2023",
+      //     parent: 1,
+      //     type: "milestone",
+      //   },
+      //   {
+      //     id: 23,
+      //     text: "Dupli.. Final Milestone",
+      //     start_date: "09-17-2023",
+      //     end_date: "09-17-2023",
+      //     parent: 1,
+      //     type: "milestone",
+      //   },
+      //   ]
+      //   ZT_Gantt.parse(newData);
+      //   ZT_Gantt.options.collapse = false
+      //   ZT_Gantt.render();
+      // });
       // ZT_Gantt.attachEvent("onResize", (event) => {
       //   console.log("onResize: ", event);
       // });

@@ -1677,6 +1677,7 @@
         localLang: opt.localLang || "en",
         currentLanguage: {},
         isOriginalDataChanged: true,
+        ganttHeight: 0,
       };
     },
 
@@ -2509,6 +2510,7 @@
 
     // create header of scale
     createHeaderScale: function (dates, calendar, options) {
+      this.options.ganttHeight = this.calculateGanttHeight();
       let rightScale = document.createElement("div");
       rightScale.classList.add("zt-gantt-scale");
       rightScale.style.height = this.calculateScaleHeight(
@@ -2671,6 +2673,8 @@
       let ztGanttTaskData = document.createElement("div");
       ztGanttTaskData.classList.add("zt-gantt-task-data");
 
+      let dayGridWidth = this.calculateGridWidth();
+
       // grid data loop
       for (let j = 0; j < options.data.length; j++) {
         let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
@@ -2748,18 +2752,12 @@
           }
 
           if (this.options.zoomLevel !== "day") {
-            if (this.options.zoomLevel === "hour") {
-              scaleCell.style.left = rangeCount + "px";
-              scaleCell.style.width = this.calculateGridWidth(date) + "px";
-            } else {
-              scaleCell.style.left = rangeCount + "px";
-              scaleCell.style.width =
-                colDates.dateCount.length * this.calculateGridWidth(date) +
-                "px";
-            }
+            scaleCell.style.left = rangeCount + "px";
+            scaleCell.style.width =
+              colDates.dateCount.length * this.calculateGridWidth(date) + "px";
           } else {
-            scaleCell.style.left = this.calculateGridWidth(date) * k + "px";
-            scaleCell.style.width = this.calculateGridWidth(date) + "px";
+            scaleCell.style.left = dayGridWidth * k + "px";
+            scaleCell.style.width = dayGridWidth + "px";
           }
 
           scaleCell.setAttribute(
@@ -3908,7 +3906,7 @@
         },
       });
       this.element.dispatchEvent(onExpand);
-      
+
       if (
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
@@ -5000,13 +4998,7 @@
 
       let sidebarWidth = 0;
       if (sidebar) {
-        let headCell = document.querySelectorAll(".head-cell");
-        console.log(headCell,"headCell");
-        if (headCell.length !== this.options.columns.length) {
-          sidebarWidth = totalWidth;
-        } else {
-          sidebarWidth = sidebar.offsetWidth;
-        }
+        sidebarWidth = sidebar.offsetWidth;
       } else {
         sidebarWidth = totalWidth;
       }
@@ -5020,11 +5012,14 @@
         );
         elementWidth -= totalWidth;
       }
-
+      // console.log(this.element.offsetHeight,"??")
+      // console.log(sidebar?.offsetHeight < sidebar?.scrollHeight,"sidebar?.offsetHeight < sidebar?.scrollHeight");
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
         elementWidth -= 22;
+      } else if (this.options.ganttHeight > this.element.offsetHeight) {
+        elementWidth -= 22;
       } else {
-        elementWidth -= sidebar?.offsetHeight ? 2 : 0;
+        elementWidth -= 2;
       }
 
       let minWidth = this.options.minColWidth;
@@ -5052,7 +5047,7 @@
           minWidth = minWidth;
           break;
       }
-      
+
       const gridWidth = Math.max(
         elementWidth /
           (level === "hour" && levelType !== "day" ? colCount * 24 : colCount),
@@ -5766,6 +5761,8 @@
       parentIdString,
       isOpened
     ) {
+      let dayGridWidth = this.calculateGridWidth();
+
       // loop through all the children
       for (let l = 0; l < taskData.length; l++) {
         let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
@@ -5854,8 +5851,8 @@
             scaleCell.style.width =
               colDates.dateCount.length * this.calculateGridWidth(date) + "px";
           } else {
-            scaleCell.style.left = `${this.calculateGridWidth(date) * k}px`;
-            scaleCell.style.width = `${this.calculateGridWidth(date)}px`;
+            scaleCell.style.left = `${dayGridWidth * k}px`;
+            scaleCell.style.width = `${dayGridWidth}px`;
           }
 
           scaleCell.setAttribute(
@@ -7156,10 +7153,7 @@
       }
 
       let flag = document.createElement("div");
-      flag.classList.add(
-        "zt-gantt-marker",
-        ...data.css.trim().split(/\s+/)
-      );
+      flag.classList.add("zt-gantt-marker", ...data.css.trim().split(/\s+/));
       flag.title = data.title;
 
       let flagText = document.createElement("div");
@@ -7320,7 +7314,6 @@
       this.options.openedTasks = [...new Set(this.options.openedTasks)];
 
       this.render();
-
     },
 
     // set the new data to the existing data
@@ -7330,7 +7323,10 @@
       this.options.data = [...this.originalData, ...uniqueData];
       this.options.arrangeData = true;
 
-      if (this.options.collapse === false && this.options.openedTasks.length > 0) {
+      if (
+        this.options.collapse === false &&
+        this.options.openedTasks.length > 0
+      ) {
         // Set opened tasks
         const uniqueIds = uniqueData.map((task) => task.id);
         this.options.openedTasks.push(...uniqueIds);
@@ -9751,6 +9747,36 @@
           barContainer.append(ztGanttBarsArea);
         }
       }
+    },
+
+    calculateGanttHeight() {
+      let totalGanttHeight = this.calculateScaleHeight(
+        this.options.scales,
+        this.options.scale_height,
+        "scroll",
+        0
+      );
+
+      let that = this;
+      this.options.data.forEach((task) => {
+        totalGanttHeight += 24;
+        if (this.options.openedTasks.includes(task.id)) {
+          totalGanttHeight += calculateVisibleTasksHeight(task);
+        }
+      });
+
+      function calculateVisibleTasksHeight(task) {
+        let childHight = 0;
+        if (that.options.openedTasks.includes(task.id)) {
+          childHight += task.children.length * 24;
+          task.children.forEach((child) => {
+            childHight += calculateVisibleTasksHeight(child);
+          });
+        }
+        return childHight;
+      }
+
+      return totalGanttHeight;
     },
   };
 
