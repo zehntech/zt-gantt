@@ -1676,7 +1676,7 @@
         },
         localLang: opt.localLang || "en",
         currentLanguage: {},
-	ganttHeight: 0,
+        ganttHeight: 0,
       };
     },
 
@@ -2525,6 +2525,20 @@
     // create header of scale
     createHeaderScale: function (dates, calendar, options) {
       this.options.ganttHeight = this.calculateGanttHeight();
+      this.attachEvent("onTaskToggle", () => {
+        const isVerScrollExist =
+          this.options.ganttHeight > this.element.offsetHeight;
+        const tempHeight = this.calculateGanttHeight();
+
+        if (
+          (!isVerScrollExist && tempHeight > this.element.offsetHeight) ||
+          (isVerScrollExist && tempHeight < this.element.offsetHeight)
+        ) {
+          this.options.ganttHeight = tempHeight;
+          this.updateBody();
+        }
+      });
+
       let rightScale = document.createElement("div");
       rightScale.classList.add("zt-gantt-scale");
       rightScale.style.height = this.calculateScaleHeight(
@@ -5055,11 +5069,9 @@
       }
 
       if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
-        elementWidth -= 22;
+        elementWidth -= 20;
       } else if (this.options.ganttHeight > this.element.offsetHeight) {
-        elementWidth -= 22;
-      } else {
-        elementWidth -= 2;
+        elementWidth -= 20;
       }
 
       let minWidth = this.options.minColWidth;
@@ -7436,7 +7448,10 @@
       this.options.data = [...this.originalData, ...uniqueData];
       this.options.arrangeData = true;
 
-      if (this.options.collapse === false && this.options.openedTasks.length > 0) {
+      if (
+        this.options.collapse === false &&
+        this.options.openedTasks.length > 0
+      ) {
         // Set opened tasks
         const uniqueIds = uniqueData.map((task) => task.id);
         this.options.openedTasks.push(...uniqueIds);
