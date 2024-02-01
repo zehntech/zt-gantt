@@ -3978,7 +3978,9 @@
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
       ) {
-        this.updateBody();
+        setTimeout(() => {
+          this.updateBody();
+        }, 0);
       } else {
         let mainContainer = document.querySelector(".zt-gantt-layout");
         this.createScrollbar(mainContainer, this.options);
@@ -5053,7 +5055,12 @@
 
       let sidebarWidth = 0;
       if (sidebar) {
-        sidebarWidth = sidebar.offsetWidth;
+        let headCell = document.querySelectorAll(".head-cell");
+        if (headCell.length !== this.options.columns.length) {
+          sidebarWidth = totalWidth;
+        } else {
+          sidebarWidth = sidebar.offsetWidth;
+        }
       } else {
         sidebarWidth = totalWidth;
       }
@@ -5068,10 +5075,13 @@
         elementWidth -= totalWidth;
       }
 
-      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
-        elementWidth -= 20;
-      } else if (this.options.ganttHeight > this.element.offsetHeight) {
-        elementWidth -= 20;
+      if (
+        sidebar?.offsetHeight < sidebar?.scrollHeight ||
+        this.options.ganttHeight > this.element.offsetHeight
+      ) {
+        elementWidth -= 22;
+      } else {
+        elementWidth -= sidebar?.offsetHeight ? 2 : 0;
       }
 
       let minWidth = this.options.minColWidth;
