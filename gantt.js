@@ -8704,8 +8704,14 @@
       );
     },
 
-    autoScheduling: function (link = this.options.links[0], index = 0) {
-      if (link) {
+    autoScheduling: function () {
+      const { links } = this.options;
+      const linksLength = links?.length;
+      for (let i = 0; i < linksLength; i++) {
+        const link = this.options.links[i];
+
+        if (!link) return;
+
         let source = document.querySelector(
           `[zt-gantt-taskbar-id="${link.source}"]`
         );
@@ -8714,74 +8720,43 @@
           `[zt-gantt-taskbar-id="${link.target}"]`
         );
 
-        if (!source || !target) {
-          return;
-        }
+        if (!source || !target) continue;
 
         let sourceLeft = source.offsetLeft,
           sourceWidth = source.offsetWidth,
           targetLeft = target.offsetLeft,
           targetWidth = target.offsetWidth;
 
-        if (link.type === 1) {
-          if (targetLeft < sourceLeft) {
-            target.style.left = sourceLeft + "px";
-          }
-        } else if (link.type === 2) {
-          if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
-            target.style.left =
-              targetLeft +
-              (sourceLeft + sourceWidth - (targetLeft + targetWidth)) +
-              "px";
-          }
-        } else if (link.type === 3) {
-          if (targetLeft + targetWidth < sourceLeft) {
-            target.style.left = sourceLeft - targetWidth + "px";
-          }
-        } else if (link.type === 0) {
-          if (targetLeft < sourceLeft + sourceWidth) {
-            target.style.left = sourceLeft + sourceWidth + "px";
-          }
+        switch (link.type) {
+          case 1:
+            if (targetLeft < sourceLeft) {
+              target.style.left = sourceLeft + "px";
+            }
+            break;
+          case 2:
+            if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
+              target.style.left =
+                targetLeft +
+                (sourceLeft + sourceWidth - (targetLeft + targetWidth)) +
+                "px";
+            }
+            break;
+          case 3:
+            if (targetLeft + targetWidth < sourceLeft) {
+              target.style.left = sourceLeft - targetWidth + "px";
+            }
+            break;
+          case 0:
+            if (targetLeft < sourceLeft + sourceWidth) {
+              target.style.left = sourceLeft + sourceWidth + "px";
+            }
+            break;
         }
 
         let task = this.getTask(link.target);
-        let taskStartDate =
-          this.dates[
-            Math.round(
-              target.offsetLeft /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - (task.type === "milestone" ? 1 : 0)
-          ];
+        let taskStartDate = this.calculateTaskStartDate(target, task);
+        let taskEndDate = this.calculateTaskEndDate(target, task);
 
-        let taskEndDate =
-          this.dates[
-            Math.round(
-              (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - 1
-          ];
-
-        // if taskStartDate is less than the gantt range
-        if (!taskStartDate) {
-          let dateDiff = Math.round(
-            target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
-          );
-          taskStartDate = this.add(new Date(this.dates[0]), dateDiff, "day");
-        }
-
-        // if taskEndDate is greater than the gantt range
-        if (!taskEndDate) {
-          let dateDiff =
-            Math.round(
-              (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - this.dates.length;
-          taskEndDate = this.add(
-            new Date(this.dates[this.dates.length - 1]),
-            dateDiff,
-            "day"
-          );
-        }
         this.updateTask(task, taskStartDate, taskEndDate, target);
 
         const onAutoScheduling = new CustomEvent("onAutoScheduling", {
@@ -8791,10 +8766,51 @@
         });
         this.element.dispatchEvent(onAutoScheduling);
       }
-      if (this.options.links.length > index) {
-        index = index + 1;
-        this.autoScheduling(this.options.links[index], index);
+    },
+
+    // calculateTaskStartDate by element
+    calculateTaskStartDate: function (target, task) {
+      let taskStartDate =
+        this.dates[
+          Math.round(
+            target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
+          ) - (task.type === "milestone" ? 1 : 0)
+        ];
+
+      // if taskStartDate is less than the gantt range
+      if (!taskStartDate) {
+        let dateDiff = Math.round(
+          target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
+        );
+        taskStartDate = this.add(new Date(this.dates[0]), dateDiff, "day");
       }
+      return taskStartDate;
+    },
+
+    // calculateTaskEndDate by element
+    calculateTaskEndDate: function (target, task) {
+      let taskEndDate =
+        this.dates[
+          Math.round(
+            (target.offsetLeft + target.offsetWidth) /
+              this.calculateGridWidth(task.start_date, "day")
+          ) - 1
+        ];
+
+      // if taskEndDate is greater than the gantt range
+      if (!taskEndDate) {
+        let dateDiff =
+          Math.round(
+            (target.offsetLeft + target.offsetWidth) /
+              this.calculateGridWidth(task.start_date, "day")
+          ) - this.dates.length;
+        taskEndDate = this.add(
+          new Date(this.dates[this.dates.length - 1]),
+          dateDiff,
+          "day"
+        );
+      }
+      return taskEndDate;
     },
 
     // check for has cycle or not
