@@ -2256,14 +2256,16 @@
         function handleMouseOver(e) {
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
+
           start_date = options.data[j].start_date;
           end_date = options.data[j].end_date;
-          if (options.data[j].children) {
-            let taskData = [...options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
+
           let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
@@ -2932,14 +2934,10 @@
         let start_date = new Date(this.options.data[j].start_date);
         let end_date = new Date(this.options.data[j].end_date);
 
-        if (
-          this.options.data[j].children &&
-          this.options.data[j].children.length > 0
-        ) {
-          let taskData = [...this.options.data[j].children];
-          let startAndEndDate = this.getStartAndEndDate(taskData);
-          start_date = startAndEndDate.startDate;
-          end_date = startAndEndDate.endDate;
+        if (this.options.data[j].children?.length) {
+          ({ start_date, end_date } = this.getLargeAndSmallDate(
+            this.options.data[j]
+          ));
         }
 
         let cellStartDate = this.options.startDate;
@@ -3112,12 +3110,15 @@
             ztGanttBarTask.classList.add("hovered");
           }
 
-          if (that.options.data[j].children) {
-            let taskData = [...that.options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+          start_date = that.options.data[j].start_date;
+          end_date = that.options.data[j].end_date;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
+
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
 
@@ -5554,28 +5555,12 @@
             start_date = taskData[l].start_date;
             end_date = taskData[l].end_date || taskData[l].start_date;
 
-            if (taskData[l].children && taskData[l].children.length > 0) {
-              let data = [...taskData[l].children];
-              let startAndEndDate = that.getStartAndEndDate(data);
-              let start = startAndEndDate.startDate;
-              let end = startAndEndDate.endDate;
-
-              const setDate = (date) => {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                return d;
-              };
-
-              const dates = [
-                setDate(start_date),
-                setDate(start),
-                setDate(end_date),
-                setDate(end),
-              ];
-
-              start_date = new Date(Math.min(...dates));
-              end_date = new Date(Math.max(...dates));
+            if (taskData[l]?.children?.length) {
+              ({ start_date, end_date } = that.getLargeAndSmallDate(
+                taskData[l]
+              ));
             }
+
             let tooltipContent = that.templates.tooltip_text(
               start_date,
               end_date,
@@ -6042,27 +6027,8 @@
         let start_date = taskData[k].start_date;
         let end_date = taskData[k].end_date || taskData[k].start_date;
 
-        if (taskData[k].children && taskData[k].children.length > 0) {
-          let data = [...taskData[k].children];
-          let startAndEndDate = this.getStartAndEndDate(data);
-          let start = startAndEndDate.startDate;
-          let end = startAndEndDate.endDate;
-
-          const setDate = (date) => {
-            const d = new Date(date);
-            d.setHours(0, 0, 0, 0);
-            return d;
-          };
-
-          const dates = [
-            setDate(start_date || start),
-            setDate(start),
-            setDate(end_date || end),
-            setDate(end),
-          ];
-
-          start_date = new Date(Math.min(...dates));
-          end_date = new Date(Math.max(...dates));
+        if (taskData[k]?.children?.length) {
+          ({ start_date, end_date } = this.getLargeAndSmallDate(taskData[k]));
         }
 
         let isCellGreater = true;
@@ -6226,27 +6192,8 @@
           let start_date = taskData[k].start_date;
           let end_date = taskData[k].end_date || taskData[k].start_date;
 
-          if (taskData[k].children && taskData[k].children.length > 0) {
-            let data = [...taskData[k].children];
-            let startAndEndDate = that.getStartAndEndDate(data);
-            let start = startAndEndDate.startDate;
-            let end = startAndEndDate.endDate;
-
-            const setDate = (date) => {
-              const d = new Date(date);
-              d.setHours(0, 0, 0, 0);
-              return d;
-            };
-
-            const dates = [
-              setDate(start_date),
-              setDate(start),
-              setDate(end_date),
-              setDate(end),
-            ];
-
-            start_date = new Date(Math.min(...dates));
-            end_date = new Date(Math.max(...dates));
+          if (taskData[k].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(taskData[k]));
           }
 
           let tooltipContent = that.templates.tooltip_text(
@@ -6666,13 +6613,14 @@
         function handleMouseOver(e) {
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
-          let start_date;
-          let end_date;
-          if (options.data[j].children) {
-            let taskData = [...options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+
+          let start_date = options.data[j]?.start_date;
+          let end_date = options.data[j]?.end_date;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
 
           let tooltipContent = that.templates.tooltip_text(
@@ -9617,28 +9565,10 @@
             let start_date = task.start_date;
             let end_date = task.end_date || task.start_date;
 
-            if (task.children && task.children.length > 0) {
-              let data = [...task.children];
-              let startAndEndDate = that.getStartAndEndDate(data);
-              let start = startAndEndDate.startDate;
-              let end = startAndEndDate.endDate;
-
-              const setDate = (date) => {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                return d;
-              };
-
-              const dates = [
-                setDate(start_date),
-                setDate(start),
-                setDate(end_date),
-                setDate(end),
-              ];
-
-              start_date = new Date(Math.min(...dates));
-              end_date = new Date(Math.max(...dates));
+            if (task.children?.length) {
+              ({ start_date, end_date } = that.getLargeAndSmallDate(task));
             }
+
             let tooltip = document.getElementById("zt-gantt-tooltip");
             tooltip.innerHTML = "";
 
@@ -9881,7 +9811,7 @@
       }
     },
 
-    calculateGanttHeight() {
+    calculateGanttHeight: function () {
       let totalGanttHeight = this.calculateScaleHeight(
         this.options.scales,
         this.options.scale_height,
@@ -9909,6 +9839,27 @@
       }
 
       return totalGanttHeight;
+    },
+
+    getLargeAndSmallDate: function (taskData) {
+      const { children, start_date, end_date } = taskData;
+      const startAndEndDate = this.getStartAndEndDate([...children]);
+      const { startDate, endDate } = startAndEndDate;
+
+      const setDate = (date) => {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+      };
+
+      const dates = [startDate, endDate, start_date, end_date];
+      const filteredDates = dates.filter((date) => date);
+      const sanitizedDates = filteredDates.map(setDate);
+
+      const minDate = new Date(Math.min(...sanitizedDates));
+      const maxDate = new Date(Math.max(...sanitizedDates));
+
+      return { start_date: minDate, end_date: maxDate };
     },
   };
 
