@@ -8387,8 +8387,8 @@
         // Calculate the differences between the mouse coordinates and the point coordinates
         let deltaX =
           mouseX -
-          (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft);
-        let deltaY = mouseY - (startY - rightPanelScroll.scrollTop);
+          (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft + window.scrollX);
+        let deltaY = mouseY - (startY - rightPanelScroll.scrollTop + window.scrollY);
 
         // Calculate the angle in radians
         let radians = Math.atan2(deltaY, deltaX);
