@@ -675,6 +675,7 @@
       ZT_Gantt.attachEvent("onAfterTaskDrag", (event) => {
         console.log("onAfterTaskDrag: ", event);
         console.log("onAfterTaskDrag??: ", ZT_Gantt.options.data);
+        // ZT_Gantt.autoScheduling(); 
       });
       ZT_Gantt.attachEvent("onBeforeTaskDrop", (event) => {
         console.log("onBeforeTaskDrop: ", event);

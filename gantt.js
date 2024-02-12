@@ -4215,34 +4215,17 @@
               }
             }
 
+            const gridWidth = that.calculateGridWidth(
+              task.start_date,
+              that.options.zoomLevel !== "hour" ? "day" : ""
+            );
+            
             // set the left and width to whole column
             taskBar.style.left =
-              Math.round(
-                taskBar.offsetLeft /
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  )
-              ) *
-                that.calculateGridWidth(
-                  task.start_date,
-                  that.options.zoomLevel !== "hour" ? "day" : ""
-                ) +
-              "px";
+              Math.round(taskBar.offsetLeft / gridWidth) * gridWidth + "px";
             if (type !== "move") {
               taskBar.style.width =
-                Math.round(
-                  taskBar.offsetWidth /
-                    that.calculateGridWidth(
-                      task.start_date,
-                      that.options.zoomLevel !== "hour" ? "day" : ""
-                    )
-                ) *
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  ) +
-                "px";
+                Math.round(taskBar.offsetWidth / gridWidth) * gridWidth + "px";
             }
           }
           if (task.type === "milestone") {
@@ -7367,7 +7350,11 @@
 
     // open a specific task tree
     openTask: function (id) {
-      if (id === null || id === undefined) {
+      if (
+        id === null ||
+        id === undefined ||
+        this.options.openedTasks.includes(id)
+      ) {
         return;
       }
 
