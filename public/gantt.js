@@ -4194,34 +4194,17 @@
               }
             }
 
+            const gridWidth = that.calculateGridWidth(
+              task.start_date,
+              that.options.zoomLevel !== "hour" ? "day" : ""
+            );
+
             // set the left and width to whole column
             taskBar.style.left =
-              Math.round(
-                taskBar.offsetLeft /
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  )
-              ) *
-                that.calculateGridWidth(
-                  task.start_date,
-                  that.options.zoomLevel !== "hour" ? "day" : ""
-                ) +
-              "px";
+              Math.round(taskBar.offsetLeft / gridWidth) * gridWidth + "px";
             if (type !== "move") {
               taskBar.style.width =
-                Math.round(
-                  taskBar.offsetWidth /
-                    that.calculateGridWidth(
-                      task.start_date,
-                      that.options.zoomLevel !== "hour" ? "day" : ""
-                    )
-                ) *
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  ) +
-                "px";
+                Math.round(taskBar.offsetWidth / gridWidth) * gridWidth + "px";
             }
           }
           if (task.type === "milestone") {
@@ -7339,7 +7322,11 @@
 
     // open a specific task tree
     openTask: function (id) {
-      if (id === null || id === undefined) {
+      if (
+        id === null ||
+        id === undefined ||
+        this.options.openedTasks.includes(id)
+      ) {
         return;
       }
 
@@ -7368,7 +7355,11 @@
         toggleTreeIcon.classList.add("zt-gantt-tree-open");
       }
 
-      this.createScrollbar(mainContainer, this.options);
+      let verScroll =
+        document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+      let horScroll =
+        document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+      this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
     },
 
     // set the new data to the existing data
@@ -8359,8 +8350,12 @@
         // Calculate the differences between the mouse coordinates and the point coordinates
         let deltaX =
           mouseX -
-          (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft + window.scrollX);
-        let deltaY = mouseY - (startY - rightPanelScroll.scrollTop + window.scrollY);
+          (startX -
+            (type === "left" ? -20 : 20) -
+            rightPanelScroll.scrollLeft +
+            window.scrollX);
+        let deltaY =
+          mouseY - (startY - rightPanelScroll.scrollTop + window.scrollY);
 
         // Calculate the angle in radians
         let radians = Math.atan2(deltaY, deltaX);
