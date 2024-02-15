@@ -3625,13 +3625,18 @@
             headerCell = document.getElementsByClassName("head-cell"),
             sidebarData = document.querySelector("#zt-gantt-left-grid");
 
+          if (that.element.offsetWidth - left <= 50) {
+            left -= 50;
+          }
+
+          let singleColIncrease = (left - startX) / that.options.columns.length;
+
           for (let j = 0; j < headerCell.length; j++) {
             let columns = document.querySelectorAll(
               `[data-column-index="${j}"]`
             );
-            let incrasedWidth =
-              headerCell[j].offsetWidth +
-              (left - startX) / that.options.columns.length;
+
+            let incrasedWidth = headerCell[j].offsetWidth + singleColIncrease;
 
             let resizerWrap = document.getElementById(
               `zt-gantt-col-resizer-wrap-${j}`
@@ -3686,12 +3691,7 @@
             that.calculateTimeLineWidth("current")
           ) {
             that.updateBody();
-          }
-
-          if (
-            that.calculateTimeLineWidth("updated") ===
-            that.calculateTimeLineWidth("current")
-          ) {
+          } else {
             let mainContainer = document.querySelector(".zt-gantt-layout");
             that.createScrollbar(mainContainer, that.options);
           }
@@ -3703,8 +3703,9 @@
       // resize the sidebar
       function resize(e) {
         sidebarResizing = true;
-        let size = `${sidebarStartWidth + (e.x - startX)}px`;
-        resizer.style.left = size;
+        let size = sidebarStartWidth + (e.x - startX);
+        if (that.element.offsetWidth - size <= 50) return;
+        resizer.style.left = `${size}px`;
       }
     },
 
