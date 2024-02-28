@@ -72,6 +72,7 @@
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
         taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
+        mouseScroll: opt.mouseScroll || false,
         dateFormat: {
           month_full: [
             "January",
@@ -2524,6 +2525,20 @@
     // create header of scale
     createHeaderScale: function (dates, calendar, options) {
       this.options.ganttHeight = this.calculateGanttHeight();
+      this.attachEvent("onTaskToggle", () => {
+        const isVerScrollExist =
+          this.options.ganttHeight > this.element.offsetHeight;
+        const tempHeight = this.calculateGanttHeight();
+
+        if (
+          (!isVerScrollExist && tempHeight > this.element.offsetHeight) ||
+          (isVerScrollExist && tempHeight < this.element.offsetHeight)
+        ) {
+          this.options.ganttHeight = tempHeight;
+          this.updateBody();
+        }
+      });
+
       let rightScale = document.createElement("div");
       rightScale.classList.add("zt-gantt-scale");
       rightScale.style.height = this.calculateScaleHeight(
@@ -3960,7 +3975,9 @@
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
       ) {
-        this.updateBody();
+        setTimeout(() => {
+          this.updateBody();
+        }, 0);
       } else {
         let mainContainer = document.querySelector(".zt-gantt-layout");
         this.createScrollbar(mainContainer, this.options);
@@ -5018,7 +5035,12 @@
 
       let sidebarWidth = 0;
       if (sidebar) {
-        sidebarWidth = sidebar.offsetWidth;
+        let headCell = document.querySelectorAll(".head-cell");
+        if (headCell.length !== this.options.columns.length) {
+          sidebarWidth = totalWidth;
+        } else {
+          sidebarWidth = sidebar.offsetWidth;
+        }
       } else {
         sidebarWidth = totalWidth;
       }
@@ -5033,12 +5055,13 @@
         elementWidth -= totalWidth;
       }
 
-      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
-        elementWidth -= 22;
-      } else if (this.options.ganttHeight > this.element.offsetHeight) {
+      if (
+        sidebar?.offsetHeight < sidebar?.scrollHeight ||
+        this.options.ganttHeight > this.element.offsetHeight
+      ) {
         elementWidth -= 22;
       } else {
-        elementWidth -= 2;
+        elementWidth -= sidebar?.offsetHeight ? 2 : 0;
       }
 
       let minWidth = this.options.minColWidth;
@@ -5516,6 +5539,7 @@
                 taskData[l]
               ));
             }
+
             let tooltipContent = that.templates.tooltip_text(
               start_date,
               end_date,
@@ -6958,6 +6982,10 @@
           }
         }
       }
+
+      if(this.options.mouseScroll && !this.options.addTaskOnDrag){
+        this.addMouseScroll(verticalScroll, horScroll);
+      }
     },
 
     resizeTimeline: function (resizer, resizerLine, options) {
@@ -7117,7 +7145,6 @@
         return data.reduce((result, item) => {
           if (condition(item)) {
             if (!that.options.splitTask && !findRecursive) {
-              // find exact match tasks
               const { children, ...flatItem } = item;
               result.push(flatItem);
             } else {
@@ -7354,7 +7381,6 @@
         toggleTreeIcon.classList.remove("zt-gantt-tree-close");
         toggleTreeIcon.classList.add("zt-gantt-tree-open");
       }
-
       let verScroll =
         document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
       let horScroll =
@@ -8107,11 +8133,12 @@
     deleteLink: function (id) {
       let link = document.querySelector(`[link-id="${id}"]`);
       if (link !== undefined && link !== null) {
-        let linkobj;
         link.remove();
-        let linkIndex = this.options.links.findIndex((obj) => obj.id == id);
-        linkobj = this.options.links.filter((obj) => obj.id == id);
-        this.options.links.splice(linkIndex, 1);
+        const linkIndex = this.options.links.findIndex((obj) => obj.id == id);
+        const linkobj = this.options.links.find((obj) => obj.id === id) || null;
+        if (linkIndex !== -1) {
+          this.options.links.splice(linkIndex, 1);
+        }
         const onDeleteLink = new CustomEvent("onDeleteLink", {
           detail: {
             link: linkobj,
@@ -8153,12 +8180,15 @@
         autoScroll = false;
         document.removeEventListener("mousemove", strechLink, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
+
         let selectedTarget = document.querySelector(".selected-target");
         if (selectedTarget !== undefined && selectedTarget !== null) {
           selectedTarget.classList.remove("selected-target");
         }
+
         barsArea.classList.remove("zt-gantt-link-streching");
         source.classList.remove("source");
+
         if (strech) {
           document.querySelector(".zt-gantt-link-direction").remove();
           let linkType =
@@ -8169,7 +8199,7 @@
               : type === "left" && targetType === "right"
               ? 3
               : 0;
-          let isLinkExist = that.options.links.find(
+          let isLinkExist = that.options.links.some(
             (obj) =>
               obj.source == sourceId &&
               obj.target == targetId &&
@@ -8200,8 +8230,7 @@
             targetId !== undefined &&
             targetId !== null &&
             targetId != sourceId &&
-            isLinkExist == undefined &&
-            isLinkExist == null &&
+            !isLinkExist &&
             !hasCycle
           ) {
             link = {
@@ -9843,6 +9872,42 @@
       const maxDate = new Date(Math.max(...sanitizedDates));
 
       return { start_date: minDate, end_date: maxDate };
+    },
+
+    addMouseScroll: function (verticalScroll, horizontalScroll) {
+      const timeLine = document.querySelector("#zt-gantt-right-cell");
+      timeLine.addEventListener("mousedown", handleMouseDown);
+      let startX,
+        startY,
+        scroll = false,
+        that = this;
+
+      function handleMouseDown(event) {
+        if(event.target.closest('.zt-gantt-bar-task')) return;
+
+        timeLine.addEventListener("mouseup", handleMouseUp, false);
+        timeLine.addEventListener("mousemove", scrollTimeline, false);
+        startX = event.x;
+        startY = event.y;
+        scroll = true;
+        console.log(startX, "startX");
+      }
+
+      function handleMouseUp(e) {
+        scroll = false;
+        timeLine.removeEventListener("mousemove", scrollTimeline, false);
+        timeLine.removeEventListener("mouseup", handleMouseUp, false);
+      }
+
+      function scrollTimeline(e) {
+        if (!scroll) return;
+        let xScroll = startX - e.x;
+        let yScroll = startY - e.clientY;
+        verticalScroll.scrollTop += yScroll;
+        horizontalScroll.scrollLeft += xScroll;
+        startX = e.x;
+        startY = e.clientY;
+      }
     },
   };
 
