@@ -355,6 +355,10 @@
       ZT_Gantt.options.updateLinkOnDrag = true;
       ZT_Gantt.options.splitTask = false;
       // ZT_Gantt.templates.showLightBox = false;
+      
+      // new feature of gantt -----
+      ZT_Gantt.options.mouseScroll = true;
+
       ZT_Gantt.options.addLinks = (task) => {
         if (task.parent === 0) {
           return false;
@@ -475,7 +479,7 @@
       ZT_Gantt.options.scale_height = 30;
       ZT_Gantt.options.row_height = 24;
       ZT_Gantt.options.minColWidth = 80;
-      ZT_Gantt.options.addTaskOnDrag = true;
+      ZT_Gantt.options.addTaskOnDrag = false;
       ZT_Gantt.options.taskProgress = true;
 
       // Gantt layout to implement columns in right side
