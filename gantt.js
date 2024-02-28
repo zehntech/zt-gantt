@@ -72,6 +72,7 @@
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
         taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
+        mouseScroll: opt.mouseScroll || false,
         dateFormat: {
           month_full: [
             "January",
@@ -6867,6 +6868,10 @@
           }
         }
       }
+
+      if(this.options.mouseScroll && !this.options.addTaskOnDrag){
+        this.addMouseScroll(verticalScroll, horScroll);
+      }
     },
 
     resizeTimeline: function (resizer, resizerLine, options) {
@@ -7026,7 +7031,6 @@
         return data.reduce((result, item) => {
           if (condition(item)) {
             if (!that.options.splitTask && !findRecursive) {
-              // find exact match tasks
               const { children, ...flatItem } = item;
               result.push(flatItem);
             } else {
@@ -9731,6 +9735,42 @@
       const maxDate = new Date(Math.max(...sanitizedDates));
 
       return { start_date: minDate, end_date: maxDate };
+    },
+
+    addMouseScroll: function (verticalScroll, horizontalScroll) {
+      const timeLine = document.querySelector("#zt-gantt-right-cell");
+      timeLine.addEventListener("mousedown", handleMouseDown);
+      let startX,
+        startY,
+        scroll = false,
+        that = this;
+
+      function handleMouseDown(event) {
+        if(event.target.closest('.zt-gantt-bar-task')) return;
+
+        timeLine.addEventListener("mouseup", handleMouseUp, false);
+        timeLine.addEventListener("mousemove", scrollTimeline, false);
+        startX = event.x;
+        startY = event.y;
+        scroll = true;
+        console.log(startX, "startX");
+      }
+
+      function handleMouseUp(e) {
+        scroll = false;
+        timeLine.removeEventListener("mousemove", scrollTimeline, false);
+        timeLine.removeEventListener("mouseup", handleMouseUp, false);
+      }
+
+      function scrollTimeline(e) {
+        if (!scroll) return;
+        let xScroll = startX - e.x;
+        let yScroll = startY - e.clientY;
+        verticalScroll.scrollTop += yScroll;
+        horizontalScroll.scrollLeft += xScroll;
+        startX = e.x;
+        startY = e.clientY;
+      }
     },
   };
 
