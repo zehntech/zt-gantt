@@ -73,6 +73,10 @@
         addTaskOnDrag: opt.addTaskOnDrag || false,
         taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
         mouseScroll: opt.mouseScroll || false,
+        ctrlKeyRequiredForMouseScroll:
+          opt.ctrlKeyRequiredForMouseScroll !== undefined
+            ? opt.ctrlKeyRequiredForMouseScroll
+            : true,
         dateFormat: {
           month_full: [
             "January",
@@ -9742,10 +9746,15 @@
       timeLine.addEventListener("mousedown", handleMouseDown);
       let startX,
         startY,
-        isScrolling = false;
+        isScrolling = false,
+        that = this;
 
       function handleMouseDown(event) {
-        if (event.target.closest(".zt-gantt-bar-task")) return;
+        if (
+          (that.options.ctrlKeyRequiredForMouseScroll && !event.ctrlKey) ||
+          event.target.closest(".zt-gantt-bar-task")
+        )
+          return;
 
         document.addEventListener("mouseup", handleMouseUp, false);
         document.addEventListener("mousemove", scrollTimeline, false);
