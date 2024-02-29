@@ -9742,34 +9742,36 @@
       timeLine.addEventListener("mousedown", handleMouseDown);
       let startX,
         startY,
-        scroll = false,
-        that = this;
+        isScrolling = false;
 
       function handleMouseDown(event) {
-        if(event.target.closest('.zt-gantt-bar-task')) return;
+        if (event.target.closest(".zt-gantt-bar-task")) return;
 
-        timeLine.addEventListener("mouseup", handleMouseUp, false);
-        timeLine.addEventListener("mousemove", scrollTimeline, false);
-        startX = event.x;
-        startY = event.y;
-        scroll = true;
-        console.log(startX, "startX");
+        document.addEventListener("mouseup", handleMouseUp, false);
+        document.addEventListener("mousemove", scrollTimeline, false);
+
+        startX = event.clientX;
+        startY = event.clientY;
+        isScrolling = true;
       }
 
-      function handleMouseUp(e) {
-        scroll = false;
-        timeLine.removeEventListener("mousemove", scrollTimeline, false);
-        timeLine.removeEventListener("mouseup", handleMouseUp, false);
+      function handleMouseUp(event) {
+        isScrolling = false;
+        document.removeEventListener("mousemove", scrollTimeline, false);
+        document.removeEventListener("mouseup", handleMouseUp, false);
       }
 
-      function scrollTimeline(e) {
-        if (!scroll) return;
-        let xScroll = startX - e.x;
-        let yScroll = startY - e.clientY;
+      function scrollTimeline(event) {
+        if (!isScrolling) return;
+
+        const xScroll = startX - event.clientX;
+        const yScroll = startY - event.clientY;
+
         verticalScroll.scrollTop += yScroll;
         horizontalScroll.scrollLeft += xScroll;
-        startX = e.x;
-        startY = e.clientY;
+
+        startX = event.clientX;
+        startY = event.clientY;
       }
     },
   };
