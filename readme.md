@@ -111,7 +111,7 @@ gantt.render();
   ---  
   
 <a name="features"></a>
-## 3. Features     
+## Features     
 
   * **Task Linking:** Four types - finish-to-start, start-to-start, finish-to-finish, start-to-finish.      
 
