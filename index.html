@@ -357,7 +357,8 @@
       // ZT_Gantt.templates.showLightBox = false;
       
       // new feature of gantt -----
-      ZT_Gantt.options.mouseScroll = true;
+      ZT_Gantt.options.mouseScroll = true; // default is false
+      ZT_Gantt.options.ctrlKeyRequiredForMouseScroll = true; // default is true
 
       ZT_Gantt.options.addLinks = (task) => {
         if (task.parent === 0) {

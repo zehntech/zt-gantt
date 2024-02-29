@@ -73,6 +73,10 @@
         addTaskOnDrag: opt.addTaskOnDrag || false,
         taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
         mouseScroll: opt.mouseScroll || false,
+        ctrlKeyRequiredForMouseScroll:
+          opt.ctrlKeyRequiredForMouseScroll !== undefined
+            ? opt.ctrlKeyRequiredForMouseScroll
+            : true,
         dateFormat: {
           month_full: [
             "January",
@@ -7126,6 +7130,7 @@
       return findObjectById(data, id);
     },
 
+    // filter tasks based on user conditions
     filterTask: function (condition, isFilter, findRecursive = false) {
       if (!this.searchedData) {
         this.oldOpenedTasks = [...this.options.openedTasks];
@@ -7133,13 +7138,13 @@
 
       this.selectedRow = undefined;
       const allData = [...this.options.data];
-      let that = this;
+      const that = this;
       let parents = [];
 
-      const data = filterAndFlatten(allData, condition);
+      const filteredData = filterAndFlatten(allData, condition);
 
       if (isFilter === true) {
-        this.searchedData = data;
+        this.searchedData = filteredData;
         this.render();
       } else {
         this.searchedData = undefined;
@@ -7158,6 +7163,7 @@
               result.push(item);
               let then = that;
               pushParent(item);
+
               function pushParent(item) {
                 if (
                   item.parent &&
@@ -7168,9 +7174,7 @@
                   let parentItem = then.getTask(item.parent);
                   if (parentItem) {
                     parentItem.children = parentItem.children.filter(
-                      (child) => {
-                        return child.id == item.id;
-                      }
+                      (child) => child.id == item.id
                     );
                     result.push(parentItem);
                     pushParent(parentItem);
@@ -7252,7 +7256,7 @@
       }
     },
 
-    // attach evnets
+    // attach events
     attachEvent: function (name, callback) {
       this.element.addEventListener(name, handleEvent);
       const eventNamesToCheck = [
@@ -9885,10 +9889,15 @@
       timeLine.addEventListener("mousedown", handleMouseDown);
       let startX,
         startY,
-        isScrolling = false;
+        isScrolling = false,
+        that = this;
 
       function handleMouseDown(event) {
-        if (event.target.closest(".zt-gantt-bar-task")) return;
+        if (
+          (that.options.ctrlKeyRequiredForMouseScroll && !event.ctrlKey) ||
+          event.target.closest(".zt-gantt-bar-task")
+        )
+          return;
 
         document.addEventListener("mouseup", handleMouseUp, false);
         document.addEventListener("mousemove", scrollTimeline, false);
