@@ -6993,7 +6993,11 @@
         }
       }
 
-      if (this.options.mouseScroll && !this.options.addTaskOnDrag) {
+      if (
+        this.options.mouseScroll &&
+        (this.options.ctrlKeyRequiredForMouseScroll ||
+          !this.options.addTaskOnDrag)
+      ) {
         this.addMouseScroll(verticalScroll, horScroll);
       }
     },
@@ -8533,6 +8537,12 @@
       timeLine.addEventListener("mousedown", handleMouseDown);
 
       function handleMouseDown(e) {
+        if (
+          that.options.mouseScroll &&
+          that.options.ctrlKeyRequiredForMouseScroll &&
+          e.ctrlKey
+        )
+          return;
         taskBarArea = document.querySelector("#zt-gantt-bars-area");
         timeLineContainer = document.querySelector("#zt-gantt-right-cell");
         startX =
