@@ -318,6 +318,12 @@
       let ZT_Gantt = new ztGantt(element);
       window.ztGantt = ZT_Gantt;
 
+      const textEditor = {type: "text", map_to: "text"};
+      const dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), 
+            max: new Date(2019, 0, 1)};
+      const numberEditor = {type: "number", map_to: "progress", min:0, max: 100};
+      const selectEditor = {type: "select", map_to: "priority", options:["Low","Medium","High"]};
+
       ZT_Gantt.options.columns = [
         {
           name: "text",
@@ -330,6 +336,7 @@
           template: (task) => {
             return `<span>${task.text}</span>`;
           },
+          editor: textEditor
         },
         {
           name: "progress",
@@ -343,7 +350,36 @@
           template: (task) => {
             return `<span>${task.progress || 0}</span>`;
           },
+          // editor: numberEditor
         },
+        // {
+        //   name: "start_date",
+        //   width: 245,
+        //   min_width: 80,
+        //   max_width: 300,
+        //   tree: false,
+        //   label: "Start Date",
+        //   resize: true,
+        //   align: "center",
+        //   template: (task) => {
+        //     return `<span>${task.start_date || 0}</span>`;
+        //   },
+        //   editor: dateEditor
+        // },
+        // {
+        //   name: "priority",
+        //   width: 245,
+        //   min_width: 80,
+        //   max_width: 300,
+        //   tree: false,
+        //   label: "Priority",
+        //   resize: true,
+        //   align: "center",
+        //   template: (task) => {
+        //     return `<span>${task?.priority || ""}</span>`;
+        //   },
+        //   editor: selectEditor
+        // },
       ];
 
       ZT_Gantt.options.date_format = "%m-%d-%Y";

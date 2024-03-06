@@ -93,4 +93,7 @@
 
 .head-cell .zt-gantt-sort.zt-gantt-asc {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAANCAYAAABlyXS1AAAARUlEQVR42mNgQAL1/VP/M2ADIIntF2/9x1AAlrh0C47hCmA60DFYwX88gIFGwNDY5D8uDFbg7hvwHx2jmIBTAlkB0e4BAEjlaNtBWJPnAAAAAElFTkSuQmCC);
+
+.zt-gantt-layout {
+  color-scheme: dark;
 }

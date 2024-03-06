@@ -2527,6 +2527,17 @@
           }
           cell.append(content);
           dataItem.append(cell);
+          if (this.options.columns[k]?.editor) {
+            cell.addEventListener("click", (e) => {
+              if(e.target.classList.contains("zt-gantt-tree-icon")) return;
+              this.addInlineEditor(
+                this.options.data[j],
+                this.options.columns[k].editor,
+                cell,
+                leftDataContainer
+              );
+            });
+          }
         }
 
         let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
@@ -3254,6 +3265,15 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress =
+              progressPer > 100 ? 100 : this.options.data[j].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -5828,6 +5848,17 @@
             }
             cell.append(content);
             dataItem.append(cell);
+            if (this.options.columns[k]?.editor) {
+              cell.addEventListener("click", (e) => {
+                if(e.target.classList.contains("zt-gantt-tree-icon")) return;
+                this.addInlineEditor(
+                  taskData[l],
+                  this.options.columns[k].editor,
+                  cell,
+                  leftDataContainer
+                );
+              });
+            }
           }
 
           let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
@@ -6344,6 +6375,14 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress = progressPer > 100 ? 100 : taskData[k].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -9729,6 +9768,14 @@
               progressPer > 100 ? 100 : progressPer
             }%`;
 
+            // update the task progress onAfterTaskUpdate
+            this.attachEvent("onAfterTaskUpdate", () => {
+              let progress = progressPer > 100 ? 100 : task.progress || 0;
+              taskProgress.style.width = `${progress}%`;
+
+              taskProgressDrag.style.left = `${progress}%`;
+            });
+
             ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
             this.dragTaskProgress(
               taskProgressDrag,
@@ -10001,6 +10048,89 @@
           (o, key) => (o && o[key] !== undefined ? o[key] : null),
           object
         );
+
+    addInlineEditor: function (
+      cellData,
+      editorData,
+      cell,
+      sidebarDataContainer
+    ) {
+      const editorWraper = document.createElement("div");
+      editorWraper.classList.add("zt-gantt-inline-editor-wraper");
+      editorWraper.style.top = `${cell.offsetTop}px`;
+      editorWraper.style.left = `${cell.offsetLeft}px`;
+      editorWraper.style.height = `${cell.offsetHeight}px`;
+      editorWraper.style.width = `${cell.offsetWidth}px`;
+
+      let editor;
+
+      if (
+        editorData.type == "number" ||
+        editorData.type == "date" ||
+        editorData.type == "text"
+      ) {
+        editor = document.createElement("input");
+        editor.type = editorData.type;
+        editor.name = editorData.map_to;
+        if (editorData.type == "date") {
+          let date = this.formatDateToString(
+            "%Y-%m-%d",
+            cellData[editorData.map_to]
+          );
+          editor.value = date;
+        } else {
+          editor.value = cellData[editorData.map_to];
+          editor.min = editorData.min;
+          editor.max = editorData.max;
+        }
+      } else if (editorData.type == "select") {
+        editor = document.createElement("select");
+        editor.type = editorData.value;
+        editor.name = editorData.map_to;
+        editor.value = cellData[editorData.map_to];
+        editorData.options.forEach((element) => {
+          let option = document.createElement("option");
+          option.innerHTML = element;
+          option.value = element;
+          editor.append(option);
+        });
+      }
+      editorWraper.append(editor);
+
+      sidebarDataContainer.append(editorWraper);
+      editor.focus();
+      editor.addEventListener("blur", () => {
+        // handle custom event
+        const onBeforeSave = new CustomEvent("onBeforeSave", {
+          detail: {
+            task: cellData,
+            columnName: editorData.map_to,
+            oldValue: cellData[editorData.map_to],
+            newValue: editor.value,
+          },
+        });
+        this.element.dispatchEvent(onBeforeSave);
+
+        cellData[editorData.map_to] = editor.value;
+        this.updateTaskData(cellData);
+        this.removeInlineEditor(editorWraper);
+        // handle custom event
+        const onSave = new CustomEvent("onSave", {
+          detail: {
+            task: cellData,
+            columnName: editorData.map_to,
+            oldValue: cellData[editorData.map_to],
+            newValue: editor.value,
+          },
+        });
+        this.element.dispatchEvent(onSave);
+      });
+    },
+
+    removeInlineEditor: function (editor) {
+      if (editor) {
+        editor.remove();
+      }
     },
   };
 
