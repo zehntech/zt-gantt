@@ -146,6 +146,7 @@
   line-height: inherit;
   white-space: nowrap;
   overflow: hidden;
+  position: relative;
 }
 
 .zt-gantt-calendar-cell {
@@ -1105,6 +1106,24 @@
 .zt-gantt-bar-milestone .zt-gantt-task-color-picker input {
   margin-left: -25px;
 }
+
+.head-cell .zt-gantt-sort {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  width: 7px;
+  height: 13px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: translateY(-50%);
+}
+
+.head-cell .zt-gantt-sort.zt-gantt-asc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAANCAYAAABlyXS1AAAARUlEQVR4nGNgQAKGxib/GbABkIS7b8B/DAUwCRiGK0CXwFBAb1DfP/U/LszwHwi2X7qFgUEArBtdAVwCBmAKMCSQFSDzAWXXaOHsXeqkAAAAAElFTkSuQmCC);
+}
+
+.head-cell .zt-gantt-sort.zt-gantt-desc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAANCAYAAABlyXS1AAAARUlEQVR42mNgQAL1/VP/M2ADIIntF2/9x1AAlrh0C47hCmA60DFYwX88gIFGwNDY5D8uDFbg7hvwHx2jmIBTAlkB0e4BAEjlaNtBWJPnAAAAAElFTkSuQmCC);
 
 .zt-gantt-inline-editor-wraper {
   position: absolute;

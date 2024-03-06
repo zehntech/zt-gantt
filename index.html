@@ -316,6 +316,7 @@
 
       let element = document.getElementById("ZT-Gantt");
       let ZT_Gantt = new ztGantt(element);
+      window.ztGantt = ZT_Gantt;
 
       const textEditor = {type: "text", map_to: "text"};
       const dateEditor = {type: "date", map_to: "start_date", min: new Date(2018, 0, 1), 
@@ -390,6 +391,7 @@
       ZT_Gantt.options.todayMarker = true;
       ZT_Gantt.options.updateLinkOnDrag = true;
       ZT_Gantt.options.splitTask = false;
+      ZT_Gantt.options.sort = true;
       // ZT_Gantt.templates.showLightBox = false;
       
       // new feature of gantt -----

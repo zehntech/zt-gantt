@@ -77,6 +77,7 @@
           opt.ctrlKeyRequiredForMouseScroll !== undefined
             ? opt.ctrlKeyRequiredForMouseScroll
             : true,
+        sort: opt.sort || false,
         dateFormat: {
           month_full: [
             "January",
@@ -2142,6 +2143,37 @@
         headCell.style.width = (options.columns[i].width || 80) + "px";
         headCell.innerHTML = options.columns[i].label;
         headCellContainer.append(headCell);
+
+        if (this.options.sort) {
+          headCell.addEventListener("click", () => {
+            let isAsc = !this.options?.sortOption?.isAsc;
+            const sortBy = options.columns[i]?.name;
+
+            if (sortBy !== this.options?.sortOption?.sortBy) {
+              isAsc = true; // Set isAsc to true by default if sortBy is different
+            }
+            this.options.sortOption = {
+              sortBy: sortBy,
+              isAsc,
+            };
+            this.sort(sortBy, isAsc);
+          });
+
+          // add sort icon to the current sorting column
+          if (
+            this.options?.sortOption &&
+            this.options?.sortOption?.sortBy == options.columns[i]?.name
+          ) {
+            const sortIcon = document.createElement("div");
+            let isAsc = !this.options?.sortOption?.isAsc;
+            sortIcon.classList.add(
+              "zt-gantt-sort",
+              isAsc ? "zt-gantt-asc" : "zt-gantt-desc"
+            );
+            headCell.appendChild(sortIcon);
+          }
+        }
+
         if (i < options.columns.length) {
           let resizerWrap = document.createElement("div");
           resizerWrap.classList.add("zt-gantt-col-resizer-wrap");
@@ -9983,6 +10015,39 @@
         startY = event.clientY;
       }
     },
+
+    // sort Gantt data
+    sort: function (sortBy, isAsc) {
+      const sortOrderMultiplier = isAsc ? 1 : -1;
+
+      this.originalData.sort((a, b) => {
+        let valueA = this.getFieldValue(a, sortBy);
+        let valueB = this.getFieldValue(b, sortBy);
+
+        // Handle null values
+        if (valueA === null) {
+          valueA = ""; // Treat null as an empty string
+        }
+        if (valueB === null) {
+          valueB = ""; // Treat null as an empty string
+        }
+        valueA = typeof valueA === "string" ? valueA.toLowerCase() : valueA;
+        valueB = typeof valueB === "string" ? valueB.toLowerCase() : valueB;
+        return (
+          (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrderMultiplier
+        );
+      });
+      this.render();
+    },
+
+    // Function to safely get the field value from the object
+    getFieldValue: function (object, fieldName) {
+      return fieldName
+        .split(".")
+        .reduce(
+          (o, key) => (o && o[key] !== undefined ? o[key] : null),
+          object
+        );
 
     addInlineEditor: function (
       cellData,
