@@ -1105,3 +1105,13 @@
 .zt-gantt-bar-milestone .zt-gantt-task-color-picker input {
   margin-left: -25px;
 }
+
+.zt-gantt-inline-editor-wraper {
+  position: absolute;
+}
+
+.zt-gantt-inline-editor-wraper > input,
+.zt-gantt-inline-editor-wraper > select {
+  height: 100%;
+  width: 100%;
+}
