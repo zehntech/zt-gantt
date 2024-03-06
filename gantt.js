@@ -2529,7 +2529,7 @@
           dataItem.append(cell);
           if (this.options.columns[k]?.editor) {
             cell.addEventListener("click", (e) => {
-              if(e.target.classList.contains("zt-gantt-tree-icon")) return;
+              if (e.target.classList.contains("zt-gantt-tree-icon")) return;
               this.addInlineEditor(
                 this.options.data[j],
                 this.options.columns[k].editor,
@@ -5850,7 +5850,7 @@
             dataItem.append(cell);
             if (this.options.columns[k]?.editor) {
               cell.addEventListener("click", (e) => {
-                if(e.target.classList.contains("zt-gantt-tree-icon")) return;
+                if (e.target.classList.contains("zt-gantt-tree-icon")) return;
                 this.addInlineEditor(
                   taskData[l],
                   this.options.columns[k].editor,
@@ -10048,6 +10048,7 @@
           (o, key) => (o && o[key] !== undefined ? o[key] : null),
           object
         );
+    },
 
     addInlineEditor: function (
       cellData,
