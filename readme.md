@@ -38,7 +38,7 @@ To create a basic Gantt Chart, follow these steps:
 <link rel="stylesheet" href="gantt.css" type="text/css">
 ~~~  
 
-**Step 1:** Insert the markup:  
+**Step 2:** Insert the markup:  
 ~~~html
 <div id="gantt_here" style='width:100%; height:100vh;'></div>
 ~~~  
@@ -61,18 +61,7 @@ gantt.options.columns = [
       return `<span>${task.parent == 0 ? task.text : task.subject}</span>`;
     },
   },
-  {
-    name: "estimated_hours",
-    width: 100,
-    min_width: 80,
-    tree: false,
-    align: "center",
-    label: "Planned Hour",
-    resize: true,
-    template: (task) => {
-      return `<span>${task.estimated_hours || ""}</span>`;
-    },
-  },
+ ...
 ];
 
 gantt.options.data = [
@@ -85,60 +74,9 @@ gantt.options.data = [
     parent: 1,
     progress: 60,
   },
-  {
-    id: 3,
-    text: "Task #2",
-    start_date: "05-05-2023",
-    end_date: "05-05-2023",
-    parent: 1,
-    progress: 30,
-  },
-  {
-    id: 5,
-    text: "SubTask #1",
-    start_date: "05-05-2023",
-    end_date: "05-05-2023",
-    parent: 3,
-    progress: 10,
-  },
-  {
-    id: 6,
-    text: "SubTask #2",
-    start_date: "05-05-2023",
-    end_date: "05-05-2023",
-    parent: 3,
-    progress: 80,
-  },
-  {
-    id: 12,
-    text: "Final Milestone",
-    start_date: "06-17-2023",
-    end_date: "06-17-2023",
-    parent: 8,
-    type: "milestone",
-  },
-  {
-    id: 7,
-    text: "SubTask #3",
-    start_date: "05-05-2023",
-    end_date: "05-05-2023",
-    parent: 3,
-    progress: 45,
-  },
-  { id: 4, text: "Task #3", parent: 1, progress: 15 },
-  { id: 8, text: "Project 2", parent: 0, progress: 55 },
-  { id: 9, text: "Project 3", parent: 0, progress: 65 },
-  { id: 10, text: "Project 4", parent: 0, progress: 75 },
-  { id: 11, text: "Project 5", progress: 100 },
-  {
-    id: 13,
-    text: "Next Milestone",
-    start_date: "06-17-2023",
-    end_date: "06-17-2023",
-    parent: 8,
-    type: "milestone",
-  },
+  ...
 ];
+
 gantt.options.scales = [
   {
     unit: "week",
@@ -153,6 +91,7 @@ gantt.options.scales = [
     format: "%d %D",
   },
 ];
+
 gantt.options.links = [
   { id: 1, source: 1, target: 2, type: 0 },
   { id: 2, source: 2, target: 3, type: 1 },
@@ -172,7 +111,7 @@ gantt.render();
   ---  
   
 <a name="features"></a>
-## 3. Features     
+## Features     
 
   * **Task Linking:** Four types - finish-to-start, start-to-start, finish-to-finish, start-to-finish.      
 
@@ -196,7 +135,8 @@ gantt.render();
   * **Full Screen:** View your Gantt in full screen for an immersive experience.    
   * **Task Management:** Expand, collapse, add markers, modify, or delete tasks.     
   * **Auto Scheduling:** Tasks are automatically scheduled.   
-  * **Date Selection:** Easily select start and end dates through drag and drop.    
+  * **Date Selection:** Easily select start and end dates through drag and drop. 
+  * **Mouse Scroll:** Scroll timeline using mouse click.   
   * **Aesthetics:** Customize the task colors via a color picker.   
 
   <a href="https://zehntech.github.io/zt-gantt/">
