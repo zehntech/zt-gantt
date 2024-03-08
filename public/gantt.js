@@ -65,12 +65,18 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag: opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
+        updateLinkOnDrag:
+          opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
         splitTask: opt.splitTask || false,
         links: opt.links || [],
         arrangeData: true,
         addTaskOnDrag: opt.addTaskOnDrag || false,
         taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
+        mouseScroll: opt.mouseScroll || false,
+        ctrlKeyRequiredForMouseScroll:
+          opt.ctrlKeyRequiredForMouseScroll !== undefined
+            ? opt.ctrlKeyRequiredForMouseScroll
+            : true,
         dateFormat: {
           month_full: [
             "January",
@@ -1675,6 +1681,7 @@
         },
         localLang: opt.localLang || "en",
         currentLanguage: {},
+        ganttHeight: 0,
       };
     },
 
@@ -1714,6 +1721,11 @@
           },
         grid_file:
           templ.grid_file ||
+          function (task) {
+            return " ";
+          },
+        grid_blank:
+          templ.grid_blank ||
           function (task) {
             return " ";
           },
@@ -2218,16 +2230,16 @@
 
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: taskData[k]
-              },
+            detail: {
+              task: that.options.data[j],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -2249,14 +2261,16 @@
         function handleMouseOver(e) {
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
+
           start_date = options.data[j].start_date;
           end_date = options.data[j].end_date;
-          if (options.data[j].children) {
-            let taskData = [...options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
+
           let tooltipContent = that.templates.tooltip_text(
             start_date,
             end_date,
@@ -2356,6 +2370,8 @@
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
 
+          ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
+
           // content of the column
           content.innerHTML =
             options.columns[k].template(options.data[j]) ||
@@ -2423,6 +2439,10 @@
                   `zt-gantt-child-${options.data[j].id}`
                 );
 
+                const isTaskOpened = toggleTreeIcon.classList.contains(
+                  "zt-gantt-tree-close"
+                );
+
                 if (toggleTreeIcon.classList.contains("zt-gantt-tree-close")) {
                   that.options.openedTasks.push(options.data[j].id);
                   that.options.openedTasks = [
@@ -2458,6 +2478,15 @@
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
                 toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
                 that.createScrollbar(mainContainer, options);
+
+                // custom event of toggle tree
+                const onTaskToggle = new CustomEvent("onTaskToggle", {
+                  detail: {
+                    task: options.data[j],
+                    isTaskOpened,
+                  },
+                });
+                that.element.dispatchEvent(onTaskToggle);
               });
             } else if (!this.options.splitTask) {
               cell.append(ztGanttBlank);
@@ -2502,6 +2531,21 @@
 
     // create header of scale
     createHeaderScale: function (dates, calendar, options) {
+      this.options.ganttHeight = this.calculateGanttHeight();
+      this.attachEvent("onTaskToggle", () => {
+        const isVerScrollExist =
+          this.options.ganttHeight > this.element.offsetHeight;
+        const tempHeight = this.calculateGanttHeight();
+
+        if (
+          (!isVerScrollExist && tempHeight > this.element.offsetHeight) ||
+          (isVerScrollExist && tempHeight < this.element.offsetHeight)
+        ) {
+          this.options.ganttHeight = tempHeight;
+          this.updateBody();
+        }
+      });
+
       let rightScale = document.createElement("div");
       rightScale.classList.add("zt-gantt-scale");
       rightScale.style.height = this.calculateScaleHeight(
@@ -2895,14 +2939,10 @@
         let start_date = new Date(this.options.data[j].start_date);
         let end_date = new Date(this.options.data[j].end_date);
 
-        if (
-          this.options.data[j].children &&
-          this.options.data[j].children.length > 0
-        ) {
-          let taskData = [...this.options.data[j].children];
-          let startAndEndDate = this.getStartAndEndDate(taskData);
-          start_date = startAndEndDate.startDate;
-          end_date = startAndEndDate.endDate;
+        if (this.options.data[j].children?.length) {
+          ({ start_date, end_date } = this.getLargeAndSmallDate(
+            this.options.data[j]
+          ));
         }
 
         let cellStartDate = this.options.startDate;
@@ -3041,19 +3081,18 @@
         ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
         function handleDblClick(e) {
-
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: that.options.data[j],
-              },
+            detail: {
+              task: that.options.data[j],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -3076,12 +3115,15 @@
             ztGanttBarTask.classList.add("hovered");
           }
 
-          if (that.options.data[j].children) {
-            let taskData = [...that.options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+          start_date = that.options.data[j].start_date;
+          end_date = that.options.data[j].end_date;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
+
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
 
@@ -3611,13 +3653,18 @@
             headerCell = document.getElementsByClassName("head-cell"),
             sidebarData = document.querySelector("#zt-gantt-left-grid");
 
+          if (that.element.offsetWidth - left <= 50) {
+            left -= 50;
+          }
+
+          let singleColIncrease = (left - startX) / that.options.columns.length;
+
           for (let j = 0; j < headerCell.length; j++) {
             let columns = document.querySelectorAll(
               `[data-column-index="${j}"]`
             );
-            let incrasedWidth =
-              headerCell[j].offsetWidth +
-              (left - startX) / that.options.columns.length;
+
+            let incrasedWidth = headerCell[j].offsetWidth + singleColIncrease;
 
             let resizerWrap = document.getElementById(
               `zt-gantt-col-resizer-wrap-${j}`
@@ -3672,12 +3719,7 @@
             that.calculateTimeLineWidth("current")
           ) {
             that.updateBody();
-          }
-
-          if (
-            that.calculateTimeLineWidth("updated") ===
-            that.calculateTimeLineWidth("current")
-          ) {
+          } else {
             let mainContainer = document.querySelector(".zt-gantt-layout");
             that.createScrollbar(mainContainer, that.options);
           }
@@ -3689,8 +3731,9 @@
       // resize the sidebar
       function resize(e) {
         sidebarResizing = true;
-        let size = `${sidebarStartWidth + (e.x - startX)}px`;
-        resizer.style.left = size;
+        let size = sidebarStartWidth + (e.x - startX);
+        if (that.element.offsetWidth - size <= 50) return;
+        resizer.style.left = `${size}px`;
       }
     },
 
@@ -3886,6 +3929,14 @@
         }
       }
 
+      // handle custom event
+      const onExpand = new CustomEvent("onExpand", {
+        detail: {
+          type: "requestFullScreen",
+        },
+      });
+      this.element.dispatchEvent(onExpand);
+
       if (
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
@@ -3900,14 +3951,6 @@
         this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
       }
       resizer.style.left = sidebar.offsetWidth + "px";
-
-      // handle custom event
-      const onExpand = new CustomEvent("onExpand", {
-        detail: {
-          type: "requestFullScreen",
-        },
-      });
-      this.element.dispatchEvent(onExpand);
     },
 
     // exit browser fullscreen
@@ -3942,7 +3985,9 @@
         this.calculateTimeLineWidth("updated") !==
         this.calculateTimeLineWidth("current")
       ) {
-        this.updateBody();
+        setTimeout(() => {
+          this.updateBody();
+        }, 0);
       } else {
         let mainContainer = document.querySelector(".zt-gantt-layout");
         this.createScrollbar(mainContainer, this.options);
@@ -4127,16 +4172,18 @@
             that.originalData.splice(newIndex, 0, task); // Insert the object at the new position
           };
           if (taskId > -1 && taskId < allTaskbars.length) {
-            let task = that.getTask(taskPositionId);
-            parentId = taskParentId.length > 1 ? task.parent : task.id;
+            let currentTask = that.getTask(taskPositionId);
+            parentId =
+              taskParentId.length > 1 ? currentTask.parent : currentTask.id;
             parentTask = that.getTask(parentId);
 
             // handle custom event
             const onBeforeTaskDrop = new CustomEvent("onBeforeTaskDrop", {
               detail: {
-                task: task,
+                task,
                 mode: type === "move" ? "move" : "resize",
                 parentTask: parentTask,
+                oldParentTask: that.getTask(task.parent),
               },
             });
             that.element.dispatchEvent(onBeforeTaskDrop);
@@ -4174,34 +4221,17 @@
               }
             }
 
+            const gridWidth = that.calculateGridWidth(
+              task.start_date,
+              that.options.zoomLevel !== "hour" ? "day" : ""
+            );
+
             // set the left and width to whole column
             taskBar.style.left =
-              Math.round(
-                taskBar.offsetLeft /
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  )
-              ) *
-                that.calculateGridWidth(
-                  task.start_date,
-                  that.options.zoomLevel !== "hour" ? "day" : ""
-                ) +
-              "px";
+              Math.round(taskBar.offsetLeft / gridWidth) * gridWidth + "px";
             if (type !== "move") {
               taskBar.style.width =
-                Math.round(
-                  taskBar.offsetWidth /
-                    that.calculateGridWidth(
-                      task.start_date,
-                      that.options.zoomLevel !== "hour" ? "day" : ""
-                    )
-                ) *
-                  that.calculateGridWidth(
-                    task.start_date,
-                    that.options.zoomLevel !== "hour" ? "day" : ""
-                  ) +
-                "px";
+                Math.round(taskBar.offsetWidth / gridWidth) * gridWidth + "px";
             }
           }
           if (task.type === "milestone") {
@@ -5035,7 +5065,10 @@
         elementWidth -= totalWidth;
       }
 
-      if (sidebar?.offsetHeight < sidebar?.scrollHeight) {
+      if (
+        sidebar?.offsetHeight < sidebar?.scrollHeight ||
+        this.options.ganttHeight > this.element.offsetHeight
+      ) {
         elementWidth -= 22;
       } else {
         elementWidth -= sidebar?.offsetHeight ? 2 : 0;
@@ -5473,17 +5506,20 @@
             }
 
             // custom event handler
-            const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
                 detail: {
-                    task: taskData[l]
+                  task: taskData[l],
                 },
-            });
+              }
+            );
             that.element.dispatchEvent(onBeforeTaskDblClick);
 
             // if onBeforeTaskDblClick return false then do not drag the task
             if (that.eventValue === false) {
-                that.eventValue = true;
-                return;
+              that.eventValue = true;
+              return;
             }
 
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -5508,28 +5544,12 @@
             start_date = taskData[l].start_date;
             end_date = taskData[l].end_date || taskData[l].start_date;
 
-            if (taskData[l].children && taskData[l].children.length > 0) {
-              let data = [...taskData[l].children];
-              let startAndEndDate = that.getStartAndEndDate(data);
-              let start = startAndEndDate.startDate;
-              let end = startAndEndDate.endDate;
-
-              const setDate = (date) => {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                return d;
-              };
-
-              const dates = [
-                setDate(start_date),
-                setDate(start),
-                setDate(end_date),
-                setDate(end),
-              ];
-
-              start_date = new Date(Math.min(...dates));
-              end_date = new Date(Math.max(...dates));
+            if (taskData[l]?.children?.length) {
+              ({ start_date, end_date } = that.getLargeAndSmallDate(
+                taskData[l]
+              ));
             }
+
             let tooltipContent = that.templates.tooltip_text(
               start_date,
               end_date,
@@ -5627,6 +5647,8 @@
             let ztGanttBlank = document.createElement("div");
             ztGanttBlank.classList.add("zt-gantt-blank");
 
+            ztGanttBlank.innerHTML = this.templates.grid_blank(taskData[l]);
+
             // content
             let content = document.createElement("div");
             content.classList.add(
@@ -5708,6 +5730,10 @@
                     let children = document.getElementsByClassName(
                       `zt-gantt-child-${taskData[l].id}`
                     );
+
+                    const isTaskOpened = toggleTreeIcon.classList.contains(
+                      "zt-gantt-tree-close"
+                    );
                     if (
                       toggleTreeIcon.classList.contains("zt-gantt-tree-close")
                     ) {
@@ -5752,6 +5778,15 @@
                     let mainContainer =
                       document.querySelector("#zt-gantt-layout");
                     that.createScrollbar(mainContainer, options);
+
+                    // custom event of toggle tree
+                    const onTaskToggle = new CustomEvent("onTaskToggle", {
+                      detail: {
+                        task: taskData[l],
+                        isTaskOpened,
+                      },
+                    });
+                    that.element.dispatchEvent(onTaskToggle);
                   });
                 }, 0);
               } else {
@@ -5981,27 +6016,8 @@
         let start_date = taskData[k].start_date;
         let end_date = taskData[k].end_date || taskData[k].start_date;
 
-        if (taskData[k].children && taskData[k].children.length > 0) {
-          let data = [...taskData[k].children];
-          let startAndEndDate = this.getStartAndEndDate(data);
-          let start = startAndEndDate.startDate;
-          let end = startAndEndDate.endDate;
-
-          const setDate = (date) => {
-            const d = new Date(date);
-            d.setHours(0, 0, 0, 0);
-            return d;
-          };
-
-          const dates = [
-            setDate(start_date || start),
-            setDate(start),
-            setDate(end_date || end),
-            setDate(end),
-          ];
-
-          start_date = new Date(Math.min(...dates));
-          end_date = new Date(Math.max(...dates));
+        if (taskData[k]?.children?.length) {
+          ({ start_date, end_date } = this.getLargeAndSmallDate(taskData[k]));
         }
 
         let isCellGreater = true;
@@ -6126,17 +6142,16 @@
         function handleDblClick(e) {
           // custom event handler
           const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: taskData[k]
-              },
+            detail: {
+              task: taskData[k],
+            },
           });
           that.element.dispatchEvent(onBeforeTaskDblClick);
 
-
           // if onBeforeTaskDblClick return false then do not drag the task
           if (that.eventValue === false) {
-              that.eventValue = true;
-              return;
+            that.eventValue = true;
+            return;
           }
 
           const onTaskDblClick = new CustomEvent("onTaskDblClick", {
@@ -6166,27 +6181,8 @@
           let start_date = taskData[k].start_date;
           let end_date = taskData[k].end_date || taskData[k].start_date;
 
-          if (taskData[k].children && taskData[k].children.length > 0) {
-            let data = [...taskData[k].children];
-            let startAndEndDate = that.getStartAndEndDate(data);
-            let start = startAndEndDate.startDate;
-            let end = startAndEndDate.endDate;
-
-            const setDate = (date) => {
-              const d = new Date(date);
-              d.setHours(0, 0, 0, 0);
-              return d;
-            };
-
-            const dates = [
-              setDate(start_date),
-              setDate(start),
-              setDate(end_date),
-              setDate(end),
-            ];
-
-            start_date = new Date(Math.min(...dates));
-            end_date = new Date(Math.max(...dates));
+          if (taskData[k].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(taskData[k]));
           }
 
           let tooltipContent = that.templates.tooltip_text(
@@ -6606,13 +6602,14 @@
         function handleMouseOver(e) {
           let tooltip = document.getElementById("zt-gantt-tooltip");
           tooltip.innerHTML = "";
-          let start_date;
-          let end_date;
-          if (options.data[j].children) {
-            let taskData = [...options.data[j].children];
-            let startAndEndDate = that.getStartAndEndDate(taskData);
-            start_date = startAndEndDate.startDate;
-            end_date = startAndEndDate.endDate;
+
+          let start_date = options.data[j]?.start_date;
+          let end_date = options.data[j]?.end_date;
+
+          if (that.options.data[j].children?.length) {
+            ({ start_date, end_date } = that.getLargeAndSmallDate(
+              that.options.data[j]
+            ));
           }
 
           let tooltipContent = that.templates.tooltip_text(
@@ -6704,6 +6701,8 @@
           let ztGanttBlank = document.createElement("div");
           ztGanttBlank.classList.add("zt-gantt-blank");
 
+          ztGanttBlank.innerHTML = this.templates.grid_blank(options.data[j]);
+
           // content
           content.innerHTML =
             options.columns[k].template(options.data[j]) ||
@@ -6739,6 +6738,10 @@
                 this.addClickListener(toggleTreeIcon, (event) => {
                   let children = document.getElementsByClassName(
                     `zt-gantt-child-${j}`
+                  );
+
+                  const isTaskOpened = toggleTreeIcon.classList.contains(
+                    "zt-gantt-tree-close"
                   );
 
                   if (
@@ -6780,6 +6783,15 @@
 
                   toggleTreeIcon.classList.toggle("zt-gantt-tree-close");
                   toggleTreeIcon.classList.toggle("zt-gantt-tree-open");
+
+                  // custom event of toggle tree
+                  const onTaskToggle = new CustomEvent("onTaskToggle", {
+                    detail: {
+                      task: options.data[j],
+                      isTaskOpened,
+                    },
+                  });
+                  that.element.dispatchEvent(onTaskToggle);
                 });
               }, 0);
             } else {
@@ -6980,6 +6992,10 @@
           }
         }
       }
+
+      if (this.options.mouseScroll && !this.options.addTaskOnDrag) {
+        this.addMouseScroll(verticalScroll, horScroll);
+      }
     },
 
     resizeTimeline: function (resizer, resizerLine, options) {
@@ -7114,26 +7130,40 @@
       return findObjectById(data, id);
     },
 
-    filterTask: function (condition, isFilter) {
+    // filter tasks based on user conditions
+    filterTask: function (condition, isFilter, findRecursive = false) {
       if (!this.searchedData) {
         this.oldOpenedTasks = [...this.options.openedTasks];
       }
 
       this.selectedRow = undefined;
       const allData = [...this.options.data];
-      let that = this;
+      const that = this;
       let parents = [];
-      const data = filterAndFlatten(allData, condition);
+
+      const filteredData = filterAndFlatten(allData, condition);
+
+      if (isFilter === true) {
+        this.searchedData = filteredData;
+        this.render();
+      } else {
+        this.searchedData = undefined;
+        this.options.openedTasks = [];
+        this.render();
+      }
+
       function filterAndFlatten(data, condition) {
         return data.reduce((result, item) => {
           if (condition(item)) {
-            if (!that.options.splitTask) {
+            if (!that.options.splitTask && !findRecursive) {
               const { children, ...flatItem } = item;
               result.push(flatItem);
             } else {
+              // find recursive parent child tasks
               result.push(item);
               let then = that;
               pushParent(item);
+
               function pushParent(item) {
                 if (
                   item.parent &&
@@ -7142,7 +7172,13 @@
                 ) {
                   parents.push(item.parent);
                   let parentItem = then.getTask(item.parent);
-                  pushParent(parentItem);
+                  if (parentItem) {
+                    parentItem.children = parentItem.children.filter(
+                      (child) => child.id == item.id
+                    );
+                    result.push(parentItem);
+                    pushParent(parentItem);
+                  }
                 }
               }
             }
@@ -7152,20 +7188,8 @@
             const filteredItems = filterAndFlatten(item.children, condition);
             result.push(...filteredItems);
           }
-          for (let i = 0; i < parents.length; i++) {
-            result.push(that.getTask(parents[i]));
-          }
           return result;
         }, []);
-      }
-
-      if (isFilter === true) {
-        this.searchedData = data;
-        this.render();
-      } else {
-        this.searchedData = undefined;
-        this.options.openedTasks = [];
-        this.render();
       }
     },
 
@@ -7232,7 +7256,7 @@
       }
     },
 
-    // attach evnets
+    // attach events
     attachEvent: function (name, callback) {
       this.element.addEventListener(name, handleEvent);
       const eventNamesToCheck = [
@@ -7335,7 +7359,11 @@
 
     // open a specific task tree
     openTask: function (id) {
-      if (id === null || id === undefined) {
+      if (
+        id === null ||
+        id === undefined ||
+        this.options.openedTasks.includes(id)
+      ) {
         return;
       }
 
@@ -7363,8 +7391,11 @@
         toggleTreeIcon.classList.remove("zt-gantt-tree-close");
         toggleTreeIcon.classList.add("zt-gantt-tree-open");
       }
-
-      this.createScrollbar(mainContainer, this.options);
+      let verScroll =
+        document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+      let horScroll =
+        document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+      this.createScrollbar(mainContainer, this.options, verScroll, horScroll);
     },
 
     // set the new data to the existing data
@@ -7374,7 +7405,10 @@
       this.options.data = [...this.originalData, ...uniqueData];
       this.options.arrangeData = true;
 
-      if (this.options.collapse === false) {
+      if (
+        this.options.collapse === false &&
+        this.options.openedTasks.length > 0
+      ) {
         // Set opened tasks
         const uniqueIds = uniqueData.map((task) => task.id);
         this.options.openedTasks.push(...uniqueIds);
@@ -8109,11 +8143,12 @@
     deleteLink: function (id) {
       let link = document.querySelector(`[link-id="${id}"]`);
       if (link !== undefined && link !== null) {
-        let linkobj;
         link.remove();
-        let linkIndex = this.options.links.findIndex((obj) => obj.id == id);
-        linkobj = this.options.links.filter((obj) => obj.id == id);
-        this.options.links.splice(linkIndex, 1);
+        const linkIndex = this.options.links.findIndex((obj) => obj.id == id);
+        const linkobj = this.options.links.find((obj) => obj.id === id) || null;
+        if (linkIndex !== -1) {
+          this.options.links.splice(linkIndex, 1);
+        }
         const onDeleteLink = new CustomEvent("onDeleteLink", {
           detail: {
             link: linkobj,
@@ -8155,12 +8190,15 @@
         autoScroll = false;
         document.removeEventListener("mousemove", strechLink, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
+
         let selectedTarget = document.querySelector(".selected-target");
         if (selectedTarget !== undefined && selectedTarget !== null) {
           selectedTarget.classList.remove("selected-target");
         }
+
         barsArea.classList.remove("zt-gantt-link-streching");
         source.classList.remove("source");
+
         if (strech) {
           document.querySelector(".zt-gantt-link-direction").remove();
           let linkType =
@@ -8171,7 +8209,7 @@
               : type === "left" && targetType === "right"
               ? 3
               : 0;
-          let isLinkExist = that.options.links.find(
+          let isLinkExist = that.options.links.some(
             (obj) =>
               obj.source == sourceId &&
               obj.target == targetId &&
@@ -8202,8 +8240,7 @@
             targetId !== undefined &&
             targetId !== null &&
             targetId != sourceId &&
-            isLinkExist == undefined &&
-            isLinkExist == null &&
+            !isLinkExist &&
             !hasCycle
           ) {
             link = {
@@ -8352,8 +8389,12 @@
         // Calculate the differences between the mouse coordinates and the point coordinates
         let deltaX =
           mouseX -
-          (startX - (type === "left" ? -20 : 20) - rightPanelScroll.scrollLeft);
-        let deltaY = mouseY - (startY - rightPanelScroll.scrollTop);
+          (startX -
+            (type === "left" ? -20 : 20) -
+            rightPanelScroll.scrollLeft +
+            window.scrollX);
+        let deltaY =
+          mouseY - (startY - rightPanelScroll.scrollTop + window.scrollY);
 
         // Calculate the angle in radians
         let radians = Math.atan2(deltaY, deltaX);
@@ -8807,8 +8848,14 @@
       );
     },
 
-    autoScheduling: function (link = this.options.links[0], index = 0) {
-      if (link) {
+    autoScheduling: function () {
+      const { links } = this.options;
+      const linksLength = links?.length;
+      for (let i = 0; i < linksLength; i++) {
+        const link = this.options.links[i];
+
+        if (!link) return;
+
         let source = document.querySelector(
           `[zt-gantt-taskbar-id="${link.source}"]`
         );
@@ -8817,74 +8864,43 @@
           `[zt-gantt-taskbar-id="${link.target}"]`
         );
 
-        if (!source || !target) {
-          return;
-        }
+        if (!source || !target) continue;
 
         let sourceLeft = source.offsetLeft,
           sourceWidth = source.offsetWidth,
           targetLeft = target.offsetLeft,
           targetWidth = target.offsetWidth;
 
-        if (link.type === 1) {
-          if (targetLeft < sourceLeft) {
-            target.style.left = sourceLeft + "px";
-          }
-        } else if (link.type === 2) {
-          if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
-            target.style.left =
-              targetLeft +
-              (sourceLeft + sourceWidth - (targetLeft + targetWidth)) +
-              "px";
-          }
-        } else if (link.type === 3) {
-          if (targetLeft + targetWidth < sourceLeft) {
-            target.style.left = sourceLeft - targetWidth + "px";
-          }
-        } else if (link.type === 0) {
-          if (targetLeft < sourceLeft + sourceWidth) {
-            target.style.left = sourceLeft + sourceWidth + "px";
-          }
+        switch (link.type) {
+          case 1:
+            if (targetLeft < sourceLeft) {
+              target.style.left = sourceLeft + "px";
+            }
+            break;
+          case 2:
+            if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
+              target.style.left =
+                targetLeft +
+                (sourceLeft + sourceWidth - (targetLeft + targetWidth)) +
+                "px";
+            }
+            break;
+          case 3:
+            if (targetLeft + targetWidth < sourceLeft) {
+              target.style.left = sourceLeft - targetWidth + "px";
+            }
+            break;
+          case 0:
+            if (targetLeft < sourceLeft + sourceWidth) {
+              target.style.left = sourceLeft + sourceWidth + "px";
+            }
+            break;
         }
 
         let task = this.getTask(link.target);
-        let taskStartDate =
-          this.dates[
-            Math.round(
-              target.offsetLeft /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - (task.type === "milestone" ? 1 : 0)
-          ];
+        let taskStartDate = this.calculateTaskStartDate(target, task);
+        let taskEndDate = this.calculateTaskEndDate(target, task);
 
-        let taskEndDate =
-          this.dates[
-            Math.round(
-              (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - 1
-          ];
-
-        // if taskStartDate is less than the gantt range
-        if (!taskStartDate) {
-          let dateDiff = Math.round(
-            target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
-          );
-          taskStartDate = this.add(new Date(this.dates[0]), dateDiff, "day");
-        }
-
-        // if taskEndDate is greater than the gantt range
-        if (!taskEndDate) {
-          let dateDiff =
-            Math.round(
-              (target.offsetLeft + target.offsetWidth) /
-                this.calculateGridWidth(task.start_date, "day")
-            ) - this.dates.length;
-          taskEndDate = this.add(
-            new Date(this.dates[this.dates.length - 1]),
-            dateDiff,
-            "day"
-          );
-        }
         this.updateTask(task, taskStartDate, taskEndDate, target);
 
         const onAutoScheduling = new CustomEvent("onAutoScheduling", {
@@ -8894,10 +8910,51 @@
         });
         this.element.dispatchEvent(onAutoScheduling);
       }
-      if (this.options.links.length > index) {
-        index = index + 1;
-        this.autoScheduling(this.options.links[index], index);
+    },
+
+    // calculateTaskStartDate by element
+    calculateTaskStartDate: function (target, task) {
+      let taskStartDate =
+        this.dates[
+          Math.round(
+            target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
+          ) - (task.type === "milestone" ? 1 : 0)
+        ];
+
+      // if taskStartDate is less than the gantt range
+      if (!taskStartDate) {
+        let dateDiff = Math.round(
+          target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
+        );
+        taskStartDate = this.add(new Date(this.dates[0]), dateDiff, "day");
       }
+      return taskStartDate;
+    },
+
+    // calculateTaskEndDate by element
+    calculateTaskEndDate: function (target, task) {
+      let taskEndDate =
+        this.dates[
+          Math.round(
+            (target.offsetLeft + target.offsetWidth) /
+              this.calculateGridWidth(task.start_date, "day")
+          ) - 1
+        ];
+
+      // if taskEndDate is greater than the gantt range
+      if (!taskEndDate) {
+        let dateDiff =
+          Math.round(
+            (target.offsetLeft + target.offsetWidth) /
+              this.calculateGridWidth(task.start_date, "day")
+          ) - this.dates.length;
+        taskEndDate = this.add(
+          new Date(this.dates[this.dates.length - 1]),
+          dateDiff,
+          "day"
+        );
+      }
+      return taskEndDate;
     },
 
     // check for has cycle or not
@@ -9490,21 +9547,23 @@
           ztGanttBarTask.addEventListener("dblclick", handleDblClick);
 
           function handleDblClick(e) {
-            
-          // custom event handler
-          const onBeforeTaskDblClick = new CustomEvent("onBeforeTaskDblClick", {
-              detail: {
-                  task: task
-              },
-          });
-          that.element.dispatchEvent(onBeforeTaskDblClick);
+            // custom event handler
+            const onBeforeTaskDblClick = new CustomEvent(
+              "onBeforeTaskDblClick",
+              {
+                detail: {
+                  task: task,
+                },
+              }
+            );
+            that.element.dispatchEvent(onBeforeTaskDblClick);
 
-          // if onBeforeTaskDblClick return false then do not drag the task
-          if (that.eventValue === false) {
+            // if onBeforeTaskDblClick return false then do not drag the task
+            if (that.eventValue === false) {
               that.eventValue = true;
               return;
-          }
-            
+            }
+
             const onTaskDblClick = new CustomEvent("onTaskDblClick", {
               detail: {
                 task: task,
@@ -9528,28 +9587,10 @@
             let start_date = task.start_date;
             let end_date = task.end_date || task.start_date;
 
-            if (task.children && task.children.length > 0) {
-              let data = [...task.children];
-              let startAndEndDate = that.getStartAndEndDate(data);
-              let start = startAndEndDate.startDate;
-              let end = startAndEndDate.endDate;
-
-              const setDate = (date) => {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                return d;
-              };
-
-              const dates = [
-                setDate(start_date),
-                setDate(start),
-                setDate(end_date),
-                setDate(end),
-              ];
-
-              start_date = new Date(Math.min(...dates));
-              end_date = new Date(Math.max(...dates));
+            if (task.children?.length) {
+              ({ start_date, end_date } = that.getLargeAndSmallDate(task));
             }
+
             let tooltip = document.getElementById("zt-gantt-tooltip");
             tooltip.innerHTML = "";
 
@@ -9789,6 +9830,100 @@
         } else {
           barContainer.append(ztGanttBarsArea);
         }
+      }
+    },
+
+    calculateGanttHeight: function () {
+      let totalGanttHeight = this.calculateScaleHeight(
+        this.options.scales,
+        this.options.scale_height,
+        "scroll",
+        0
+      );
+
+      let that = this;
+      this.options.data.forEach((task) => {
+        totalGanttHeight += this.options.row_height;
+        if (this.options.openedTasks.includes(task.id)) {
+          totalGanttHeight += calculateVisibleTasksHeight(task);
+        }
+      });
+
+      function calculateVisibleTasksHeight(task) {
+        let childHight = 0;
+        if (that.options.openedTasks.includes(task.id)) {
+          childHight += task.children.length * that.options.row_height;
+          task.children.forEach((child) => {
+            childHight += calculateVisibleTasksHeight(child);
+          });
+        }
+        return childHight;
+      }
+
+      return totalGanttHeight;
+    },
+
+    getLargeAndSmallDate: function (taskData) {
+      const { children, start_date, end_date } = taskData;
+      const startAndEndDate = this.getStartAndEndDate([...children]);
+      const { startDate, endDate } = startAndEndDate;
+
+      const setDate = (date) => {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+      };
+
+      const dates = [startDate, endDate, start_date, end_date];
+      const filteredDates = dates.filter((date) => date);
+      const sanitizedDates = filteredDates.map(setDate);
+
+      const minDate = new Date(Math.min(...sanitizedDates));
+      const maxDate = new Date(Math.max(...sanitizedDates));
+
+      return { start_date: minDate, end_date: maxDate };
+    },
+
+    addMouseScroll: function (verticalScroll, horizontalScroll) {
+      const timeLine = document.querySelector("#zt-gantt-right-cell");
+      timeLine.addEventListener("mousedown", handleMouseDown);
+      let startX,
+        startY,
+        isScrolling = false,
+        that = this;
+
+      function handleMouseDown(event) {
+        if (
+          (that.options.ctrlKeyRequiredForMouseScroll && !event.ctrlKey) ||
+          event.target.closest(".zt-gantt-bar-task")
+        )
+          return;
+
+        document.addEventListener("mouseup", handleMouseUp, false);
+        document.addEventListener("mousemove", scrollTimeline, false);
+
+        startX = event.clientX;
+        startY = event.clientY;
+        isScrolling = true;
+      }
+
+      function handleMouseUp(event) {
+        isScrolling = false;
+        document.removeEventListener("mousemove", scrollTimeline, false);
+        document.removeEventListener("mouseup", handleMouseUp, false);
+      }
+
+      function scrollTimeline(event) {
+        if (!isScrolling) return;
+
+        const xScroll = startX - event.clientX;
+        const yScroll = startY - event.clientY;
+
+        verticalScroll.scrollTop += yScroll;
+        horizontalScroll.scrollLeft += xScroll;
+
+        startX = event.clientX;
+        startY = event.clientY;
       }
     },
   };
