@@ -77,6 +77,7 @@
           opt.ctrlKeyRequiredForMouseScroll !== undefined
             ? opt.ctrlKeyRequiredForMouseScroll
             : true,
+        sort: opt.sort || false,
         dateFormat: {
           month_full: [
             "January",
@@ -2142,6 +2143,37 @@
         headCell.style.width = (options.columns[i].width || 80) + "px";
         headCell.innerHTML = options.columns[i].label;
         headCellContainer.append(headCell);
+
+        if (this.options.sort) {
+          headCell.addEventListener("click", () => {
+            let isAsc = !this.options?.sortOption?.isAsc;
+            const sortBy = options.columns[i]?.name;
+
+            if (sortBy !== this.options?.sortOption?.sortBy) {
+              isAsc = true; // Set isAsc to true by default if sortBy is different
+            }
+            this.options.sortOption = {
+              sortBy: sortBy,
+              isAsc,
+            };
+            this.sort(sortBy, isAsc);
+          });
+
+          // add sort icon to the current sorting column
+          if (
+            this.options?.sortOption &&
+            this.options?.sortOption?.sortBy == options.columns[i]?.name
+          ) {
+            const sortIcon = document.createElement("div");
+            let isAsc = !this.options?.sortOption?.isAsc;
+            sortIcon.classList.add(
+              "zt-gantt-sort",
+              isAsc ? "zt-gantt-asc" : "zt-gantt-desc"
+            );
+            headCell.appendChild(sortIcon);
+          }
+        }
+
         if (i < options.columns.length) {
           let resizerWrap = document.createElement("div");
           resizerWrap.classList.add("zt-gantt-col-resizer-wrap");
@@ -2495,6 +2527,17 @@
           }
           cell.append(content);
           dataItem.append(cell);
+          if (this.options.columns[k]?.editor) {
+            cell.addEventListener("click", (e) => {
+              if (e.target.classList.contains("zt-gantt-tree-icon")) return;
+              this.addInlineEditor(
+                this.options.data[j],
+                this.options.columns[k].editor,
+                cell,
+                leftDataContainer
+              );
+            });
+          }
         }
 
         let isTaskExist = this.getTask(options.data[j].id, this.searchedData);
@@ -3222,6 +3265,15 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress =
+              progressPer > 100 ? 100 : this.options.data[j].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -5796,6 +5848,17 @@
             }
             cell.append(content);
             dataItem.append(cell);
+            if (this.options.columns[k]?.editor) {
+              cell.addEventListener("click", (e) => {
+                if (e.target.classList.contains("zt-gantt-tree-icon")) return;
+                this.addInlineEditor(
+                  taskData[l],
+                  this.options.columns[k].editor,
+                  cell,
+                  leftDataContainer
+                );
+              });
+            }
           }
 
           let isTaskExist = this.getTask(taskData[l].id, this.searchedData);
@@ -6312,6 +6375,14 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress = progressPer > 100 ? 100 : taskData[k].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -6993,7 +7064,11 @@
         }
       }
 
-      if (this.options.mouseScroll && !this.options.addTaskOnDrag) {
+      if (
+        this.options.mouseScroll &&
+        (this.options.ctrlKeyRequiredForMouseScroll ||
+          !this.options.addTaskOnDrag)
+      ) {
         this.addMouseScroll(verticalScroll, horScroll);
       }
     },
@@ -8533,6 +8608,12 @@
       timeLine.addEventListener("mousedown", handleMouseDown);
 
       function handleMouseDown(e) {
+        if (
+          that.options.mouseScroll &&
+          that.options.ctrlKeyRequiredForMouseScroll &&
+          e.ctrlKey
+        )
+          return;
         taskBarArea = document.querySelector("#zt-gantt-bars-area");
         timeLineContainer = document.querySelector("#zt-gantt-right-cell");
         startX =
@@ -9687,6 +9768,14 @@
               progressPer > 100 ? 100 : progressPer
             }%`;
 
+            // update the task progress onAfterTaskUpdate
+            this.attachEvent("onAfterTaskUpdate", () => {
+              let progress = progressPer > 100 ? 100 : task.progress || 0;
+              taskProgress.style.width = `${progress}%`;
+
+              taskProgressDrag.style.left = `${progress}%`;
+            });
+
             ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
             this.dragTaskProgress(
               taskProgressDrag,
@@ -9924,6 +10013,124 @@
 
         startX = event.clientX;
         startY = event.clientY;
+      }
+    },
+
+    // sort Gantt data
+    sort: function (sortBy, isAsc) {
+      const sortOrderMultiplier = isAsc ? 1 : -1;
+
+      this.originalData.sort((a, b) => {
+        let valueA = this.getFieldValue(a, sortBy);
+        let valueB = this.getFieldValue(b, sortBy);
+
+        // Handle null values
+        if (valueA === null) {
+          valueA = ""; // Treat null as an empty string
+        }
+        if (valueB === null) {
+          valueB = ""; // Treat null as an empty string
+        }
+        valueA = typeof valueA === "string" ? valueA.toLowerCase() : valueA;
+        valueB = typeof valueB === "string" ? valueB.toLowerCase() : valueB;
+        return (
+          (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrderMultiplier
+        );
+      });
+      this.render();
+    },
+
+    // Function to safely get the field value from the object
+    getFieldValue: function (object, fieldName) {
+      return fieldName
+        .split(".")
+        .reduce(
+          (o, key) => (o && o[key] !== undefined ? o[key] : null),
+          object
+        );
+    },
+
+    addInlineEditor: function (
+      cellData,
+      editorData,
+      cell,
+      sidebarDataContainer
+    ) {
+      const editorWraper = document.createElement("div");
+      editorWraper.classList.add("zt-gantt-inline-editor-wraper");
+      editorWraper.style.top = `${cell.offsetTop}px`;
+      editorWraper.style.left = `${cell.offsetLeft}px`;
+      editorWraper.style.height = `${cell.offsetHeight}px`;
+      editorWraper.style.width = `${cell.offsetWidth}px`;
+
+      let editor;
+
+      if (
+        editorData.type == "number" ||
+        editorData.type == "date" ||
+        editorData.type == "text"
+      ) {
+        editor = document.createElement("input");
+        editor.type = editorData.type;
+        editor.name = editorData.map_to;
+        if (editorData.type == "date") {
+          let date = this.formatDateToString(
+            "%Y-%m-%d",
+            cellData[editorData.map_to]
+          );
+          editor.value = date;
+        } else {
+          editor.value = cellData[editorData.map_to];
+          editor.min = editorData.min;
+          editor.max = editorData.max;
+        }
+      } else if (editorData.type == "select") {
+        editor = document.createElement("select");
+        editor.type = editorData.value;
+        editor.name = editorData.map_to;
+        editor.value = cellData[editorData.map_to];
+        editorData.options.forEach((element) => {
+          let option = document.createElement("option");
+          option.innerHTML = element;
+          option.value = element;
+          editor.append(option);
+        });
+      }
+      editorWraper.append(editor);
+
+      sidebarDataContainer.append(editorWraper);
+      editor.focus();
+      editor.addEventListener("blur", () => {
+        // handle custom event
+        const onBeforeSave = new CustomEvent("onBeforeSave", {
+          detail: {
+            task: cellData,
+            columnName: editorData.map_to,
+            oldValue: cellData[editorData.map_to],
+            newValue: editor.value,
+          },
+        });
+        this.element.dispatchEvent(onBeforeSave);
+
+        cellData[editorData.map_to] = editor.value;
+        this.updateTaskData(cellData);
+        this.removeInlineEditor(editorWraper);
+        // handle custom event
+        const onSave = new CustomEvent("onSave", {
+          detail: {
+            task: cellData,
+            columnName: editorData.map_to,
+            oldValue: cellData[editorData.map_to],
+            newValue: editor.value,
+          },
+        });
+        this.element.dispatchEvent(onSave);
+      });
+    },
+
+    removeInlineEditor: function (editor) {
+      if (editor) {
+        editor.remove();
       }
     },
   };
