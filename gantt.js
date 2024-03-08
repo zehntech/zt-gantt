@@ -2510,6 +2510,17 @@
           }
           cell.append(content);
           dataItem.append(cell);
+          if (this.options.columns[k]?.editor) {
+            cell.addEventListener("click", (e) => {
+              if (e.target.classList.contains("zt-gantt-tree-icon")) return;
+              this.addInlineEditor(
+                this.options.data[j],
+                this.options.columns[k].editor,
+                cell,
+                leftDataContainer
+              );
+            });
+          }
         }
 
         leftDataContainer.append(dataItem);
@@ -3239,6 +3250,15 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress =
+              progressPer > 100 ? 100 : this.options.data[j].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -5732,6 +5752,17 @@
             }
             cell.append(content);
             dataItem.append(cell);
+            if (this.options.columns[k]?.editor) {
+              cell.addEventListener("click", (e) => {
+                if (e.target.classList.contains("zt-gantt-tree-icon")) return;
+                this.addInlineEditor(
+                  taskData[l],
+                  this.options.columns[k].editor,
+                  cell,
+                  leftDataContainer
+                );
+              });
+            }
           }
 
           leftDataContainer.append(dataItem);
@@ -6261,6 +6292,14 @@
           taskProgressDrag.style.left = `${
             progressPer > 100 ? 100 : progressPer
           }%`;
+
+          // update the task progress onAfterTaskUpdate
+          this.attachEvent("onAfterTaskUpdate", () => {
+            let progress = progressPer > 100 ? 100 : taskData[k].progress || 0;
+            taskProgress.style.width = `${progress}%`;
+
+            taskProgressDrag.style.left = `${progress}%`;
+          });
 
           ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
           this.dragTaskProgress(
@@ -9577,6 +9616,14 @@
               progressPer > 100 ? 100 : progressPer
             }%`;
 
+            // update the task progress onAfterTaskUpdate
+            this.attachEvent("onAfterTaskUpdate", () => {
+              let progress = progressPer > 100 ? 100 : task.progress || 0;
+              taskProgress.style.width = `${progress}%`;
+
+              taskProgressDrag.style.left = `${progress}%`;
+            });
+
             ztGanttBarTask.append(taskProgressContainer, taskProgressDrag);
             this.dragTaskProgress(
               taskProgressDrag,
@@ -9836,6 +9883,8 @@
           (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrderMultiplier
         );
       });
+
+      this.options.isOriginalDataChanged = true;
       this.render();
     },
 
