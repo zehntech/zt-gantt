@@ -1,89 +1,100 @@
 :root {
-/* -------- Background Colors Start ----------- */
---body-background: #333332;
---header-background: #333332;
---header-cell-background: #333332;
---timeline-cell-background: #333332;
---timeline-scale-background: #333332;
---resizer-background: #ffffff4d;
---grid-resize-area-background: #c0bebe4f;
---row-item-background: #333332;
---row-item-hover-background: rgba(19, 147, 190, 0.379);
---weekend-cell-background: #4d4d4d;
---selected-background: rgba(19, 147, 190, 0.379);
---marker-background: #1396bea7;
---marker-hover-background: #1395be;
---toastr-background: #aaaaaa;
---scroll-background: #333332;
+  /* -------- Background Colors Start ----------- */
+  --body-background: #333332;
+  --header-background: #333332;
+  --header-cell-background: #333332;
+  --timeline-cell-background: #333332;
+  --timeline-scale-background: #333332;
+  --resizer-background: #ffffff4d;
+  --grid-resize-area-background: #c0bebe4f;
+  --row-item-background: #333332;
+  --row-item-hover-background: rgba(19, 147, 190, 0.379);
+  --weekend-cell-background: #4d4d4d;
+  --selected-background: rgba(19, 147, 190, 0.379);
+  --marker-background: #1396bea7;
+  --marker-hover-background: #1395be;
+  --toastr-background: #aaaaaa;
+  --scroll-background: #333332;
 
-/* lightbox backgrounds  */
---lightbox-background: #333332;
---textarea-background: #333332;
+  /* lightbox backgrounds  */
+  --lightbox-background: #333332;
+  --textarea-background: #333332;
 
-/* tooltip background */
---tooltip-background: #333332;
+  /* tooltip background */
+  --tooltip-background: #333332;
 
-/* taskbar background */
---taskbar-background: #1395be;
---taskbar-child-background: #1395be;
---task-area-background: rgba(19, 149, 190, 0.302);
---task-progress-background: #0e7595;
---child-task-progress-background: #0e7595;
+  /* taskbar background */
+  --taskbar-background: #1395be;
+  --taskbar-child-background: #1395be;
+  --task-area-background: rgba(19, 149, 190, 0.302);
+  --task-progress-background: #0e7595;
+  --child-task-progress-background: #0e7595;
 
-/* milestone content */
---milestone-content-background: #ff3737;
+  /* milestone content */
+  --milestone-content-background: #ff3737;
 
-/* backdrop background */
---backdrop-background: #0000004d;
---loder-backdrop-background: #000000cc;
+  /* backdrop background */
+  --backdrop-background: #0000004d;
+  --loder-backdrop-background: #000000cc;
 
-/* btn background  */
---btn-primary-background: #1395be;
---btn-normal-background: rgb(255, 255, 255, .85);
---btn-danger-background: #ff3737;
+  /* btn background  */
+  --btn-primary-background: #1395be;
+  --btn-normal-background: rgb(255, 255, 255, 0.85);
+  --btn-danger-background: #ff3737;
 
-/* link backgrounds */
---link-background: rgba(255, 140, 0, .85);
---link-control-background: #f0f0f0;
---link-control-hover-background: #fff;
---selected-link-control-background: rgba(255, 140, 0, .85);
-/* -------- Background Colors End ----------- */
+  /* link backgrounds */
+  --link-background: rgba(255, 140, 0, 0.85);
+  --link-control-background: #f0f0f0;
+  --link-control-hover-background: #fff;
+  --selected-link-control-background: rgba(255, 140, 0, 0.85);
+  /* -------- Background Colors End ----------- */
 
-/* -------- Text Colors Start ----------- */
---primary-color: rgb(255, 255, 255, .85);
---marker-color: rgb(255, 255, 255, .85);
---tooltip-color: rgb(255, 255, 255, .85);
---task-content-color: rgb(255, 255, 255, .85);
---milestone-content-color: rgb(255, 255, 255, .85);
+  /* -------- Text Colors Start ----------- */
+  --primary-color: rgb(255, 255, 255, 0.85);
+  --marker-color: rgb(255, 255, 255, 0.85);
+  --tooltip-color: rgb(255, 255, 255, 0.85);
+  --task-content-color: rgb(255, 255, 255, 0.85);
+  --milestone-content-color: rgb(255, 255, 255, 0.85);
 
-/* btn colors  */
---btn-primary-color: rgb(255, 255, 255, .85);
---btn-normal-color: #000;
---btn-danger-color: #ff3737;
+  /* btn colors  */
+  --btn-primary-color: rgb(255, 255, 255, 0.85);
+  --btn-normal-color: #000;
+  --btn-danger-color: #ff3737;
 
-/* loader color  */
---loader-color: #d1ebfa;
---loader-after-color: #0093ff;
+  /* loader color  */
+  --loader-color: #d1ebfa;
+  --loader-after-color: #0093ff;
 
-/* toastr color  */
---toastr-color: rgb(255, 255, 255, .85);
---toastr-p-color: rgb(255, 255, 255, .85);
-/* -------- Text Colors End ----------- */
+  /* toastr color  */
+  --toastr-color: rgb(255, 255, 255, 0.85);
+  --toastr-p-color: rgb(255, 255, 255, 0.85);
+  /* -------- Text Colors End ----------- */
 
-/* -------- Border Colors Start ----------- */
---primary-border: #ffffff4d;
+  /* -------- Border Colors Start ----------- */
+  --primary-border: #ffffff4d;
 
-/* taskbar border  */
---taskbar-border: #0e7595;
---task-area-border: #1395be;
---milestone-content-border: #ff3737;
+  /* taskbar border  */
+  --taskbar-border: #0e7595;
+  --task-area-border: #1395be;
+  --milestone-content-border: #ff3737;
 
-/* link border  */
---link-border: rgba(255, 140, 0, .85);
---link-control-border: #929292;
+  /* link border  */
+  --link-border: rgba(255, 140, 0, 0.85);
+  --link-control-border: #929292;
+}
 
+.zt-gantt-layout {
+  color-scheme: dark;
 }
 
 .zt-gantt-folder-icon > div {
-    background-image: url('data:image/svg+xml,<%3Fxml version="1.0" encoding="utf-8"%3F><svg width="16px" height="10px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><style>.a{fill:none;stroke:%23fff;stroke-linecap:round;stroke-linejoin:round;}</style></defs><path class="a" d="M41.6783,13.0436H24.77c-1.9628-.1072-5.9311-4.2372-8.1881-4.2372H6.6806V8.8046A2.1762,2.1762,0,0,0,4.5,10.9763v7.3063h39V14.8652A1.8217,1.8217,0,0,0,41.6783,13.0436Z" /><path class="a" d="M43.5,18.2826H4.5V37.0165a2.1762,2.1762,0,0,0,2.1735,2.1789H41.3194A2.1762,2.1762,0,0,0,43.5,37.0237V18.2826Z" /></svg>');
+  background-image: url('data:image/svg+xml,<%3Fxml version="1.0" encoding="utf-8"%3F><svg width="16px" height="10px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><style>.a{fill:none;stroke:%23fff;stroke-linecap:round;stroke-linejoin:round;}</style></defs><path class="a" d="M41.6783,13.0436H24.77c-1.9628-.1072-5.9311-4.2372-8.1881-4.2372H6.6806V8.8046A2.1762,2.1762,0,0,0,4.5,10.9763v7.3063h39V14.8652A1.8217,1.8217,0,0,0,41.6783,13.0436Z" /><path class="a" d="M43.5,18.2826H4.5V37.0165a2.1762,2.1762,0,0,0,2.1735,2.1789H41.3194A2.1762,2.1762,0,0,0,43.5,37.0237V18.2826Z" /></svg>');
+}
+
+.head-cell .zt-gantt-sort.zt-gantt-desc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAANCAYAAABlyXS1AAAARUlEQVR4nGNgQAKGxib/GbABkIS7b8B/DAUwCRiGK0CXwFBAb1DfP/U/LszwHwi2X7qFgUEArBtdAVwCBmAKMCSQFSDzAWXXaOHsXeqkAAAAAElFTkSuQmCC);
+}
+
+.head-cell .zt-gantt-sort.zt-gantt-asc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAANCAYAAABlyXS1AAAARUlEQVR42mNgQAL1/VP/M2ADIIntF2/9x1AAlrh0C47hCmA60DFYwX88gIFGwNDY5D8uDFbg7hvwHx2jmIBTAlkB0e4BAEjlaNtBWJPnAAAAAElFTkSuQmCC);
 }
