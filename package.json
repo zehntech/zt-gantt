@@ -1,6 +1,6 @@
 {
     "name": "zt-gantt",
-    "version": "2.2.1",
+    "version": "2.3.1",
     "description": "An open source JavaScript Gantt. This library provides a powerful set of tools and functionalities to create interactive Gantt charts for project management.",
     "main": "public/gantt.js",
     "repository": {
