@@ -9853,7 +9853,7 @@
       const targetDate = this.stripTime(date).getTime();
       const startDate = this.stripTime(this.options.startDate).getTime();
       const endDate = this.stripTime(this.options.endDate).getTime();
-      return targetDate < startDate && targetDate > endDate;
+      return targetDate < startDate || targetDate > endDate;
     },
 
     /**
