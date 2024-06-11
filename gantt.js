@@ -32,18 +32,15 @@
     constructor: ZTGantt,
 
     // initialize Options
-    initializeOptions: function (opt) {
-      if (opt == null) {
-        opt = {};
-      }
+    initializeOptions: function (opt = {}) {
       this.options = {
         date_format: opt.date_format,
         columns: opt.columns || [],
         rightGrid: opt.rightGrid,
         data: opt.data || [],
-        collapse: opt.collapse !== undefined ? opt.collapse : true,
-        fullWeek: opt.fullWeek !== undefined ? opt.fullWeek : true,
-        todayMarker: opt.todayMarker !== undefined ? opt.todayMarker : true,
+        collapse: opt.collapse !== false,
+        fullWeek: opt.fullWeek !== false,
+        todayMarker: opt.todayMarker !== false,
         weekends: opt.weekends || [],
         startDate: opt.startDate,
         endDate: opt.endDate,
@@ -65,18 +62,15 @@
         taskOpacity: opt.taskOpacity || 0.8,
         addLinks: opt.addLinks || false,
         exportApi: opt.exportApi,
-        updateLinkOnDrag:
-          opt.updateLinkOnDrag !== undefined ? opt.updateLinkOnDrag : true,
+        updateLinkOnDrag: opt.updateLinkOnDrag !== false,
         splitTask: opt.splitTask || false,
         links: opt.links || [],
         arrangeData: true,
         selectAreaOnDrag: opt.selectAreaOnDrag || false,
-        taskProgress: opt.taskProgress !== undefined ? opt.taskProgress : true,
+        taskProgress: opt.taskProgress !== false,
         mouseScroll: opt.mouseScroll || false,
         ctrlKeyRequiredForMouseScroll:
-          opt.ctrlKeyRequiredForMouseScroll !== undefined
-            ? opt.ctrlKeyRequiredForMouseScroll
-            : true,
+          opt.ctrlKeyRequiredForMouseScroll !== false,
         sort: opt.sort || false,
         dateFormat: {
           month_full: [
@@ -1687,49 +1681,21 @@
     },
 
     // initialize templates
-    initTemplates: function (templ) {
-      if (templ == null) {
-        templ = {};
-      }
-
+    initTemplates: function (templ = {}) {
       this.templates = {
         tooltip_text:
           templ.tooltip_text ||
-          function (start, end, task) {
-            return (
-              "<b>Task:</b> " +
-              task.text +
-              "<br/><b>Start date:</b> " +
-              start +
-              "<br/><b>End date:</b> " +
-              end
-            );
-          },
-        taskbar_text:
-          templ.taskbar_text ||
-          function (start, end, task) {
-            return task.text;
-          },
-        task_drag:
-          templ.task_drag ||
-          function (mode, task) {
-            return true;
-          },
-        grid_folder:
-          templ.grid_folder ||
-          function (task) {
-            return " ";
-          },
-        grid_file:
-          templ.grid_file ||
-          function (task) {
-            return " ";
-          },
-        grid_blank:
-          templ.grid_blank ||
-          function (task) {
-            return " ";
-          },
+          ((start, end, task) => `<b>Task:</b>
+              ${task.text}
+              <br/><b>Start date:</b>
+              ${start}
+              <br/><b>End date:</b>
+              ${end}`),
+        taskbar_text: templ.taskbar_text || ((start, end, task) => task.text),
+        task_drag: templ.task_drag || (() => true),
+        grid_folder: templ.grid_folder || (() => ""),
+        grid_file: templ.grid_file || (() => ""),
+        grid_blank: templ.grid_blank || (() => ""),
         showLightBox: templ.showLightBox || undefined,
         grid_header_class: templ.grid_header_class || undefined,
         grid_row_class: templ.grid_row_class || undefined,
@@ -6832,7 +6798,7 @@
           const that = this;
           let parents = [];
 
-          if (!isFilter || this.searchedData) {
+          if (!isFilter) {
             this.searchedData = undefined;
             this.options.openedTasks = [];
             this.render();
@@ -9062,7 +9028,7 @@
 
       if (this.tooltip) this.tooltip.remove();
 
-      if (this.lightbox){
+      if (this.lightbox) {
         this.lightbox.lightbox.remove();
         this.lightbox.lightboxBackdrop.remove();
         this.lightbox = null;
