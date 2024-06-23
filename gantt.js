@@ -9615,8 +9615,6 @@
      */
     updateTooltipPosition(e) {
       const tooltip = this.tooltip;
-      const scrollY = window.scrollY;
-      const scrollX = window.scrollX;
       const screenWidth = window.innerWidth;
       const bodyHeight = document.documentElement.clientHeight;
 
@@ -9636,8 +9634,8 @@
       }
 
       // Apply the new positions
-      tooltip.style.top = `${top + scrollY}px`;
-      tooltip.style.left = `${left + scrollX}px`;
+      tooltip.style.top = `${top}px`;
+      tooltip.style.left = `${left}px`;
     }
 
     /**

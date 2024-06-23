@@ -375,7 +375,7 @@
 
 .zt-gantt-tooltip {
   padding: 10px;
-  position: absolute;
+  position: fixed; /* previous value :- absolute */
   z-index: 1080;
   white-space: nowrap;
   background-color: var(--tooltip-background);
@@ -1151,7 +1151,7 @@
   opacity: 0;
 }
 
-.zt-gantt-timeline-data:has(.task-dragging) .drop-area{
+.zt-gantt-timeline-data:has(.task-dragging) .drop-area {
   z-index: 101;
   opacity: 1;
 }
