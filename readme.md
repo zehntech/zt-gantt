@@ -23,7 +23,7 @@ To integrate the Gantt Chart Library, adhere to the steps below:
   4. You're now ready to start using the ztGantt Chart Library!    
 
 <a href="https://zehntech.github.io/zt-gantt/">
-  <img src="./images/zt-gantt-screenshot.png">
+  <img src="src/assets/images/zt-gantt-screenshot.png">
 </a>    
   
 ---  
@@ -116,7 +116,7 @@ gantt.render();
   * **Task Linking:** Four types - finish-to-start, start-to-start, finish-to-finish, start-to-finish.      
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/links.gif">
+    <img src="src/assets/images/links.gif">
   </a>  
 
   * **Drag and Drop:** Shift multiple tasks horizontally and vertically.    
@@ -126,7 +126,7 @@ gantt.render();
   * **Customization:** Modify the time scale, task edit form, and much more.    
     
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/popup.gif">
+    <img src="src/assets/images/popup.gif">
   </a>   
 
   * **Task Progress:** Update task progress via dragging or manually set the percentage.    
@@ -140,14 +140,14 @@ gantt.render();
   * **Aesthetics:** Customize the task colors via a color picker.   
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/taskColor.gif">
+    <img src="src/assets/images/taskColor.gif">
   </a>       
     
   * **Localization:** Multilingual support to cater to a global audience.   
   * **Themes:** Dark mode for those late-night work sessions.  
 
   <a href="https://zehntech.github.io/zt-gantt/">
-    <img src="./images/theme.gif">
+    <img src="src/assets/images/theme.gif">
   </a>  
   
   You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf)   
