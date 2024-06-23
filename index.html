@@ -121,7 +121,7 @@
         <input
         type="checkbox"
         id="toggle"
-        onchange="changeTheme(event)"
+        onchange="changeTheme(event.target.checked)"
         class="toggle--checkbox"
         />
         <label for="toggle" class="toggle-theme"> </label>
@@ -677,6 +677,7 @@
 
       // render gantt
       ZT_Gantt.render(element);
+      const ztGanttTheme = localStorage.getItem('ztGantt-theme');
 
       // console.log(ZT_Gantt);
 
@@ -902,12 +903,14 @@
       // })
       let cssStyle;
       let root = document.querySelector(":root");
-      function changeTheme(event) {
-        if (event.target.checked) {
+      function changeTheme(isDark) {
+        if (isDark) {
+          document.getElementById('toggle').checked = true;
           cssStyle = document.createElement("link");
           cssStyle.setAttribute("rel", "stylesheet");
           cssStyle.setAttribute("href", "src/theme/dark.css");
           document.getElementsByTagName("head")[0].append(cssStyle);
+          localStorage.setItem('ztGantt-theme', 'dark');
 
           root.style.setProperty("--bg-color", "#333332");
           root.style.setProperty("--text-color", "#fff");
@@ -915,15 +918,19 @@
           root.style.setProperty("--index-primary-color", "#1395BE");
           root.style.setProperty("--index-primary-hover-color", "#0E7595");
         } else {
-          cssStyle.remove();
+          if(cssStyle){
+            cssStyle.remove();
+          }
           root.style.setProperty("--bg-color", "#fff");
           root.style.setProperty("--text-color", "#000");
           root.style.setProperty("--text-secondary-color", "#fff");
           root.style.setProperty("--index-primary-color", "#4ca0fff2");
           root.style.setProperty("--index-primary-hover-color", "#3585e0f2");
+          localStorage.setItem('ztGantt-theme', 'light');
         }
       }
 
+      changeTheme(ztGanttTheme == 'dark');
       let getScale = () => {
         console.log(ZT_Gantt.getScale());
       };
