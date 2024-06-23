@@ -106,7 +106,7 @@ gantt.render();
 
 [Live demo](https://zehntech.github.io/zt-gantt/)      
 
-**Complete Documentation:** [ztGantt Documentation](./Documentaion/Gantt-Chart-Documentation.pdf)  
+**Complete Documentation:** [ztGantt Documentation](./docs/Gantt-Chart-Documentation.pdf)  
   
   ---  
   
@@ -150,7 +150,7 @@ gantt.render();
     <img src="./images/theme.gif">
   </a>  
   
-  You can see the full list of features in the [documentation](./Documentaion/Gantt-Chart-Documentation.pdf)   
+  You can see the full list of features in the [documentation](./docs/Gantt-Chart-Documentation.pdf)   
     
         
   [Try it Yourself:](https://stackblitz.com/edit/js-bdaa47?file=index.js): Dive into hands-on examples and truly understand the potential of the library.    
