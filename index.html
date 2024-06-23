@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ztGantt</title>
     <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="./gantt.css" />
-    <link rel="stylesheet" href="./zt-tour/zt-tour.css" />
+    <link rel="stylesheet" href="src/gantt.css" />
+    <link rel="stylesheet" href="src/assets/zt-tour/zt-tour.css" />
     <!-- <link rel="stylesheet" href="./theme/dark.css" /> -->
     <link
       rel="shortcut icon"
-      href="./images/ztGanttLogo.png"
+      href="src/assets/images/ztGanttLogo.png"
       type="image/x-icon"
     />
-    <script src="./gantt.js"></script>
+    <script src="src/gantt.js"></script>
   </head>
   <body>
     <div class="zt-gantt-d-flex action-container"> 
@@ -147,7 +147,7 @@
     </div>
     <div id="ZT-Gantt"></div>
   </div>
-  <script src="./zt-tour/zt-tour.js"></script>
+  <script src="src/assets/zt-tour/zt-tour.js"></script>
     <script>
       let data = [
         { id: 1, text: "Project 1", parent: 0, progress: 30 },
@@ -924,7 +924,7 @@
           document.getElementById('toggle').checked = true;
           cssStyle = document.createElement("link");
           cssStyle.setAttribute("rel", "stylesheet");
-          cssStyle.setAttribute("href", "./theme/dark.css");
+          cssStyle.setAttribute("href", "src/theme/dark.css");
           document.getElementsByTagName("head")[0].append(cssStyle);
           localStorage.setItem('ztGantt-theme', 'dark');
 
