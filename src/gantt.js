@@ -3737,7 +3737,7 @@
         }
       }
 
-      this.dispatchEvent("onExpand", { type: "requestFullScreen" });
+      this.dispatchEvent("onRequestFullScreen", { type: "requestFullScreen" });
 
       if (
         this.calculateTimeLineWidth("updated") !==
@@ -3799,7 +3799,7 @@
       this.hideTooltip();
 
       // handle custom event
-      this.dispatchEvent("onCollapse", { type: "exitFullScreen" });
+      this.dispatchEvent("onExitFullScreen", { type: "exitFullScreen" });
     }
 
     /**
@@ -4779,9 +4779,9 @@
 
     /**
      * Method to get the timeline cell width based on date and zoom level.
-     * @param {Date} date - date of the cell
-     * @param {string} levelType - zoom level of the cell
-     * @returns
+     * @param {Date} date - date of the cell.
+     * @param {string} levelType - zoom level of the cell.
+     * @returns {Number} returns the timeline single grid cell width.
      */
     calculateGridWidth(date = new Date(0), levelType = this.options.zoomLevel) {
       let sidebar = document.getElementById("zt-gantt-grid-left-data");
@@ -6627,7 +6627,7 @@
 
           if (!isFilter) {
             this.#searchedData = undefined;
-            this.options.openedTasks = [];
+            this.options.openedTasks = this.oldOpenedTasks;
             this.render();
             return;
           }
