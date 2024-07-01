@@ -6974,9 +6974,9 @@
 
       if (linkType == 0) {
         // 0 is  finish_to_start
-        startLine.style.left = sourceLeft + sourceWidth + "px";
-        startLine.style.top = sourceTop + rowHeight / 2 + "px";
-        startLine.style.width = 15 + "px";
+        startLine.style.left = `${sourceLeft + sourceWidth}px`;
+        startLine.style.top = `${sourceTop + rowHeight / 2}px`;
+        startLine.style.width = `${15}px`;
         let innerHorLine = linkHorInnerLine.cloneNode(true);
         startLine.append(innerHorLine);
         taskLink.append(startLine);
@@ -6987,24 +6987,23 @@
             "zt-gantt-ver-link-line",
             "zt-gantt-link-line"
           );
-          middleLine.style.left =
-            startLine.offsetLeft + startLine.offsetWidth - 2 + "px";
+          middleLine.style.left = `${
+            startLine.offsetLeft + startLine.offsetWidth - 2
+          }px`;
           if (sourceTop < targetTop) {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-            middleLine.style.height =
-              source.offsetHeight / 2 + (extraHeight + 2) + "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight / 2
+            }px`;
+            middleLine.style.height = `${
+              source.offsetHeight / 2 + (extraHeight + 2)
+            }px`;
           } else {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) +
-              rowHeight +
-              (extraHeight + 2) +
-              "px";
-            middleLine.style.height =
-              Math.abs(sourceTop - targetTop) -
-              rowHeight / 2 -
-              extraHeight +
-              "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight + (extraHeight + 2)
+            }px`;
+            middleLine.style.height = `${
+              Math.abs(sourceTop - targetTop) - rowHeight / 2 - extraHeight
+            }px`;
           }
           let innerLine = linkVerInnerLine.cloneNode(true);
           middleLine.append(innerLine);
@@ -7012,64 +7011,60 @@
 
           let horLine = document.createElement("div");
           horLine.classList.add("zt-gantt-hor-link-line", "zt-gantt-link-line");
-          horLine.style.left = targetLeft - 15 + "px";
-          horLine.style.top =
-            Math.min(sourceTop, targetTop) +
-            source.offsetHeight +
-            extraHeight +
-            "px";
-          horLine.style.width =
+          horLine.style.left = `${targetLeft - 15}px`;
+          horLine.style.top = `${
+            Math.min(sourceTop, targetTop) + source.offsetHeight + extraHeight
+          }px`;
+          horLine.style.width = `${
             Math.abs(
               startLine.offsetLeft + startLine.offsetWidth - targetLeft
-            ) +
-            15 +
-            "px";
+            ) + 15
+          }px`;
           let innerHorLine = linkHorInnerLine.cloneNode(true);
           horLine.append(innerHorLine);
           taskLink.append(horLine);
         }
 
         if (sourceLeft + sourceWidth + 15 >= targetLeft) {
-          middleLine.style.left = target.offsetLeft - 15 + "px";
+          middleLine.style.left = `${target.offsetLeft - 15}px`;
           if (sourceTop < targetTop) {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) +
-              rowHeight +
-              (extraHeight + 2) +
-              "px";
-            middleLine.style.height =
-              Math.abs(sourceTop - targetTop) -
-              rowHeight / 2 -
-              extraHeight +
-              "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight + (extraHeight + 2)
+            }px`;
+            middleLine.style.height = `${
+              Math.abs(sourceTop - targetTop) - rowHeight / 2 - extraHeight
+            }px`;
           } else {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-            middleLine.style.height =
-              source.offsetHeight / 2 + extraHeight + "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight / 2
+            }px`;
+            middleLine.style.height = `${
+              source.offsetHeight / 2 + extraHeight
+            }px`;
           }
         } else {
-          middleLine.style.left =
-            startLine.offsetLeft + startLine.offsetWidth - 2 + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${
+            startLine.offsetLeft + startLine.offsetWidth - 2
+          }px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         }
         let innerLine = linkVerInnerLine.cloneNode(true);
         middleLine.append(innerLine);
         taskLink.append(middleLine);
 
         if (sourceLeft + sourceWidth + 15 >= targetLeft) {
-          endLine.style.left = middleLine.offsetLeft + "px";
-          endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width = 15 + "px";
+          endLine.style.left = `${middleLine.offsetLeft}px`;
+          endLine.style.top = `${targetTop + rowHeight / 2}px`;
+          endLine.style.width = `${15}px`;
         } else {
-          endLine.style.left = middleLine.offsetLeft + "px";
-          endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width =
-            Math.abs(
-              startLine.offsetLeft + startLine.offsetWidth - targetLeft
-            ) + "px";
+          endLine.style.left = `${middleLine.offsetLeft}px`;
+          endLine.style.top = `${targetTop + rowHeight / 2}px`;
+          endLine.style.width = `${Math.abs(
+            startLine.offsetLeft + startLine.offsetWidth - targetLeft
+          )}px`;
         }
 
         let innerEndLine = linkHorInnerLine.cloneNode(true);
@@ -7077,35 +7072,37 @@
         taskLink.append(endLine);
       } else if (linkType == 1) {
         // 1 is  start_to_start
-        startLine.style.left = Math.min(sourceLeft, targetLeft) - 15 + "px";
-        startLine.style.top = sourceTop + rowHeight / 2 + "px";
+        startLine.style.left = `${Math.min(sourceLeft, targetLeft) - 15}px`;
+        startLine.style.top = `${sourceTop + rowHeight / 2}px`;
         if (sourceLeft > targetLeft) {
-          startLine.style.width = Math.abs(sourceLeft - targetLeft) + 15 + "px";
+          startLine.style.width = `${Math.abs(sourceLeft - targetLeft) + 15}px`;
         } else {
-          startLine.style.width = 15 + "px";
+          startLine.style.width = `${15}px`;
         }
         let innerHorLine = linkVerInnerLine.cloneNode(true);
         startLine.append(innerHorLine);
         taskLink.append(startLine);
 
         if (sourceLeft >= targetLeft) {
-          middleLine.style.left = target.offsetLeft - 15 + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${target.offsetLeft - 15}px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         } else {
-          middleLine.style.left = startLine.offsetLeft + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${startLine.offsetLeft}px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         }
         let innerLine = linkVerInnerLine.cloneNode(true);
         middleLine.append(innerLine);
         taskLink.append(middleLine);
 
-        endLine.style.left = middleLine.offsetLeft + "px";
-        endLine.style.top = targetTop + rowHeight / 2 + "px";
-        endLine.style.width = targetLeft - middleLine.offsetLeft + "px";
+        endLine.style.left = `${middleLine.offsetLeft}px`;
+        endLine.style.top = `${targetTop + rowHeight / 2}px`;
+        endLine.style.width = `${targetLeft - middleLine.offsetLeft}px`;
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
@@ -7309,7 +7306,7 @@
         startLine.append(innerHorLine);
         taskLink.append(startLine);
 
-        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
+        if (sourceLeft + sourceWidth + 30 >= targetLeft) {
           let middleLine = document.createElement("div");
           middleLine.classList.add(
             "zt-gantt-ver-link-line",
@@ -7317,26 +7314,29 @@
           );
           middleLine.style.left = sourceLeft + sourceWidth + 15 + "px";
           if (sourceTop < targetTop) {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-            middleLine.style.height =
-              source.offsetHeight / 2 + (extraHeight + 2) + "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight / 2
+            }px`;
+            middleLine.style.height = `${
+              source.offsetHeight / 2 + (extraHeight + 2)
+            }px`;
           } else {
             if (Math.abs(sourceTop - targetTop) <= rowHeight / 2) {
-              middleLine.style.top =
+              middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) +
                 rowHeight / 2 +
-                Math.abs(sourceTop - targetTop) +
-                "px";
-              middleLine.style.height =
-                Math.abs(
-                  sourceTop - targetTop - rowHeight / 2 - (extraHeight + 2)
-                ) + "px";
+                Math.abs(sourceTop - targetTop)
+              }px`;
+              middleLine.style.height = `${Math.abs(
+                sourceTop - targetTop - rowHeight / 2 - (extraHeight + 2)
+              )}px`;
             } else {
-              middleLine.style.top =
-                Math.min(sourceTop, targetTop) + rowHeight + extraHeight + "px";
-              middleLine.style.height =
-                Math.abs(sourceTop - targetTop) - rowHeight / 2 + "px";
+              middleLine.style.top = `${
+                Math.min(sourceTop, targetTop) + rowHeight + extraHeight
+              }px`;
+              middleLine.style.height = `${
+                Math.abs(sourceTop - targetTop) - rowHeight / 2
+              }px`;
             }
           }
           let innerLine = linkVerInnerLine.cloneNode(true);
@@ -7351,94 +7351,96 @@
             source.offsetHeight +
             extraHeight +
             "px";
-          if (0 < sourceLeft + sourceWidth + 15 - targetLeft <= 15) {
-            horLine.style.width =
-              Math.abs(sourceLeft + sourceWidth + 15 - targetLeft) + 15 + "px";
+          const sourceTargetDiff = sourceLeft + sourceWidth - targetLeft;
+          if (0 <= sourceTargetDiff + 30 && sourceTargetDiff + 30 <= 30) {
+            horLine.style.width = `${Math.abs(sourceTargetDiff + 30)}px`;
           } else {
-            horLine.style.width =
-              Math.abs(sourceLeft + sourceWidth - targetLeft) + 30 + "px";
+            horLine.style.width = `${Math.abs(sourceTargetDiff) + 30}px`;
           }
           let innerHorLine = linkHorInnerLine.cloneNode(true);
           horLine.append(innerHorLine);
           taskLink.append(horLine);
         }
 
-        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
-          middleLine.style.left = target.offsetLeft - 15 + "px";
+        if (sourceLeft + sourceWidth + 30 >= targetLeft) {
+          middleLine.style.left = `${target.offsetLeft - 15}px`;
           if (sourceTop < targetTop) {
             if (Math.abs(sourceTop - targetTop) <= rowHeight / 2) {
-              middleLine.style.top =
+              middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) +
                 rowHeight / 2 +
-                Math.abs(sourceTop - targetTop) +
-                "px";
-              middleLine.style.height =
-                Math.abs(sourceTop - targetTop + rowHeight / 2 + extraHeight) +
-                "px";
+                Math.abs(sourceTop - targetTop)
+              }px`;
+              middleLine.style.height = `${Math.abs(
+                sourceTop - targetTop + rowHeight / 2 + extraHeight
+              )}px`;
             } else {
-              middleLine.style.top =
-                Math.min(sourceTop, targetTop) +
-                rowHeight +
-                (extraHeight + 2) +
-                "px";
-              middleLine.style.height =
-                Math.abs(sourceTop - targetTop) -
-                rowHeight / 2 -
-                extraHeight +
-                "px";
+              middleLine.style.top = `${
+                Math.min(sourceTop, targetTop) + rowHeight + (extraHeight + 2)
+              }px`;
+              middleLine.style.height = `${
+                Math.abs(sourceTop - targetTop) - rowHeight / 2 - extraHeight
+              }px`;
             }
           } else {
-            middleLine.style.top =
-              Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-            middleLine.style.height =
-              source.offsetHeight / 2 + extraHeight + "px";
+            middleLine.style.top = `${
+              Math.min(sourceTop, targetTop) + rowHeight / 2
+            }px`;
+            middleLine.style.height = `${
+              source.offsetHeight / 2 + extraHeight
+            }px`;
           }
         } else {
-          middleLine.style.left = sourceLeft + sourceWidth + 13 + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${sourceLeft + sourceWidth + 13}px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2 + 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         }
         let innerLine = linkVerInnerLine.cloneNode(true);
         middleLine.append(innerLine);
         taskLink.append(middleLine);
 
-        if (sourceLeft + sourceWidth + 15 >= targetLeft) {
-          endLine.style.left = targetLeft - 15 + "px";
-          endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width = 15 + "px";
+        const sourceLeftWidth = sourceLeft + sourceWidth;
+        if (sourceLeftWidth + 30 >= targetLeft) {
+          endLine.style.left = `${targetLeft - 15}px`;
+          endLine.style.top = `${targetTop + rowHeight / 2}px`;
+          endLine.style.width = `${15}px`;
         } else {
-          endLine.style.left = sourceLeft + sourceWidth + 13 + "px";
-          endLine.style.top = targetTop + rowHeight / 2 + "px";
-          endLine.style.width =
-            Math.abs(sourceLeft + sourceWidth + 15 - targetLeft) + "px";
+          endLine.style.left = `${sourceLeftWidth + 13}px`;
+          endLine.style.top = `${targetTop + rowHeight / 2}px`;
+          endLine.style.width = `${Math.abs(
+            sourceLeftWidth + 15 - targetLeft
+          )}px`;
         }
         let innerEndLine = linkHorInnerLine.cloneNode(true);
         endLine.append(innerEndLine);
         taskLink.append(endLine);
       } else if (linkType === 1) {
         // 1 is  start_to_start
-        startLine.style.left = Math.min(sourceLeft, targetLeft) - 15 + "px";
-        startLine.style.top = sourceTop + rowHeight / 2 + "px";
+        startLine.style.left = `${Math.min(sourceLeft, targetLeft) - 15}px`;
+        startLine.style.top = `${sourceTop + rowHeight / 2}px`;
         if (sourceLeft > targetLeft) {
-          startLine.style.width = Math.abs(sourceLeft - targetLeft) + 15 + "px";
+          startLine.style.width = `${Math.abs(sourceLeft - targetLeft) + 15}px`;
         } else {
-          startLine.style.width = 15 + "px";
+          startLine.style.width = `${15}px`;
         }
         let innerHorLine = linkHorInnerLine.cloneNode(true);
         startLine.append(innerHorLine);
         taskLink.append(startLine);
 
         if (sourceLeft >= targetLeft) {
-          middleLine.style.left = targetLeft - 15 + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${targetLeft - 15}px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         } else {
-          middleLine.style.left = Math.min(sourceLeft, targetLeft) - 15 + "px";
-          middleLine.style.top =
-            Math.min(sourceTop, targetTop) + rowHeight / 2 + "px";
-          middleLine.style.height = Math.abs(sourceTop - targetTop) + "px";
+          middleLine.style.left = `${Math.min(sourceLeft, targetLeft) - 15}px`;
+          middleLine.style.top = `${
+            Math.min(sourceTop, targetTop) + rowHeight / 2
+          }px`;
+          middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
         }
         let innerLine = linkVerInnerLine.cloneNode(true);
         middleLine.append(innerLine);
@@ -7522,15 +7524,14 @@
             }px`;
           } else {
             if (Math.abs(sourceTop - targetTop) <= rowHeight / 2) {
-              middleLine.style.top =
+              middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) +
                 rowHeight / 2 +
-                Math.abs(sourceTop - targetTop) +
-                "px";
-              middleLine.style.height =
-                Math.abs(
-                  sourceTop - targetTop - rowHeight / 2 - (extraHeight + 2)
-                ) + "px";
+                Math.abs(sourceTop - targetTop)
+              }px`;
+              middleLine.style.height = `${Math.abs(
+                sourceTop - targetTop - rowHeight / 2 - (extraHeight + 2)
+              )}px`;
             } else {
               middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) + rowHeight + (extraHeight + 2)
@@ -7573,15 +7574,14 @@
             middleLine.style.height = `${Math.abs(sourceTop - targetTop)}px`;
           } else {
             if (Math.abs(sourceTop - targetTop) <= rowHeight / 2) {
-              middleLine.style.top =
+              middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) +
                 rowHeight / 2 +
-                Math.abs(sourceTop - targetTop) +
-                "px";
-              middleLine.style.height =
-                Math.abs(
-                  sourceTop - targetTop + rowHeight / 2 + extraHeight + 2
-                ) + "px";
+                Math.abs(sourceTop - targetTop)
+              }px`;
+              middleLine.style.height = `${Math.abs(
+                sourceTop - targetTop + rowHeight / 2 + extraHeight + 2
+              )}px`;
             } else {
               middleLine.style.top = `${
                 Math.min(sourceTop, targetTop) + rowHeight + extraHeight
