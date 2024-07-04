@@ -17,9 +17,12 @@
 (function (global) {
   class ztGantt {
     #arrangeData = true;
+    #originalData = [];
     #ganttHeight = 0;
     #debounceTimers = new Map();
     #searchedData = undefined;
+    ztGanttLayout = null;
+    #eventValue = true;
     #dateFormat = {
       month_full: [
         "January",
@@ -66,9 +69,8 @@
       this.initializeOptions(options);
       this.initTemplates(templates);
 
-      this.handleFullScreenChangeSafari = this.handleFullScreenChangeSafari.bind(
-        this
-      );
+      this.handleFullScreenChangeSafari =
+        this.handleFullScreenChangeSafari.bind(this);
       this.handleFullScreenChange = this.handleFullScreenChange.bind(this);
       this.handleResizeWindow = this.handleResizeWindow.bind(this);
 
@@ -1744,6 +1746,9 @@
       return dates;
     }
 
+    /**
+     * initialize events
+     */
     init() {
       this.options.currentLanguage = this.options.i18n[this.options.localLang];
 
@@ -1835,10 +1840,10 @@
 
       // create a copy of the data
       if (this.#arrangeData) {
-        this.originalData = [...this.options.data];
+        this.#originalData = [...this.options.data];
       }
 
-      const originalData = this.originalData;
+      const originalData = this.#originalData;
       const { date_format } = options;
 
       // process task start and end date
@@ -1887,7 +1892,7 @@
         return tree;
       }
 
-      this.options.data = createNestedTree(this.originalData);
+      this.options.data = createNestedTree(this.#originalData);
 
       // calculate and add duration and start and end date in all data objects
       this.updateTaskDuration();
@@ -1912,7 +1917,7 @@
 
       // set all task expanded initially if collapse is false
       if (!options.collapse && !options?.openedTasks?.length) {
-        this.options.openedTasks = this.originalData.map((task) => task?.id);
+        this.options.openedTasks = this.#originalData.map((task) => task?.id);
       }
 
       if (this.fullScreen === true) {
@@ -1923,37 +1928,39 @@
       ztGanttLayout.classList.add("zt-gantt-layout", "zt-gantt-d-flex");
       ztGanttLayout.id = "zt-gantt-layout";
 
-      this.createSidebar(ztGanttLayout);
+      this.ztGanttLayout = ztGanttLayout;
+
+      this.createSidebar();
 
       const timeline = document.createElement("div");
       timeline.classList.add("zt-gantt-timeline-cell");
       timeline.id = "zt-gantt-timeline-cell";
 
       this.createTimelineScale(timeline);
-      this.createTimelineBody(timeline, ztGanttLayout, true);
+      this.createTimelineBody(timeline, true);
 
       if (options?.rightGrid) {
         let newGridOptions = { ...options };
         newGridOptions.columns = options.rightGrid;
-        this.createRightSidebar(newGridOptions, ztGanttLayout);
+        this.createRightSidebar(newGridOptions);
       }
 
       const verScroll =
-        document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+        this.element.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
       const horScroll =
-        document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+        this.element.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
 
       // append zt-gantt-layout in element
-      const layout = document.querySelector("#zt-gantt-layout");
+      const layout = this.element.querySelector("#zt-gantt-layout");
       if (layout) {
         layout.replaceWith(ztGanttLayout);
       } else {
         this.element.append(ztGanttLayout);
       }
 
-      this.createScrollbar(ztGanttLayout, verScroll || 0, horScroll || 0);
+      this.createScrollbar(verScroll || 0, horScroll || 0);
 
-      const timelineDataContainer = document.querySelector(
+      const timelineDataContainer = this.element.querySelector(
         "#zt-gantt-timeline-data"
       );
 
@@ -1991,7 +1998,8 @@
     }
 
     // create left sidebar
-    createSidebar(ztGanttLayout) {
+    createSidebar() {
+      const ztGanttLayout = this.ztGanttLayout;
       const options = this.options;
 
       // sidebar head cells
@@ -2021,6 +2029,7 @@
 
       // head loop of left side
       for (let i = 0; i < options.columns.length; i++) {
+        const column = options.columns[i];
         let headCell = document.createElement("div");
         headCell.classList.add("head-cell");
 
@@ -2028,19 +2037,19 @@
         this.addClassesFromFunction(
           this.templates.grid_header_class,
           headCell,
-          options.columns[i],
+          column,
           i
         );
 
         headCell.setAttribute("data-column-index", i);
-        headCell.style.width = (options.columns[i].width || 80) + "px";
-        headCell.innerHTML = options.columns[i].label;
+        headCell.style.width = (column.width || 80) + "px";
+        headCell.innerHTML = column.label;
         headCellContainer.append(headCell);
 
         if (this.options.sort) {
           headCell.addEventListener("click", () => {
             let isAsc = !this.options?.sortOption?.isAsc;
-            const sortBy = options.columns[i]?.name;
+            const sortBy = column?.name;
 
             if (sortBy !== this.options?.sortOption?.sortBy) {
               isAsc = true; // Set isAsc to true by default if sortBy is different
@@ -2052,7 +2061,7 @@
           // add sort icon to the current sorting column
           if (
             this.options?.sortOption &&
-            this.options?.sortOption?.sortBy == options.columns[i]?.name
+            this.options?.sortOption?.sortBy == column?.name
           ) {
             const sortIcon = document.createElement("div");
             let isAsc = !this.options?.sortOption?.isAsc;
@@ -2070,11 +2079,11 @@
           resizerWrap.id = "zt-gantt-col-resizer-wrap-" + i;
           resizerWrap.style.height = this.calculateScaleHeight("header");
 
-          if (options.columns[i].resize === true) {
+          if (column.resize === true) {
             const resizer = document.createElement("div");
             resizer.classList.add("zt-gantt-col-resizer");
             resizerWrap.append(resizer);
-            resizerLeft += options.columns[i].width || 80;
+            resizerLeft += column.width || 80;
             resizerWrap.style.left = resizerLeft + "px";
             headCellContainer.append(resizerWrap);
             this.resizeColumns(
@@ -2082,8 +2091,8 @@
               `data-column-index="${i}"`,
               headCell,
               headCellContainer,
-              options.columns[i].min_width,
-              options.columns[i].max_width,
+              column.min_width,
+              column.max_width,
               i,
               sidebar,
               false
@@ -2099,7 +2108,7 @@
 
       // loop through all the data
       for (let j = 0; j < options.data.length; j++) {
-        const task = options.data[j];
+        const task = this.options.data[j];
         if (!this.isTaskNotInSearchedData(task.id)) {
           if (this.#searchedData) {
             this.addTaskToOpenedList(task.id);
@@ -2145,8 +2154,8 @@
             });
 
             // if onBeforeTaskDblClick return false then do not drag the task
-            if (that.eventValue === false) {
-              that.eventValue = true;
+            if (that.#eventValue === false) {
+              that.#eventValue = true;
               return;
             }
 
@@ -2175,7 +2184,8 @@
           });
 
           // loop through all the columns
-          for (let k = 0; k < options.columns.length; k++) {
+          for (let k = 0; k < this.options.columns.length; k++) {
+            const column = this.options.columns[k];
             const cell = document.createElement("div");
             cell.classList.add("zt-gantt-cell");
 
@@ -2183,19 +2193,15 @@
             this.addClassesFromFunction(
               this.templates.grid_cell_class,
               cell,
-              this.options.columns[k],
+              column,
               task
             );
 
-            cell.style.width = (options.columns[k].width || 80) + "px";
+            cell.style.width = (column.width || 80) + "px";
 
-            options.columns[k].align
-              ? (cell.style.textAlign = options.columns[k].align)
-              : "";
+            column.align ? (cell.style.textAlign = column.align) : "";
 
-            options.columns[k].align
-              ? (cell.style.justifyContent = options.columns[k].align)
-              : "";
+            column.align ? (cell.style.justifyContent = column.align) : "";
 
             const content = document.createElement("div");
             content.classList.add(
@@ -2211,11 +2217,7 @@
 
             // function to get content HTML
             const getContentHTML = () => {
-              return (
-                this.options.columns[k].template(task) ||
-                task[this.options.columns[k].name] ||
-                " "
-              );
+              return column.template(task) || task[column.name] || " ";
             };
 
             // content of the column
@@ -2238,7 +2240,7 @@
               content.innerHTML = getContentHTML();
             });
 
-            if (options.columns[k].tree) {
+            if (column.tree) {
               cell.classList.add("zt-gantt-d-flex");
 
               // folder icon
@@ -2269,12 +2271,7 @@
                   if (isTaskCollapse) {
                     this.addTaskToOpenedList(task.id);
                   } else {
-                    const openedTasks = this.options.openedTasks.indexOf(
-                      task.id
-                    );
-                    if (openedTasks > -1) {
-                      this.options.openedTasks.splice(openedTasks, 1);
-                    }
+                    this.removeTaskFromOpenedList(task.id);
                   }
 
                   this.setCollapseAll(
@@ -2288,7 +2285,7 @@
                   treeIcon.classList.toggle("zt-gantt-tree-close");
                   treeIcon.classList.toggle("zt-gantt-tree-open");
 
-                  this.createScrollbar(ztGanttLayout);
+                  this.createScrollbar();
 
                   // custom event of toggle tree
                   this.dispatchEvent("onTaskToggle", {
@@ -2304,12 +2301,12 @@
             cell.append(content);
             dataItem.append(cell);
 
-            if (this.options.columns[k]?.editor) {
+            if (column?.editor) {
               cell.addEventListener("click", (e) => {
                 if (e.target.classList.contains("zt-gantt-tree-icon")) return;
                 this.addInlineEditor(
                   task,
-                  this.options.columns[k].editor,
+                  column.editor,
                   cell,
                   leftDataContainer
                 );
@@ -2372,6 +2369,7 @@
       timelineScale.style.height = this.calculateScaleHeight("header");
 
       for (let i = 0; i < options.scales.length; i++) {
+        const scale = options.scales[i];
         const timelineScaleRow = document.createElement("div");
         timelineScaleRow.classList.add(`zt-gantt-scale-row`);
 
@@ -2383,25 +2381,20 @@
         let endDate = new Date(0).getTime();
 
         for (let j = 0; j < dates.length; j++) {
+          const date = dates[j];
           if (
-            new Date(endDate).getTime() >=
-            new Date(dates[j]).setHours(0, 0, 0, 0)
+            new Date(endDate).getTime() >= new Date(date).setHours(0, 0, 0, 0)
           ) {
             continue;
           }
-          let dateFormat = this.isFunction(options.scales[i].format)
-            ? options.scales[i].format(new Date(dates[j]))
-            : this.formatDateToString(options.scales[i].format, dates[j]);
-
+          let dateFormat = this.isFunction(scale.format)
+            ? scale.format(new Date(date))
+            : this.formatDateToString(scale.format, date);
           let colDates;
 
           // if date scale unit is week || month || year || (day && step > 1)
-          if (isMultiUnitScale(options.scales[i])) {
-            colDates = this.initColSizes(
-              options.scales[i].unit,
-              options.scales[i].step,
-              dates[j]
-            );
+          if (isMultiUnitScale(scale)) {
+            colDates = this.initColSizes(scale.unit, scale.step, date);
           }
 
           function isMultiUnitScale(scale) {
@@ -2418,44 +2411,42 @@
           this.addClassesFromFunction(
             this.templates.scale_cell_class,
             dateCell,
-            dates[j],
-            this.options.scales[i],
+            date,
+            scale,
             i
           );
 
           dateCell.innerHTML = `<span class="date-scale">${dateFormat}</span>`;
 
-          if (isMultiUnitScale(options.scales[i])) {
+          if (isMultiUnitScale(scale)) {
             dateCell.style.width =
-              colDates.dateCount * this.calculateGridWidth(dates[j]) + "px";
+              colDates.dateCount * this.calculateGridWidth(date) + "px";
             dateCell.style.left = rangeCount + "px";
           } else {
             dateCell.style.left =
-              j * this.calculateGridWidth(dates[j], "day") + "px";
-            dateCell.style.width =
-              this.calculateGridWidth(dates[j], "day") + "px";
+              j * this.calculateGridWidth(date, "day") + "px";
+            dateCell.style.width = this.calculateGridWidth(date, "day") + "px";
           }
-          let currentDate = new Date(dates[j]).setHours(0, 0, 0, 0);
+          let currentDate = new Date(date).setHours(0, 0, 0, 0);
           if (
-            isMultiUnitScale(options.scales[i]) &&
+            isMultiUnitScale(scale) &&
             new Date(endDate).getTime() < currentDate
           ) {
             timelineScaleRow.append(dateCell);
-            rangeCount +=
-              colDates.dateCount * this.calculateGridWidth(dates[j]);
+            rangeCount += colDates.dateCount * this.calculateGridWidth(date);
             endDate = new Date(colDates.endDate);
-          } else if (options.scales[i].unit == "hour") {
-            let dateStartHour = new Date(dates[j]).getHours();
-            let cellDate = new Date(dates[j]);
-            let cellWidth = this.calculateGridWidth(dates[j]);
+          } else if (scale.unit == "hour") {
+            let dateStartHour = new Date(date).getHours();
+            let cellDate = new Date(date);
+            let cellWidth = this.calculateGridWidth(date);
 
             const fragment = document.createDocumentFragment();
             for (let k = dateStartHour; k < 24; k++) {
               let hourCell = dateCell.cloneNode(true);
 
-              let dateFormat = this.isFunction(options.scales[i].format)
-                ? options.scales[i].format(cellDate)
-                : this.formatDateToString(options.scales[i].format, cellDate);
+              let dateFormat = this.isFunction(scale.format)
+                ? scale.format(cellDate)
+                : this.formatDateToString(scale.format, cellDate);
 
               hourCell.innerHTML = dateFormat;
               cellDate.setHours(k + 1);
@@ -2466,10 +2457,7 @@
               rangeCount += cellWidth;
             }
             timelineScaleRow.append(fragment);
-          } else if (
-            options.scales[i].unit == "day" &&
-            options.scales[i].step == 1
-          ) {
+          } else if (scale.unit == "day" && scale.step == 1) {
             timelineScaleRow.append(dateCell);
           }
         }
@@ -2481,7 +2469,8 @@
     }
 
     // create grid body
-    createTimelineBody(timeline, ztGanttLayout, isFromRender = false) {
+    createTimelineBody(timeline, isFromRender = false) {
+      const ztGanttLayout = this.ztGanttLayout;
       const options = this.options;
       const timelineDataContainer = document.createElement("div");
       timelineDataContainer.classList.add("zt-gantt-timeline-data");
@@ -2499,33 +2488,32 @@
       const timelineRowTemplate = this.createRowTemplate();
       // grid data loop
       for (let j = 0; j < options.data.length; j++) {
-        if (!this.isTaskNotInSearchedData(options.data[j].id)) {
+        const task = this.options.data[j];
+        if (!this.isTaskNotInSearchedData(task.id)) {
           const timelineRow = timelineRowTemplate.cloneNode(true);
-          const isSelected = options.selectedRow === `${options.data[j].id}`;
+          const isSelected = options.selectedRow === `${task.id}`;
 
           if (isSelected) timelineRow.classList.add("zt-gantt-selected");
 
           timelineRow.setAttribute("zt-gantt-data-task-id", j);
-          timelineRow.setAttribute("zt-gantt-task-id", options.data[j].id);
+          timelineRow.setAttribute("zt-gantt-task-id", task.id);
 
           //add custom classes from user
-          const { start_date, end_date } = this.getLargeAndSmallDate(
-            options.data[j]
-          );
+          const { start_date, end_date } = this.getLargeAndSmallDate(task);
 
           this.addClassesFromFunction(
             this.templates.task_row_class,
             timelineRow,
             start_date,
             end_date,
-            this.options.data[j]
+            task
           );
 
           // handle cell click event
           this.addClickListener(timelineRow, (e) => {
             if (e.target.classList.contains("zt-gantt-task-cell")) {
               this.dispatchEvent("onCellClick", {
-                task: this.options.data[j],
+                task,
                 cellDate: e.target.getAttribute("zt-gantt-cell-date"),
               });
             }
@@ -2535,12 +2523,12 @@
         }
 
         // if children exist
-        if (this.options.data[j]?.children?.length && !this.options.splitTask) {
+        if (task?.children?.length && !this.options.splitTask) {
           this.createTimelineChildBody(
-            this.options.data[j].children,
+            task.children,
             ztGanttTaskData,
             j,
-            this.isTaskOpened(this.options.data[j].id),
+            this.isTaskOpened(task.id),
             timelineRowTemplate
           );
         }
@@ -2552,7 +2540,9 @@
       timelineDataContainer.append(ztGanttTaskData);
       timeline.append(timelineDataContainer);
 
-      let isCalendarExist = document.querySelector("#zt-gantt-timeline-cell");
+      let isCalendarExist = this.element.querySelector(
+        "#zt-gantt-timeline-cell"
+      );
 
       if (isCalendarExist && isFromRender === false) {
         isCalendarExist.replaceWith(timeline);
@@ -2564,11 +2554,7 @@
 
       // create custom scroller
       if (!isFromRender) {
-        this.createScrollbar(
-          ztGanttLayout,
-          this.verScroll || 0,
-          this.horScroll || 0
-        );
+        this.createScrollbar(this.verScroll || 0, this.horScroll || 0);
 
         if (!this.markerArea) {
           const markerArea = document.createElement("div");
@@ -2718,24 +2704,21 @@
       ztGanttBarsArea.id = "zt-gantt-bars-area";
 
       for (let j = 0; j < this.options.data.length; j++) {
-        const cellStartDate = this.options.startDate;
+        const task = this.options.data[j];
+        let cellStartDate = this.options.startDate;
 
-        if (!this.isTaskNotInSearchedData(this.options.data[j].id)) {
-          let start_date = new Date(this.options.data[j].start_date);
-          let end_date = new Date(this.options.data[j].end_date);
+        if (!this.isTaskNotInSearchedData(task.id)) {
+          let start_date = new Date(task.start_date);
+          let end_date = new Date(task.end_date);
 
-          if (this.options.data[j].children?.length) {
-            ({ start_date, end_date } = this.getLargeAndSmallDate(
-              this.options.data[j]
-            ));
+          if (task.children?.length) {
+            ({ start_date, end_date } = this.getLargeAndSmallDate(task));
           }
 
           let isCellGreater = true;
           let cellBefore = this.getDates(
             cellStartDate,
-            this.options.data[j].type === "milestone"
-              ? this.options.data[j].start_date
-              : start_date
+            task.type === "milestone" ? task.start_date : start_date
           );
 
           if (cellBefore.length === 0) {
@@ -2750,27 +2733,24 @@
           }
           let ztGanttBarTask = document.createElement("div");
 
-          if (
-            this.options.data[j].taskColor &&
-            this.options.data[j].type !== "milestone"
-          ) {
+          if (task.taskColor && task.type !== "milestone") {
             ztGanttBarTask.style.setProperty(
               "background-color",
-              this.changeOpacity(this.options.data[j].taskColor),
+              this.changeOpacity(task.taskColor),
               "important"
             );
             ztGanttBarTask.style.setProperty(
               "border-color",
-              this.options.data[j].taskColor,
+              task.taskColor,
               "important"
             );
           }
 
-          if (this.options.data[j].type === "milestone") {
+          if (task.type === "milestone") {
             ztGanttBarTask.classList.add(
               "zt-gantt-bar-task",
               "zt-gantt-bar-milestone",
-              this.options.selectedTask === `${this.options.data[j].id}`
+              this.options.selectedTask === `${task.id}`
                 ? "zt-gantt-selected-task-bar"
                 : "zt-gantt-bar-milestone"
             );
@@ -2778,7 +2758,7 @@
             ztGanttBarTask.classList.add(
               "zt-gantt-bar-task",
               "zt-gantt-bar-parent-task",
-              this.options.selectedTask === `${this.options.data[j].id}`
+              this.options.selectedTask === `${task.id}`
                 ? "zt-gantt-selected-task-bar"
                 : "zt-gantt-bar-task"
             );
@@ -2790,15 +2770,12 @@
             ztGanttBarTask,
             start_date,
             end_date,
-            this.options.data[j]
+            task
           );
 
           ztGanttBarTask.setAttribute("task-parent", j);
           ztGanttBarTask.setAttribute("data-task-pos", 0);
-          ztGanttBarTask.setAttribute(
-            "zt-gantt-taskbar-id",
-            this.options.data[j].id
-          );
+          ztGanttBarTask.setAttribute("zt-gantt-taskbar-id", task.id);
 
           let taskLeft =
             cellBefore * this.calculateGridWidth(start_date, "day");
@@ -2816,7 +2793,7 @@
           let barTaskHeight = Math.floor((this.options.row_height * 80) / 100);
           ztGanttBarTask.style.height = `${barTaskHeight}px`;
           ztGanttBarTask.style.lineHeight = `${barTaskHeight}px`;
-          if (this.options.data[j].type === "milestone") {
+          if (task.type === "milestone") {
             ztGanttBarTask.style.width = `${barTaskHeight}px`;
             ztGanttBarTask.style.left =
               (cellBefore + 1) * this.calculateGridWidth(start_date, "day") +
@@ -2829,19 +2806,16 @@
             "parent-task-bar-content"
           );
 
-          if (
-            this.options.data[j].type === "milestone" &&
-            this.options.data[j].taskColor
-          ) {
+          if (task.type === "milestone" && task.taskColor) {
             ztGanttBarTaskContent.style.setProperty(
               "background-color",
-              this.options.data[j].taskColor,
+              task.taskColor,
               "important"
             );
 
             ztGanttBarTaskContent.style.setProperty(
               "border-color",
-              this.options.data[j].taskColor,
+              task.taskColor,
               "important"
             );
           }
@@ -2854,20 +2828,20 @@
           function handleDblClick() {
             // custom event handler
             that.dispatchEvent("onBeforeTaskDblClick", {
-              task: that.options.data[j],
+              task,
             });
 
             // if onBeforeTaskDblClick return false then do not drag the task
-            if (that.eventValue === false) {
-              that.eventValue = true;
+            if (that.#eventValue === false) {
+              that.#eventValue = true;
               return;
             }
 
             that.dispatchEvent("onTaskDblClick", {
-              task: that.options.data[j],
+              task,
             });
 
-            that.showLightBox(that.options.data[j]);
+            that.showLightBox(task);
           }
 
           const userAgent = navigator.userAgent;
@@ -2880,7 +2854,7 @@
               ztGanttBarTask.classList.add("hovered");
             }
 
-            that.updateTooltipBody(that.options.data[j]);
+            that.updateTooltipBody(task);
           }
 
           // Handle mouseleave event
@@ -2895,8 +2869,8 @@
           }
 
           if (
-            this.callTemplate("task_drag", "resize", this.options.data[j]) &&
-            this.options.data[j].type !== "milestone"
+            this.callTemplate("task_drag", "resize", task) &&
+            task.type !== "milestone"
           ) {
             // left side resizer
             const ztGanttTaskDragLeft = document.createElement("div");
@@ -2911,14 +2885,14 @@
               ztGanttTaskDragLeft,
               ztGanttBarTask,
               "left",
-              this.options.data[j]
+              task
             );
 
             this.resizeTaskBars(
               ztGanttTaskDragRight,
               ztGanttBarTask,
               "right",
-              this.options.data[j]
+              task
             );
           }
 
@@ -2926,13 +2900,10 @@
 
           let taskProgress;
           const isTaskProgress = this.isFunction(this.options.taskProgress)
-            ? this.options.taskProgress(this.options.data[j])
+            ? this.options.taskProgress(task)
             : this.options.taskProgress;
-          if (
-            isTaskProgress === true &&
-            this.options.data[j].type !== "milestone"
-          ) {
-            let progressPer = this.options.data[j].progress || 0;
+          if (isTaskProgress === true && task.type !== "milestone") {
+            let progressPer = task.progress || 0;
             progressPer = progressPer > 100 ? 100 : progressPer;
             const taskProgressContainer = document.createElement("div");
             taskProgressContainer.classList.add(
@@ -2942,10 +2913,10 @@
             taskProgress.classList.add("zt-gantt-task-progress");
             taskProgress.style.width = `${progressPer}%`;
 
-            if (this.options.data[j].taskColor) {
+            if (task.taskColor) {
               taskProgress.style.setProperty(
                 "background-color",
-                this.options.data[j].taskColor,
+                task.taskColor,
                 "important"
               );
             }
@@ -2958,7 +2929,7 @@
 
             // update the task progress onAfterTaskUpdate
             this.attachEvent("onAfterTaskUpdate", () => {
-              let progress = this.options.data[j].progress || 0;
+              let progress = task.progress || 0;
               taskProgress.style.width = `${progress}%`;
               taskProgressDrag.style.left = `${progress}%`;
             });
@@ -2968,22 +2939,22 @@
               taskProgressDrag,
               taskProgress,
               ztGanttBarTask,
-              this.options.data[j]
+              task
             );
           }
 
-          if (this.callTemplate("task_drag", "move", this.options.data[j])) {
+          if (this.callTemplate("task_drag", "move", task)) {
             this.resizeTaskBars(
               ztGanttBarTaskContent,
               ztGanttBarTask,
               "move",
-              this.options.data[j]
+              task
             );
           }
 
           // link control pointers
           let isAddLinks = this.isFunction(this.options.addLinks)
-            ? this.options.addLinks(this.options.data[j])
+            ? this.options.addLinks(task)
             : this.options.addLinks;
 
           if (isAddLinks === true) {
@@ -3011,24 +2982,14 @@
             rightLinkPoint.append(rightPoint);
             ztGanttBarTask.append(leftLinkPoint, rightLinkPoint);
 
-            this.createNewLink(
-              rightPoint,
-              ztGanttBarTask,
-              this.options.data[j].id,
-              "right"
-            );
+            this.createNewLink(rightPoint, ztGanttBarTask, task.id, "right");
 
-            this.createNewLink(
-              leftPoint,
-              ztGanttBarTask,
-              this.options.data[j].id,
-              "left"
-            );
+            this.createNewLink(leftPoint, ztGanttBarTask, task.id, "left");
           }
 
           //add custom task color picker
           let isCustomColor = this.isFunction(this.options.taskColor)
-            ? this.options.taskColor(this.options.data[j])
+            ? this.options.taskColor(task)
             : this.options.taskColor;
 
           if (isCustomColor) {
@@ -3040,23 +3001,20 @@
 
             setTimeout(() => {
               const backgroundElement =
-                this.options.data[j].type === "milestone"
+                task.type === "milestone"
                   ? ztGanttBarTaskContent
                   : ztGanttBarTask;
 
               // Get the computed style of the element
-              const ztGanttBarTaskStyle = window.getComputedStyle(
-                backgroundElement
-              );
+              const ztGanttBarTaskStyle =
+                window.getComputedStyle(backgroundElement);
 
               // Get the background-color property value
-              const backgroundColor = ztGanttBarTaskStyle.getPropertyValue(
-                "background-color"
-              );
+              const backgroundColor =
+                ztGanttBarTaskStyle.getPropertyValue("background-color");
 
               colorInput.value =
-                this.options.data[j].taskColor ||
-                this.rgbaToHex(backgroundColor);
+                task.taskColor || this.rgbaToHex(backgroundColor);
             }, 0);
 
             colorPicker.append(colorInput);
@@ -3066,11 +3024,11 @@
               colorInput,
               taskProgress,
               ztGanttBarTaskContent,
-              this.options.data[j]
+              task
             );
           }
 
-          if (this.options.data[j].type !== "milestone") {
+          if (task.type !== "milestone") {
             let taskWidth =
               taskDates.length * this.calculateGridWidth(end_date, "day");
 
@@ -3086,14 +3044,14 @@
           }
 
           let sideContent;
-          if (this.options.data[j].type === "milestone") {
+          if (task.type === "milestone") {
             sideContent = document.createElement("div");
             sideContent.classList.add("zt-gantt-side-content");
             sideContent.innerHTML = this.callTemplate(
               "taskbar_text",
               new Date(start_date),
               new Date(end_date),
-              this.options.data[j]
+              task
             );
             ztGanttBarTask.append(sideContent);
           } else {
@@ -3101,7 +3059,7 @@
               "taskbar_text",
               new Date(start_date.setHours(0)),
               new Date(end_date.setHours(0)),
-              this.options.data[j]
+              task
             );
           }
           ztGanttBarTask.append(ztGanttBarTaskContent);
@@ -3111,10 +3069,10 @@
               "taskbar_text",
               start_date.setHours(0),
               end_date.setHours(0),
-              this.options.data[j]
+              task
             );
 
-            if (this.options.data[j].type === "milestone") {
+            if (task.type === "milestone") {
               sideContent.innerHTML = innerHTML;
             } else {
               ztGanttBarTaskContent.innerHTML = innerHTML;
@@ -3128,12 +3086,12 @@
 
         // if children exist
         if (
-          this.options.data[j]?.children?.length &&
-          this.isTaskOpened(this.options.data[j].id) &&
+          task?.children?.length &&
+          this.isTaskOpened(task.id) &&
           !this.options.splitTask
         ) {
           rowCount = this.createChildTaskBars(
-            this.options.data[j].children,
+            task.children,
             rowCount,
             ztGanttBarsArea,
             j
@@ -3155,7 +3113,9 @@
       }
       if (!isFromRender) {
         // create links if addLinks is true
-        let isLinksAreaExist = document.querySelector("#zt-gantt-links-area");
+        let isLinksAreaExist = this.element.querySelector(
+          "#zt-gantt-links-area"
+        );
         // if lines already exist remove all lines
         if (isLinksAreaExist) {
           isLinksAreaExist.innerHTML = "";
@@ -3233,10 +3193,6 @@
 
         resizeArea.style.left = resizeLeft + "px";
 
-        const ztGanttLayout = document.getElementById("zt-gantt-layout");
-
-        resizeArea.style.height = ztGanttLayout.scrollHeight + "px";
-
         let resizeAreaWidth = headCell.offsetWidth;
 
         resizeArea.style.width =
@@ -3246,7 +3202,7 @@
             ? maxWidth
             : resizeAreaWidth) + "px";
 
-        ztGanttLayout.append(resizeArea);
+        that.ztGanttLayout.append(resizeArea);
         document.addEventListener("mousemove", resize, false);
         document.addEventListener("mouseup", handleMouseUp, false);
       }
@@ -3256,7 +3212,7 @@
         document.removeEventListener("mouseup", handleMouseUp, false);
         resizeArea.remove();
         if (colResizing) {
-          let columns = document.querySelectorAll(`[${attr}]`);
+          let columns = that.element.querySelectorAll(`[${attr}]`);
           let colWidth = columns[0].offsetWidth + (e.x - startX);
           colWidth =
             colWidth < (minWidth || 80)
@@ -3317,7 +3273,7 @@
               document.getElementById("zt-gantt-grid-left-data").offsetWidth +
               "px";
           } else {
-            let rightResizer = document.querySelector(
+            let rightResizer = that.element.querySelector(
               "#zt-gantt-timeline-resizer-wrap"
             );
             headCellContainer.style.width = totalHeadWidth + "px";
@@ -3336,8 +3292,7 @@
           ) {
             that.updateBody();
           } else {
-            let ztGanttLayout = document.querySelector(".zt-gantt-layout");
-            that.createScrollbar(ztGanttLayout);
+            that.createScrollbar();
           }
         }
         colResizing = false;
@@ -3385,7 +3340,7 @@
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
         if (sidebarResizing) {
-          let rightResizer = document.querySelector(
+          let rightResizer = that.element.querySelector(
             "#zt-gantt-timeline-resizer-wrap"
           );
           // add the all columns minWidth
@@ -3407,7 +3362,7 @@
 
           let resizerLeft = 0,
             headerCell = document.getElementsByClassName("head-cell"),
-            sidebarData = document.querySelector("#zt-gantt-left-grid");
+            sidebarData = that.element.querySelector("#zt-gantt-left-grid");
 
           if (that.element.offsetWidth - left <= 50) {
             left -= 50;
@@ -3416,7 +3371,7 @@
           let singleColIncrease = (left - startX) / that.options.columns.length;
 
           for (let j = 0; j < headerCell.length; j++) {
-            let columns = document.querySelectorAll(
+            let columns = that.element.querySelectorAll(
               `[data-column-index="${j}"]`
             );
 
@@ -3475,8 +3430,7 @@
           ) {
             that.updateBody();
           } else {
-            let ztGanttLayout = document.querySelector(".zt-gantt-layout");
-            that.createScrollbar(ztGanttLayout);
+            that.createScrollbar();
           }
         }
         resizerLine.classList.remove("resizing");
@@ -3684,7 +3638,7 @@
       this.element.classList.add("zt-gantt-fullScreen");
 
       this.fullScreen = true;
-      let isVerScrollExist = document.querySelectorAll(
+      let isVerScrollExist = this.element.querySelectorAll(
         ".zt-gantt-ver-scroll-cell"
       );
       if (isVerScrollExist && isVerScrollExist.length > 0) {
@@ -3701,12 +3655,11 @@
       ) {
         this.updateBody();
       } else {
-        let ztGanttLayout = document.querySelector(".zt-gantt-layout");
         let verScroll =
-          document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+          this.element.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
         let horScroll =
-          document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
-        this.createScrollbar(ztGanttLayout, verScroll, horScroll);
+          this.element.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+        this.createScrollbar(verScroll, horScroll);
       }
       resizer.style.left = sidebar.offsetWidth + "px";
     }
@@ -3729,7 +3682,7 @@
 
       this.fullScreen = false;
 
-      let isVerScrollExist = document.querySelectorAll(
+      let isVerScrollExist = this.element.querySelectorAll(
         ".zt-gantt-ver-scroll-cell"
       );
 
@@ -3747,8 +3700,7 @@
           this.updateBody();
         }, 0);
       } else {
-        let ztGanttLayout = document.querySelector(".zt-gantt-layout");
-        this.createScrollbar(ztGanttLayout);
+        this.createScrollbar();
       }
 
       // manage tooltip
@@ -3762,10 +3714,8 @@
      * Method to expand all rows of gantt
      */
     expandAll() {
-      const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      const toggleIcons = document.querySelectorAll(".zt-gantt-tree-close");
-
-      let openedTasks = this.setAllExpand(this.options.data, []);
+      const childRows = this.element.querySelectorAll(".zt-gantt-child-row");
+      const toggleIcons = this.element.querySelectorAll(".zt-gantt-tree-close");
 
       for (let icon of toggleIcons) {
         icon.classList.remove("zt-gantt-tree-close");
@@ -3779,10 +3729,9 @@
         }
       }
 
-      this.options.openedTasks = openedTasks;
+      this.options.openedTasks = this.#originalData.map((task) => task?.id);
       this.createTaskBars();
-      const ztGanttLayout = document.querySelector("#zt-gantt-layout");
-      this.createScrollbar(ztGanttLayout);
+      this.createScrollbar();
       this.options.collapse = false;
     }
 
@@ -3790,11 +3739,11 @@
      * Method to collapse all rows of gantt
      */
     collapseAll() {
-      const childRows = document.querySelectorAll(".zt-gantt-child-row");
-      const toggleIcons = document.querySelectorAll(".zt-gantt-tree-icon");
+      const childRows = this.element.querySelectorAll(".zt-gantt-child-row");
+      const toggleIcons = this.element.querySelectorAll(".zt-gantt-tree-icon");
 
       // Make the opened task array empty
-      this.options.openedTasks = [];
+      this.options.openedTasks.length = 0;
 
       // Change all the toggle icons to close
       for (let icon of toggleIcons) {
@@ -3810,13 +3759,12 @@
 
       // Again create all taskBars
       this.createTaskBars();
-      const ztGanttLayout = document.querySelector("#zt-gantt-layout");
-      this.createScrollbar(ztGanttLayout);
+      this.createScrollbar();
       this.options.collapse = true;
     }
 
     // get start and end dates from children array
-    getStartAndEndDate(data) {
+    getStartAndEndDate(data = this.options.data) {
       const that = this;
       function getDates(array) {
         let dates = [];
@@ -3880,7 +3828,7 @@
       function handleMouseDown(event) {
         rightPanelScroll = document.getElementById("zt-gantt-timeline-cell");
         rightPanelScrollWidth = rightPanelScroll.scrollWidth;
-        allTaskbars = document.querySelectorAll(".zt-gantt-bar-task");
+        allTaskbars = that.element.querySelectorAll(".zt-gantt-bar-task");
 
         scrollContainerTop =
           that.element.offsetTop + rightPanelScroll.offsetHeight;
@@ -3923,9 +3871,8 @@
           const isTaskbarIndexInRange =
             taskbarIndex > -1 && taskbarIndex < allTaskbars.length;
           const taskParentId = currentPosTaskbar?.getAttribute("task-parent");
-          const taskPosition = +currentPosTaskbar?.getAttribute(
-            "data-task-pos"
-          );
+          const taskPosition =
+            +currentPosTaskbar?.getAttribute("data-task-pos");
           const taskPositionId = currentPosTaskbar?.getAttribute(
             "zt-gantt-taskbar-id"
           );
@@ -3933,18 +3880,18 @@
           const currentTaskPosition = +taskBar.getAttribute("data-task-pos");
 
           const updateData = (parentId, task, taskPositionId) => {
-            let currentIndex = that.originalData.findIndex(
+            let currentIndex = that.#originalData.findIndex(
               (obj) => obj.id == task.id
             );
             let newIndexTask = that.getTask(taskPositionId);
-            let newIndex = that.originalData.findIndex(
+            let newIndex = that.#originalData.findIndex(
               (obj) => obj.id == taskPositionId
             );
 
-            that.originalData.splice(currentIndex, 1); // Remove the object from the current position
+            that.#originalData.splice(currentIndex, 1); // Remove the object from the current position
             task.parent =
               parentId.length > 1 ? newIndexTask.parent : newIndexTask.id;
-            that.originalData.splice(newIndex, 0, task); // Insert the object at the new position
+            that.#originalData.splice(newIndex, 0, task); // Insert the object at the new position
           };
 
           if (isTaskbarIndexInRange) {
@@ -3964,13 +3911,13 @@
             oldParentTask: that.getTask(task.parent),
           });
 
-          if (type === "move" && that.eventValue === false) {
+          if (type === "move" && that.#eventValue === false) {
             taskBar.style.top = `${startTop}px`;
             taskBar.style.left = `${startLeft}px`;
             resizer.style.cursor = "pointer";
             that.#updateTask(task, initStartDate, initEndDate, taskBar);
             resizeTask = false;
-            that.eventValue = true;
+            that.#eventValue = true;
           } else {
             if (type === "move") {
               resizer.style.cursor = "pointer";
@@ -4047,12 +3994,12 @@
         }
 
         // if onBeforeTaskDrag return false then do not drag the task
-        if (that.eventValue === false) {
+        if (that.#eventValue === false) {
           return;
         }
 
         resizeTask = true;
-        
+
         function startAutoScroll(type) {
           if (type === "right") {
             rightPanelScroll.scrollLeft += scrollSpeed;
@@ -4144,14 +4091,14 @@
             if (isTaskbarIndexInRange) {
               const taskPos = currentPosTaskbar.getAttribute("task-parent");
               const pos = taskPos?.slice(0, -1) || taskPos;
-              const rows = document.querySelectorAll(
+              const rows = that.element.querySelectorAll(
                 `[zt-gantt-data-task-id^="${pos}"].zt-gantt-task-row`
               );
               const dropAreaHeight =
                 rows[rows.length - 1].offsetTop -
                 rows[0].offsetTop +
                 that.options.row_height;
-              const dropArea = document.querySelector(".drop-area");
+              const dropArea = that.element.querySelector(".drop-area");
               dropArea.style.top = `${rows[0].offsetTop}px`;
               dropArea.style.height = `${dropAreaHeight}px`;
             }
@@ -4348,18 +4295,16 @@
 
       // update the task content innerHTML
       if (task.type === "milestone") {
-        target.querySelector(
-          ".zt-gantt-side-content"
-        ).innerHTML = this.callTemplate("taskbar_text", start, end, task);
+        target.querySelector(".zt-gantt-side-content").innerHTML =
+          this.callTemplate("taskbar_text", start, end, task);
       } else {
-        target.querySelector(
-          ".zt-gantt-bar-task-content"
-        ).innerHTML = this.callTemplate(
-          "taskbar_text",
-          taskCurrentStart,
-          taskCurrentEnd,
-          task
-        );
+        target.querySelector(".zt-gantt-bar-task-content").innerHTML =
+          this.callTemplate(
+            "taskbar_text",
+            taskCurrentStart,
+            taskCurrentEnd,
+            task
+          );
       }
 
       if (this.options.zoomLevel === "hour") {
@@ -4419,7 +4364,7 @@
         for (let i = 0; i < allParents.length - 1; i++) {
           const currentTask = currentLevel[allParents[i]];
           currentLevel = currentTask.children;
-          const currentParent = document.querySelector(
+          const currentParent = that.element.querySelector(
             `[task-parent="${currentParentSelector}"]`
           );
 
@@ -4461,21 +4406,20 @@
 
               end_date = new Date(new Date(start_date).setHours(23, 59, 59));
 
-              currentParent.querySelector(
-                ".zt-gantt-side-content"
-              ).innerHTML = that.callTemplate(
-                "taskbar_text",
-                start_date,
-                end_date,
-                currentTask
-              );
+              currentParent.querySelector(".zt-gantt-side-content").innerHTML =
+                that.callTemplate(
+                  "taskbar_text",
+                  start_date,
+                  end_date,
+                  currentTask
+                );
             } else {
               // find All childs of current parent
               let allChildsLeft = [];
               let allChildsLeftAndWidth = [];
 
               currentLevel.forEach((task) => {
-                let childTaskBar = document.querySelector(
+                let childTaskBar = that.element.querySelector(
                   `[zt-gantt-taskbar-id="${task.id}"]`
                 );
                 if (childTaskBar) {
@@ -4613,7 +4557,7 @@
     updateTaskDate(task, start, end) {
       task.start_date = start;
       task.end_date = end;
-      this.originalData.findIndex((item) => {
+      this.#originalData.findIndex((item) => {
         if (item.id == task.id) {
           item.start_date = start;
           item.end_date = end;
@@ -4774,7 +4718,7 @@
 
       let sidebarWidth = 0;
       if (sidebar) {
-        let headCell = document.querySelectorAll(".head-cell");
+        let headCell = this.element.querySelectorAll(".head-cell");
         if (headCell.length !== this.options.columns.length) {
           sidebarWidth = totalWidth;
         } else {
@@ -4863,7 +4807,7 @@
             this.calculateGridWidth(new Date(0), levelType) * this.dates.length;
         }
       } else {
-        let timeLineRow = document.querySelector(".zt-gantt-task-row");
+        let timeLineRow = this.element.querySelector(".zt-gantt-task-row");
         let timeLineCell = timeLineRow.querySelectorAll(".zt-gantt-task-cell");
         totalWidth = Array.from(timeLineCell).reduce(
           (totalWidth, cell) => totalWidth + cell.offsetWidth,
@@ -4979,7 +4923,7 @@
         );
       }
 
-      this.originalData.unshift(task);
+      this.#originalData.unshift(task);
       this.eachTask((item) => {
         if (item.id == task.parent) {
           if (!item.children) {
@@ -5004,10 +4948,10 @@
      * @param { number | string } id - id of the task to delete
      */
     deleteTask(id) {
-      const task = this.getTask(id);
-      for (let i = 0; i < this.originalData.length; i++) {
-        if (this.originalData[i].id == id) {
-          this.originalData.splice(i, 1);
+      for (let i = 0; i < this.#originalData.length; i++) {
+        if (this.#originalData[i].id == id) {
+          const task = this.getTask(id);
+          this.#originalData.splice(i, 1);
           this.render();
           this.hideLightbox();
           this.dispatchEvent("onTaskDelete", { task });
@@ -5021,19 +4965,19 @@
      * @param { Task } task - updated task object.
      */
     updateTaskData(task) {
-      const updatedTaskIndex = this.originalData.findIndex(
+      const updatedTaskIndex = this.#originalData.findIndex(
         (item) => item.id === task.id
       );
 
       if (updatedTaskIndex !== -1) {
-        this.originalData[updatedTaskIndex] = {
-          ...this.originalData[updatedTaskIndex],
+        this.#originalData[updatedTaskIndex] = {
+          ...this.#originalData[updatedTaskIndex],
           ...task,
         };
 
         this.eachTask((item, parentTask, index) => {
           if (item.id === task.id) {
-            parentTask[index] = this.originalData[updatedTaskIndex];
+            parentTask[index] = this.#originalData[updatedTaskIndex];
           }
         });
 
@@ -5059,7 +5003,8 @@
      */
     exportToExcel(name = "ztGantt") {
       let csv = "";
-      const regexIgnorePattern = /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
+      const regexIgnorePattern =
+        /<[^>]+?\szt-gantt-ignore=(["'])(true)\1[^>]*>.*?<\/[^>]+?>/g;
 
       // Function to escape quotes and commas in the CSV content
       function escapeCSV(value) {
@@ -5196,38 +5141,37 @@
     ) {
       // loop through all the children
       for (let l = 0; l < taskData.length; l++) {
+        const task = taskData[l];
         let taskParents = `${parentIdString}${l}`;
 
-        if (!this.isTaskNotInSearchedData(taskData[l].id)) {
+        if (!this.isTaskNotInSearchedData(task.id)) {
           if (this.#searchedData) {
-            this.addTaskToOpenedList(taskData[l].id);
+            this.addTaskToOpenedList(task.id.id);
           }
 
           let dataItem = document.createElement("div");
           dataItem.classList.add(
             "zt-gantt-row-item",
             "zt-gantt-child-row",
-            `zt-gantt-child-${taskData[l].parent}`,
+            `zt-gantt-child-${task.parent}`,
             !isOpened ? "zt-gantt-d-none" : "zt-gantt-d-flex",
-            this.options.selectedRow === `${taskData[l].id}`
+            this.options.selectedRow === `${task.id}`
               ? "zt-gantt-selected"
               : "zt-gantt-row-item"
           );
 
           //add custom classes from user
-          const { start_date, end_date } = this.getLargeAndSmallDate(
-            taskData[l]
-          );
+          const { start_date, end_date } = this.getLargeAndSmallDate(task);
           this.addClassesFromFunction(
             this.templates.grid_row_class,
             dataItem,
             start_date,
             end_date,
-            taskData[l]
+            task
           );
 
           dataItem.setAttribute("zt-gantt-data-task-id", `${taskParents}`);
-          dataItem.setAttribute("zt-gantt-task-id", taskData[l].id);
+          dataItem.setAttribute("zt-gantt-task-id", task.id);
           dataItem.style.height = options.row_height + "px";
           dataItem.style.lineHeight = options.row_height + "px";
 
@@ -5240,22 +5184,22 @@
             if (e.target.classList.contains("zt-gantt-tree-icon")) return;
 
             // custom event handler
-            that.dispatchEvent("onBeforeTaskDblClick", { task: taskData[l] });
+            that.dispatchEvent("onBeforeTaskDblClick", { task });
 
             // if onBeforeTaskDblClick return false then do not drag the task
-            if (that.eventValue === false) {
-              that.eventValue = true;
+            if (that.#eventValue === false) {
+              that.#eventValue = true;
               return;
             }
 
-            that.dispatchEvent("onTaskDblClick", { task: taskData[l] });
+            that.dispatchEvent("onTaskDblClick", { task });
 
-            that.showLightBox(taskData[l]);
+            that.showLightBox(task);
           }
 
           // Handle mouseover event
           dataItem.addEventListener("mouseover", () =>
-            this.updateTooltipBody(taskData[l])
+            this.updateTooltipBody(task)
           );
 
           // Handle mouseleave event
@@ -5265,11 +5209,12 @@
             if (e.target.classList.contains("zt-gantt-tree-icon")) {
               return;
             }
-            that.selectTask(taskData[l]);
+            that.selectTask(task);
           });
 
           // loop through all the columns
           for (let k = 0; k < options.columns.length; k++) {
+            const column = this.options.columns[k];
             let cell = document.createElement("div");
             cell.classList.add("zt-gantt-cell");
 
@@ -5277,25 +5222,18 @@
             this.addClassesFromFunction(
               this.templates.grid_cell_class,
               cell,
-              this.options.columns[k],
-              taskData[l]
+              column,
+              task
             );
 
-            cell.style.width = (options.columns[k].width || 80) + "px";
-            options.columns[k].align
-              ? (cell.style.textAlign = options.columns[k].align)
-              : "";
-            options.columns[k].align
-              ? (cell.style.justifyContent = options.columns[k].align)
-              : "";
+            cell.style.width = (column.width || 80) + "px";
+            column.align ? (cell.style.textAlign = column.align) : "";
+            column.align ? (cell.style.justifyContent = column.align) : "";
 
             let ztGanttBlank = document.createElement("div");
             ztGanttBlank.classList.add("zt-gantt-blank");
 
-            ztGanttBlank.innerHTML = this.callTemplate(
-              "grid_blank",
-              taskData[l]
-            );
+            ztGanttBlank.innerHTML = this.callTemplate("grid_blank", task);
 
             // content
             let content = document.createElement("div");
@@ -5310,47 +5248,37 @@
               cell.setAttribute("data-column-index", k);
             }
             content.innerHTML =
-              options.columns[k].template(taskData[l]) ||
-              taskData[l][options.columns[k].name] ||
-              " ";
+              column.template(task) || task[column.name] || " ";
 
             // update content innerHTML on after task update
             this.attachEvent("onAfterTaskUpdate", () => {
               content.innerHTML =
-                options.columns[k].template(taskData[l]) ||
-                taskData[l][options.columns[k].name] ||
-                " ";
+                column.template(task) || task[column.name] || " ";
             });
 
             // update content innerHTML on after progress drag
             this.attachEvent("onAfterProgressDrag", () => {
               content.innerHTML =
-                options.columns[k].template(taskData[l]) ||
-                taskData[l][options.columns[k].name] ||
-                " ";
+                column.template(task) || task[column.name] || " ";
             });
 
             // update content innerHTML on task drag
             this.attachEvent("onTaskDrag", () => {
               content.innerHTML =
-                options.columns[k].template(taskData[l]) ||
-                taskData[l][options.columns[k].name] ||
-                " ";
+                column.template(task) || task[column.name] || " ";
             });
 
             // update content innerHTML on after task drag
             this.attachEvent("onAfterTaskDrag", () => {
               content.innerHTML =
-                options.columns[k].template(taskData[l]) ||
-                taskData[l][options.columns[k].name] ||
-                " ";
+                column.template(task) || task[column.name] || " ";
             });
 
-            if (options.columns[k].tree) {
+            if (column.tree) {
               // file icon
               let file = document.createElement("div");
               file.classList.add("zt-gantt-file-icon");
-              file.innerHTML = this.callTemplate("grid_file", taskData[l]);
+              file.innerHTML = this.callTemplate("grid_file", task);
 
               //add child indentation
               for (let n = 0; n < nestedLevel; n++) {
@@ -5360,34 +5288,29 @@
               }
               cell.classList.add("zt-gantt-d-flex");
 
-              if (taskData[l].children && taskData[l].children.length > 0) {
+              if (task?.children?.length) {
                 // tree icon
                 let treeIcon = document.createElement("div");
                 treeIcon.classList.add(
                   "zt-gantt-tree-icon",
-                  !this.isTaskOpened(taskData[l].id)
+                  !this.isTaskOpened(task.id)
                     ? "zt-gantt-tree-close"
                     : "zt-gantt-tree-open"
                 );
                 cell.append(treeIcon);
 
                 this.addClickListener(treeIcon, () => {
-                  const isTaskCollapse = !this.isTaskOpened(taskData[l].id);
+                  const isTaskCollapse = !this.isTaskOpened(task.id);
 
                   if (isTaskCollapse) {
-                    this.addTaskToOpenedList(taskData[l].id);
+                    this.addTaskToOpenedList(task.id);
                   } else {
-                    const openedTask = this.options.openedTasks.indexOf(
-                      taskData[l].id
-                    );
-                    if (openedTask > -1) {
-                      this.options.openedTasks.splice(openedTask, 1);
-                    }
+                    this.removeTaskFromOpenedList(task.id);
                   }
 
                   this.setCollapseAll(
-                    taskData[l].children,
-                    taskData[l].id,
+                    task.children,
+                    task.id,
                     isTaskCollapse ? "open" : "collapse"
                   );
 
@@ -5395,14 +5318,11 @@
                   treeIcon.classList.toggle("zt-gantt-tree-close");
                   treeIcon.classList.toggle("zt-gantt-tree-open");
 
-                  const ztGanttLayout = document.querySelector(
-                    "#zt-gantt-layout"
-                  );
-                  this.createScrollbar(ztGanttLayout);
+                  this.createScrollbar();
 
                   // custom event of toggle tree
                   this.dispatchEvent("onTaskToggle", {
-                    task: taskData[l],
+                    task,
                     isTaskOpened: isTaskCollapse,
                   });
                 });
@@ -5413,12 +5333,12 @@
             }
             cell.append(content);
             dataItem.append(cell);
-            if (this.options.columns[k]?.editor) {
+            if (column?.editor) {
               cell.addEventListener("click", (e) => {
                 if (e.target.classList.contains("zt-gantt-tree-icon")) return;
                 this.addInlineEditor(
-                  taskData[l],
-                  this.options.columns[k].editor,
+                  task,
+                  column.editor,
                   cell,
                   leftDataContainer
                 );
@@ -5430,13 +5350,13 @@
         }
 
         this.createSidebarChild(
-          taskData[l].children,
+          task.children,
           options,
           leftDataContainer,
           nestedLevel + 1,
           taskParents,
           isRight,
-          isOpened ? this.isTaskOpened(taskData[l].id) : isOpened
+          isOpened ? this.isTaskOpened(task.id) : isOpened
         );
       }
     }
@@ -5452,17 +5372,18 @@
 
       // loop through all the children
       for (let l = 0; l < taskData.length; l++) {
+        const task = taskData[l];
         const taskParents = `${parentIdString}${l}`;
 
-        if (!this.isTaskNotInSearchedData(taskData[l].id)) {
+        if (!this.isTaskNotInSearchedData(task.id)) {
           const timelineRow = timelineRowTemplate.cloneNode(true);
-          const isRowSelected = options.selectedRow === `${taskData[l].id}`;
-          const isCollapsed = !this.isTaskOpened(taskData[l].parent);
+          const isRowSelected = options.selectedRow === `${task.id}`;
+          const isCollapsed = !this.isTaskOpened(task.parent);
 
           // Array to hold the classes
           const classes = [
             "zt-gantt-child-row",
-            `zt-gantt-child-${taskData[l].parent}`,
+            `zt-gantt-child-${task.parent}`,
           ];
 
           // Conditionally add classes based on `isCollapsed` and `isOpened`
@@ -5478,25 +5399,23 @@
           timelineRow.classList.add(...classes);
 
           //add custom classes from user
-          const { start_date, end_date } = this.getLargeAndSmallDate(
-            taskData[l]
-          );
+          const { start_date, end_date } = this.getLargeAndSmallDate(task);
           this.addClassesFromFunction(
             this.templates.task_row_class,
             timelineRow,
             start_date,
             end_date,
-            taskData[l]
+            task
           );
 
           timelineRow.setAttribute("zt-gantt-data-task-id", taskParents);
-          timelineRow.setAttribute("zt-gantt-task-id", taskData[l].id);
+          timelineRow.setAttribute("zt-gantt-task-id", task.id);
 
           // handle cell click event
           this.addClickListener(timelineRow, (e) => {
             if (e.target.classList.contains("zt-gantt-task-cell")) {
               this.dispatchEvent("onCellClick", {
-                task: taskData[l],
+                task,
                 cellDate: e.target.getAttribute("zt-gantt-cell-date"),
               });
             }
@@ -5506,12 +5425,12 @@
         }
 
         // if children exist
-        if (taskData[l]?.children?.length) {
+        if (task?.children?.length) {
           this.createTimelineChildBody(
-            taskData[l].children,
+            task.children,
             ztGanttTaskData,
             taskParents,
-            isOpened ? this.isTaskOpened(taskData[l].id) : isOpened,
+            isOpened ? this.isTaskOpened(task.id) : isOpened,
             timelineRowTemplate
           );
         }
@@ -5523,21 +5442,20 @@
       const barTaskHeight = Math.floor((this.options.row_height * 80) / 100);
       // loop through all children
       for (let k = 0; k < taskData.length; k++) {
+        const task = taskData[k];
         const taskParents = `${taskParentString}${k}`;
 
-        if (!this.isTaskNotInSearchedData(taskData[k].id)) {
-          let start_date = taskData[k].start_date;
-          let end_date = taskData[k].end_date || taskData[k].start_date;
+        if (!this.isTaskNotInSearchedData(task.id)) {
+          let start_date = task.start_date;
+          let end_date = task.end_date || task.start_date;
 
-          if (taskData[k]?.children?.length) {
-            ({ start_date, end_date } = this.getLargeAndSmallDate(taskData[k]));
+          if (task?.children?.length) {
+            ({ start_date, end_date } = this.getLargeAndSmallDate(task));
           }
 
           let cellBefore = this.getDates(
             cellStartDate,
-            taskData[k].type === "milestone"
-              ? taskData[k].start_date
-              : start_date
+            task.type === "milestone" ? task.start_date : start_date
           );
 
           if (cellBefore.length === 0) {
@@ -5549,32 +5467,32 @@
 
           const ztGanttBarTask = document.createElement("div");
 
-          if (taskData[k].type === "milestone") {
+          if (task.type === "milestone") {
             ztGanttBarTask.classList.add(
               "zt-gantt-bar-task",
               "zt-gantt-bar-milestone",
-              this.options.selectedTask === `${taskData[k].id}`
+              this.options.selectedTask === `${task.id}`
                 ? "zt-gantt-selected-task-bar"
                 : "zt-gantt-bar-milestone"
             );
           } else {
             ztGanttBarTask.classList.add(
               "zt-gantt-bar-task",
-              this.options.selectedTask === `${taskData[k].id}`
+              this.options.selectedTask === `${task.id}`
                 ? "zt-gantt-selected-task-bar"
                 : "zt-gantt-bar-task"
             );
           }
 
-          if (taskData[k].taskColor && taskData[k].type !== "milestone") {
+          if (task.taskColor && task.type !== "milestone") {
             ztGanttBarTask.style.setProperty(
               "background-color",
-              this.changeOpacity(taskData[k].taskColor),
+              this.changeOpacity(task.taskColor),
               "important"
             );
             ztGanttBarTask.style.setProperty(
               "border-color",
-              taskData[k].taskColor,
+              task.taskColor,
               "important"
             );
           }
@@ -5585,12 +5503,12 @@
             ztGanttBarTask,
             start_date,
             end_date,
-            taskData[k]
+            task
           );
 
           ztGanttBarTask.setAttribute("task-parent", taskParents);
           ztGanttBarTask.setAttribute("data-task-pos", k);
-          ztGanttBarTask.setAttribute("zt-gantt-taskbar-id", taskData[k].id);
+          ztGanttBarTask.setAttribute("zt-gantt-taskbar-id", task.id);
 
           let taskLeft =
             cellBefore * this.calculateGridWidth(start_date, "day");
@@ -5606,7 +5524,7 @@
             "px";
           ztGanttBarTask.style.height = `${barTaskHeight}px`;
           ztGanttBarTask.style.lineHeight = `${barTaskHeight}px`;
-          if (taskData[k].type === "milestone") {
+          if (task.type === "milestone") {
             ztGanttBarTask.style.width = `${barTaskHeight}px`;
             ztGanttBarTask.style.left =
               (cellBefore + 1) * this.calculateGridWidth(start_date, "day") +
@@ -5619,16 +5537,16 @@
             "child-task-bar-content"
           );
 
-          if (taskData[k].type === "milestone" && taskData[k].taskColor) {
+          if (task.type === "milestone" && task.taskColor) {
             ztGanttBarTaskContent.style.setProperty(
               "background-color",
-              taskData[k].taskColor,
+              task.taskColor,
               "important"
             );
 
             ztGanttBarTaskContent.style.setProperty(
               "border-color",
-              taskData[k].taskColor,
+              task.taskColor,
               "important"
             );
           }
@@ -5640,17 +5558,17 @@
 
           function handleDblClick() {
             // custom event handler
-            that.dispatchEvent("onBeforeTaskDblClick", { task: taskData[k] });
+            that.dispatchEvent("onBeforeTaskDblClick", { task: task });
 
             // if onBeforeTaskDblClick return false then end here
-            if (that.eventValue === false) {
-              that.eventValue = true;
+            if (that.#eventValue === false) {
+              that.#eventValue = true;
               return;
             }
 
-            that.dispatchEvent("onTaskDblClick", { task: taskData[k] });
+            that.dispatchEvent("onTaskDblClick", { task: task });
 
-            that.showLightBox(taskData[k]);
+            that.showLightBox(task);
           }
 
           const userAgent = navigator.userAgent;
@@ -5663,7 +5581,7 @@
               ztGanttBarTask.classList.add("hovered");
             }
 
-            that.updateTooltipBody(taskData[k]);
+            that.updateTooltipBody(task);
           }
 
           // Handle mouseleave event
@@ -5678,8 +5596,8 @@
           }
 
           if (
-            this.callTemplate("task_drag", "resize", taskData[k]) &&
-            taskData[k].type !== "milestone"
+            this.callTemplate("task_drag", "resize", task) &&
+            task.type !== "milestone"
           ) {
             let ztGanttTaskDragLeft = document.createElement("div");
             ztGanttTaskDragLeft.classList.add("zt-gantt-task-drag-left");
@@ -5691,28 +5609,28 @@
               ztGanttTaskDragLeft,
               ztGanttBarTask,
               "left",
-              taskData[k]
+              task
             );
             this.resizeTaskBars(
               ztGanttTaskDragRight,
               ztGanttBarTask,
               "right",
-              taskData[k]
+              task
             );
           }
 
-          if (this.callTemplate("task_drag", "move", taskData[k])) {
+          if (this.callTemplate("task_drag", "move", task)) {
             this.resizeTaskBars(
               ztGanttBarTaskContent,
               ztGanttBarTask,
               "move",
-              taskData[k]
+              task
             );
           }
 
           // link control pointers
           const isAddLinks = this.isFunction(this.options.addLinks)
-            ? this.options.addLinks(taskData[k])
+            ? this.options.addLinks(task)
             : this.options.addLinks;
 
           if (isAddLinks === true) {
@@ -5737,26 +5655,16 @@
             leftLinkPoint.append(leftPoint);
             rightLinkPoint.append(rightPoint);
             ztGanttBarTask.append(leftLinkPoint, rightLinkPoint);
-            this.createNewLink(
-              rightPoint,
-              ztGanttBarTask,
-              taskData[k].id,
-              "right"
-            );
-            this.createNewLink(
-              leftPoint,
-              ztGanttBarTask,
-              taskData[k].id,
-              "left"
-            );
+            this.createNewLink(rightPoint, ztGanttBarTask, task.id, "right");
+            this.createNewLink(leftPoint, ztGanttBarTask, task.id, "left");
           }
 
           let taskProgress;
           const isTaskProgress = this.isFunction(this.options.taskProgress)
-            ? this.options.taskProgress(taskData[k])
+            ? this.options.taskProgress(task)
             : this.options.taskProgress;
-          if (isTaskProgress === true && taskData[k].type !== "milestone") {
-            let progressPer = taskData[k].progress || 0;
+          if (isTaskProgress === true && task.type !== "milestone") {
+            let progressPer = task.progress || 0;
             const taskProgressContainer = document.createElement("div");
             taskProgressContainer.classList.add(
               "zt-gantt-task-progress-wrapper"
@@ -5767,10 +5675,10 @@
               progressPer > 100 ? 100 : progressPer
             }%`;
 
-            if (taskData[k].taskColor) {
+            if (task.taskColor) {
               taskProgress.style.setProperty(
                 "background-color",
-                taskData[k].taskColor,
+                task.taskColor,
                 "important"
               );
             }
@@ -5785,8 +5693,7 @@
 
             // update the task progress onAfterTaskUpdate
             this.attachEvent("onAfterTaskUpdate", () => {
-              const progress =
-                progressPer > 100 ? 100 : taskData[k].progress || 0;
+              const progress = progressPer > 100 ? 100 : task.progress || 0;
               taskProgress.style.width = `${progress}%`;
               taskProgressDrag.style.left = `${progress}%`;
             });
@@ -5796,13 +5703,13 @@
               taskProgressDrag,
               taskProgress,
               ztGanttBarTask,
-              taskData[k]
+              task
             );
           }
 
           //add custom task color picker
           let isCustomColor = this.isFunction(this.options.taskColor)
-            ? this.options.taskColor(taskData[k])
+            ? this.options.taskColor(task)
             : this.options.taskColor;
 
           if (isCustomColor) {
@@ -5812,23 +5719,21 @@
             colorInput.type = "color";
 
             setTimeout(() => {
-              let backgroundColor = taskData[k]?.taskColor;
-              if (!taskData[k]?.taskColor) {
+              let backgroundColor = task?.taskColor;
+              if (!task?.taskColor) {
                 // Get the computed style of the element
                 const backgroundElement =
-                  taskData[k].type === "milestone"
+                  task.type === "milestone"
                     ? ztGanttBarTaskContent
                     : ztGanttBarTask;
-                const ztGanttBarTaskStyle = window.getComputedStyle(
-                  backgroundElement
-                );
+                const ztGanttBarTaskStyle =
+                  window.getComputedStyle(backgroundElement);
                 // Get the background-color property value
-                backgroundColor = ztGanttBarTaskStyle.getPropertyValue(
-                  "background-color"
-                );
+                backgroundColor =
+                  ztGanttBarTaskStyle.getPropertyValue("background-color");
               }
               colorInput.value =
-                taskData[k]?.taskColor || this.rgbaToHex(backgroundColor);
+                task?.taskColor || this.rgbaToHex(backgroundColor);
             }, 0);
 
             colorPicker.append(colorInput);
@@ -5839,13 +5744,13 @@
               colorInput,
               taskProgress,
               ztGanttBarTaskContent,
-              taskData[k]
+              task
             );
           }
 
           let taskDates = this.getDates(start_date, end_date);
 
-          if (taskData[k].type !== "milestone") {
+          if (task.type !== "milestone") {
             let taskWidth =
               taskDates.length * this.calculateGridWidth(end_date, "day");
 
@@ -5867,9 +5772,9 @@
             "taskbar_text",
             new Date(start_date),
             new Date(end_date),
-            taskData[k]
+            task
           );
-          if (taskData[k].type === "milestone") {
+          if (task.type === "milestone") {
             sideContent = document.createElement("div");
             sideContent.classList.add("zt-gantt-side-content");
             sideContent.innerHTML = innerHTML;
@@ -5883,9 +5788,9 @@
               "taskbar_text",
               new Date(start_date),
               new Date(end_date),
-              taskData[k]
+              task
             );
-            if (taskData[k].type === "milestone") {
+            if (task.type === "milestone") {
               sideContent.innerHTML = innerHTML;
             } else {
               ztGanttBarTaskContent.innerHTML = innerHTML;
@@ -5899,9 +5804,9 @@
           rowCount += 1;
         }
 
-        if (taskData[k].children && this.isTaskOpened(taskData[k].id)) {
+        if (task.children && this.isTaskOpened(task.id)) {
           rowCount = this.createChildTaskBars(
-            taskData[k].children,
+            task.children,
             rowCount,
             ztGanttBarsArea,
             taskParents
@@ -5963,9 +5868,10 @@
     }
 
     // create right sidebar
-    createRightSidebar(options, mainContainer) {
+    createRightSidebar(options) {
+      const ztGanttLayout = this.ztGanttLayout;
       // sidebar head cells
-      let sidebar = document.createElement("div");
+      const sidebar = document.createElement("div");
       sidebar.classList.add("zt-gantt-right-sidebar-cell");
       sidebar.id = "zt-gantt-grid-right-data";
       let headCellContainer = document.createElement("div");
@@ -5991,6 +5897,7 @@
       let resizerLeft = 0;
       // head loop of left side
       for (let i = 0; i < options.columns.length; i++) {
+        const column = options.columns[i];
         let headCell = document.createElement("div");
         headCell.classList.add("right-head-cell");
 
@@ -5998,13 +5905,13 @@
         this.addClassesFromFunction(
           this.templates.grid_header_class,
           headCell,
-          this.options.columns[i],
+          column,
           i
         );
 
         headCell.setAttribute("data-column-index", `r-${i}`);
-        headCell.style.width = (options.columns[i].width || 80) + "px";
-        headCell.innerHTML = options.columns[i].label;
+        headCell.style.width = (column.width || 80) + "px";
+        headCell.innerHTML = column.label;
         headCellContainer.append(headCell);
         if (i < options.columns.length) {
           let resizerWrap = document.createElement("div");
@@ -6012,11 +5919,11 @@
           resizerWrap.id = "zt-gantt-col-resizer-wrap-r-" + i;
           resizerWrap.style.height = this.calculateScaleHeight("header");
 
-          if (options.columns[i].resize === true) {
+          if (column.resize === true) {
             let resizer = document.createElement("div");
             resizer.classList.add("zt-gantt-col-resizer");
             resizerWrap.append(resizer);
-            resizerLeft += options.columns[i].width || 80;
+            resizerLeft += column.width || 80;
             resizerWrap.style.left = resizerLeft + "px";
             headCellContainer.append(resizerWrap);
             this.resizeColumns(
@@ -6024,8 +5931,8 @@
               `data-column-index="r-${i}"`,
               headCell,
               headCellContainer,
-              options.columns[i].min_width,
-              options.columns[i].max_width,
+              column.min_width,
+              column.max_width,
               i,
               sidebar,
               true
@@ -6043,30 +5950,29 @@
       }, 0);
       // loop through all the data
       for (let j = 0; j < options.data.length; j++) {
-        if (!this.isTaskNotInSearchedData(options.data[j].id)) {
+        const task = this.options.data[j];
+        if (!this.isTaskNotInSearchedData(task.id)) {
           const dataItem = document.createElement("div");
           dataItem.classList.add("zt-gantt-row-item", "zt-gantt-d-flex");
 
           //add custom classes from user
-          const { start_date, end_date } = this.getLargeAndSmallDate(
-            options.data[j]
-          );
+          const { start_date, end_date } = this.getLargeAndSmallDate(task);
           this.addClassesFromFunction(
             this.templates.grid_row_class,
             dataItem,
             start_date,
             end_date,
-            this.options.data[j]
+            task
           );
 
           dataItem.setAttribute("zt-gantt-data-task-id", j);
-          dataItem.setAttribute("zt-gantt-task-id", options.data[j].id);
+          dataItem.setAttribute("zt-gantt-task-id", task.id);
           dataItem.style.height = options.row_height + "px";
           dataItem.style.lineHeight = options.row_height + "px";
           let that = this;
           // Handle mouseover event
           dataItem.addEventListener("mouseover", () =>
-            this.updateTooltipBody(this.options.data[j])
+            this.updateTooltipBody(task)
           );
 
           // Handle mouseleave event
@@ -6077,8 +5983,9 @@
               return;
             }
 
-            let selectedRows = document.querySelectorAll(".zt-gantt-selected");
-            let selectedTaskBars = document.querySelectorAll(
+            let selectedRows =
+              this.element.querySelectorAll(".zt-gantt-selected");
+            let selectedTaskBars = this.element.querySelectorAll(
               ".zt-gantt-selected-task-bar"
             );
 
@@ -6091,23 +5998,24 @@
             }
 
             // select the selected task taskBar
-            let currentTaskBar = document.querySelector(
-              `[zt-gantt-taskbar-id="${options.data[j].id}"]`
+            let currentTaskBar = this.element.querySelector(
+              `[zt-gantt-taskbar-id="${task.id}"]`
             );
             currentTaskBar.classList.add("zt-gantt-selected-task-bar");
 
-            let taskRow = document.querySelectorAll(
+            let taskRow = this.element.querySelectorAll(
               `[zt-gantt-data-task-id="${j}"]`
             );
             for (let item of taskRow) {
               item.classList.add("zt-gantt-selected");
             }
-            that.options.selectedRow = `${options.data[j].id}`;
-            that.options.selectedTask = `${options.data[j].id}`;
+            that.options.selectedRow = `${task.id}`;
+            that.options.selectedTask = `${task.id}`;
           });
 
           // loop through all the columns
           for (let k = 0; k < options.columns.length; k++) {
+            const column = this.options.columns[k];
             let cell = document.createElement("div");
             cell.classList.add("zt-gantt-cell");
 
@@ -6115,17 +6023,13 @@
             this.addClassesFromFunction(
               this.templates.grid_cell_class,
               cell,
-              this.options.columns[k],
-              this.options.data[j]
+              column,
+              task
             );
 
-            cell.style.width = (options.columns[k].width || 80) + "px";
-            options.columns[k].align
-              ? (cell.style.textAlign = options.columns[k].align)
-              : "";
-            options.columns[k].align
-              ? (cell.style.justifyContent = options.columns[k].align)
-              : "";
+            cell.style.width = (column.width || 80) + "px";
+            column.align ? (cell.style.textAlign = column.align) : "";
+            column.align ? (cell.style.justifyContent = column.align) : "";
 
             let content = document.createElement("div");
             content.classList.add(
@@ -6137,38 +6041,27 @@
             let ztGanttBlank = document.createElement("div");
             ztGanttBlank.classList.add("zt-gantt-blank");
 
-            ztGanttBlank.innerHTML = this.callTemplate(
-              "grid_blank",
-              options.data[j]
-            );
+            ztGanttBlank.innerHTML = this.callTemplate("grid_blank", task);
 
             // content
             content.innerHTML =
-              options.columns[k].template(options.data[j]) ||
-              options.data[j][options.columns[k].name] ||
-              " ";
+              column.template(task) || task[column.name] || " ";
 
-            if (options.columns[k].tree) {
+            if (column.tree) {
               cell.classList.add("zt-gantt-d-flex");
 
               // folder icon
               let folderIcon = document.createElement("div");
               folderIcon.classList.add("zt-gantt-folder-icon");
 
-              folderIcon.innerHTML = this.callTemplate(
-                "grid_folder",
-                options.data[j]
-              );
+              folderIcon.innerHTML = this.callTemplate("grid_folder", task);
 
-              if (
-                options.data[j].children &&
-                options.data[j].children.length > 0
-              ) {
+              if (task.children && task.children.length > 0) {
                 // tree icon
                 let treeIcon = document.createElement("div");
                 treeIcon.classList.add(
                   "zt-gantt-tree-icon",
-                  !this.isTaskOpened(options.data[j].id)
+                  !this.isTaskOpened(task.id)
                     ? "zt-gantt-tree-close"
                     : "zt-gantt-tree-open"
                 );
@@ -6176,22 +6069,17 @@
                 cell.append(treeIcon);
                 // toggle children
                 this.addClickListener(treeIcon, () => {
-                  const isTaskCollapse = !this.isTaskOpened(options.data[j].id);
+                  const isTaskCollapse = !this.isTaskOpened(task.id);
 
                   if (isTaskCollapse) {
-                    this.addTaskToOpenedList(options.data[j].id);
+                    this.addTaskToOpenedList(task.id);
                   } else {
-                    const openedTasks = this.options.openedTasks.indexOf(
-                      options.data[j]
-                    );
-                    if (openedTasks > -1) {
-                      this.options.openedTasks.splice(openedTasks, 1);
-                    }
+                    this.removeTaskFromOpenedList(task.id);
                   }
 
                   this.setCollapseAll(
-                    this.options.data[j].children,
-                    this.options.data[j].id,
+                    task.children,
+                    task.id,
                     isTaskCollapse ? "open" : "collapse"
                   );
 
@@ -6202,7 +6090,7 @@
 
                   // custom event of toggle tree
                   this.dispatchEvent("onTaskToggle", {
-                    task: this.options.data[j],
+                    task,
                     isTaskOpened: isTaskCollapse,
                   });
                 });
@@ -6219,13 +6107,13 @@
         }
 
         this.createSidebarChild(
-          options.data[j].children,
+          task.children,
           options,
           leftDataContainer,
           1,
           j,
           true,
-          this.isTaskOpened(options.data[j].id)
+          this.isTaskOpened(task.id)
         );
       }
       sidebar.append(leftDataContainer);
@@ -6240,28 +6128,32 @@
       setTimeout(() => {
         timelineResizerWrap.style.left = sidebar.offsetLeft + "px";
       }, 0);
-      mainContainer.append(timelineResizerWrap);
+      ztGanttLayout.append(timelineResizerWrap);
       this.resizeTimeline(timelineResizerWrap, timelineResizer, options);
-      mainContainer.append(sidebar);
+      ztGanttLayout.append(sidebar);
     }
 
     /**
      *
-     * @param {HTMLElement} ztGanttLayout - the main layout element of the gantt chart.
      * @param {number} verScrollPos - vertical scrollbar position if it exist.
      * @param {number} horScrollPos - horizontal scrollbar position if it exist.
      */
-    createScrollbar(ztGanttLayout, verScrollPos = 0, horScrollPos = 0) {
-      const layout = document.querySelector("#zt-gantt-layout");
-      const timeline = document.querySelector("#zt-gantt-timeline-cell");
-      const timelineData = document.querySelector("#zt-gantt-timeline-data");
+    createScrollbar(verScrollPos = 0, horScrollPos = 0) {
+      const ztGanttLayout = this.ztGanttLayout;
+      const timeline = this.element.querySelector("#zt-gantt-timeline-cell");
+      const timelineData = this.element.querySelector(
+        "#zt-gantt-timeline-data"
+      );
       const headerHeight = this.calculateScaleHeight("scroll");
-      const rightSideBar = document.querySelector("#zt-gantt-grid-right-data");
+      const sidebar = this.element.querySelector("#zt-gantt-grid-left-data");
+      const rightSideBar = this.element.querySelector(
+        "#zt-gantt-grid-right-data"
+      );
 
-      const isVerScrollExist = document.querySelectorAll(
+      const isVerScrollExist = this.element.querySelectorAll(
         ".zt-gantt-ver-scroll-cell"
       );
-      const isHorScrollExist = document.querySelectorAll(
+      const isHorScrollExist = this.element.querySelectorAll(
         ".zt-gantt-hor-scroll-cell"
       );
 
@@ -6293,7 +6185,7 @@
       const horScrollContent = document.createElement("div");
       horScrollContent.style.width =
         timeline.scrollWidth +
-        (layout.offsetWidth - timeline.offsetWidth) +
+        (ztGanttLayout.offsetWidth - timeline.offsetWidth) +
         "px";
       horScroll.append(horScrollContent);
       horScrollContainer.append(horScroll);
@@ -6302,28 +6194,26 @@
       removeExistingScrollElements(isHorScrollExist);
 
       if (
-        timeline.scrollWidth + (layout.offsetWidth - timeline.offsetWidth) >
-        layout.offsetWidth
+        timeline.scrollWidth +
+          (ztGanttLayout.offsetWidth - timeline.offsetWidth) >
+        ztGanttLayout.offsetWidth
       ) {
         ztGanttLayout.append(horScrollContainer);
       }
 
-      const sidebar = document.querySelector("#zt-gantt-grid-left-data");
-      const calendar = document.querySelector("#zt-gantt-timeline-cell");
-
-      verticalScroll.scrollTop = verScrollPos || calendar.scrollTop;
-      horScroll.scrollLeft = horScrollPos || calendar.scrollLeft;
+      verticalScroll.scrollTop = verScrollPos || timeline.scrollTop;
+      horScroll.scrollLeft = horScrollPos || timeline.scrollLeft;
 
       let that = this;
-      calendar.removeEventListener("scroll", handleCalendarScroll);
-      calendar.addEventListener("scroll", handleCalendarScroll);
+      timeline.removeEventListener("scroll", handleCalendarScroll);
+      timeline.addEventListener("scroll", handleCalendarScroll);
 
       function handleCalendarScroll(e) {
-        sidebar.scrollTop = calendar.scrollTop;
-        horScroll.scrollLeft = calendar.scrollLeft;
-        verticalScroll.scrollTop = calendar.scrollTop;
+        sidebar.scrollTop = timeline.scrollTop;
+        horScroll.scrollLeft = timeline.scrollLeft;
+        verticalScroll.scrollTop = timeline.scrollTop;
         if (rightSideBar) {
-          rightSideBar.scrollTop = calendar.scrollTop;
+          rightSideBar.scrollTop = timeline.scrollTop;
         }
 
         that.dispatchEvent("onScroll", { event: e });
@@ -6333,7 +6223,7 @@
       sidebar.addEventListener("scroll", handleSidebarScroll);
 
       function handleSidebarScroll() {
-        calendar.scrollTop = sidebar.scrollTop;
+        timeline.scrollTop = sidebar.scrollTop;
         verticalScroll.scrollTop = sidebar.scrollTop;
         if (rightSideBar) {
           rightSideBar.scrollTop = sidebar.scrollTop;
@@ -6344,7 +6234,7 @@
       horScroll.removeEventListener("scroll", handleHorScroll);
       horScroll.addEventListener("scroll", handleHorScroll);
       function handleHorScroll() {
-        calendar.scrollLeft = horScroll.scrollLeft;
+        timeline.scrollLeft = horScroll.scrollLeft;
       }
 
       // for rightSideBar custom scroll
@@ -6352,7 +6242,7 @@
         rightSideBar.removeEventListener("scroll", handleRightSidebarScroll);
         rightSideBar.addEventListener("scroll", handleRightSidebarScroll);
         function handleRightSidebarScroll() {
-          calendar.scrollTop = rightSideBar.scrollTop;
+          timeline.scrollTop = rightSideBar.scrollTop;
           verticalScroll.scrollTop = rightSideBar.scrollTop;
           sidebar.scrollTop = rightSideBar.scrollTop;
         }
@@ -6360,19 +6250,19 @@
 
       // for vertical custom scroller
       verticalScroll.addEventListener("scroll", function () {
-        calendar.scrollTop = verticalScroll.scrollTop;
+        timeline.scrollTop = verticalScroll.scrollTop;
         sidebar.scrollTop = verticalScroll.scrollTop;
         if (rightSideBar) {
           rightSideBar.scrollTop = verticalScroll.scrollTop;
         }
       });
 
-      const timelineResizer = document.querySelector(
+      const timelineResizer = this.element.querySelector(
         "#zt-gantt-timeline-resizer-wrap"
       );
       if (timelineResizer) {
         timelineResizer.style.left =
-          calendar.offsetLeft + calendar.offsetWidth + "px";
+          timeline.offsetLeft + timeline.offsetWidth + "px";
       }
 
       function createCustomScrollContainer(id) {
@@ -6418,7 +6308,7 @@
 
       function handleMouseDown(event) {
         startX = event.x;
-        leftResizer = document.querySelector(
+        leftResizer = that.element.querySelector(
           "#zt-gantt-left-layout-resizer-wrap"
         );
         resizerLeft = resizer.offsetLeft;
@@ -6434,7 +6324,7 @@
         document.removeEventListener("mousemove", resize, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
         if (timeLineResizing) {
-          let rightSideBar = document.querySelector(
+          let rightSideBar = that.element.querySelector(
             "#zt-gantt-grid-right-data"
           );
 
@@ -6459,7 +6349,7 @@
             headerCell = document.getElementsByClassName("right-head-cell");
 
           for (let j = 0; j < headerCell.length; j++) {
-            let columns = document.querySelectorAll(
+            let columns = that.element.querySelectorAll(
               `[data-column-index="r-${j}"]`
             );
 
@@ -6497,8 +6387,7 @@
             that.calculateTimeLineWidth("updated") ===
             that.calculateTimeLineWidth("current")
           ) {
-            const ztGanttLayout = document.querySelector(".zt-gantt-layout");
-            that.createScrollbar(ztGanttLayout);
+            that.createScrollbar();
           } else {
             // rerender the calendar and scale
             that.updateBody();
@@ -6671,8 +6560,8 @@
 
       function handleEvent(e) {
         if (eventNamesToCheck.includes(name)) {
-          that.eventValue = callback(e.detail);
-          that.eventValue = that.eventValue !== false;
+          that.#eventValue = callback(e.detail);
+          that.#eventValue = that.#eventValue !== false;
         } else {
           callback(e.detail);
         }
@@ -6717,7 +6606,7 @@
      */
     clearAll() {
       this.#arrangeData = true;
-      this.options.openedTasks = [];
+      this.options.openedTasks.length = 0;
     }
 
     /**
@@ -6751,14 +6640,13 @@
 
     // open a specific task tree
     openTask(id) {
-      if (id === null || id === undefined || this.isTaskOpened(id)) {
+      if (!id || this.isTaskOpened(id)) {
         return;
       }
 
-      const sidebar = document.querySelector("#zt-gantt-left-grid");
+      const sidebar = this.element.querySelector("#zt-gantt-left-grid");
       const taskRow = sidebar.querySelector(`[zt-gantt-task-id="${id}"]`);
-      const children = document.querySelectorAll(`.zt-gantt-child-${id}`);
-      const ztGanttLayout = document.querySelector("#zt-gantt-layout");
+      const children = this.element.querySelectorAll(`.zt-gantt-child-${id}`);
       const toggleTreeIcon = taskRow.querySelector(".zt-gantt-tree-icon");
 
       let task = this.getTask(id);
@@ -6781,10 +6669,10 @@
         toggleTreeIcon.classList.add("zt-gantt-tree-open");
       }
       let verScroll =
-        document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+        this.element.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
       let horScroll =
-        document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
-      this.createScrollbar(ztGanttLayout, verScroll, horScroll);
+        this.element.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+      this.createScrollbar(verScroll, horScroll);
     }
 
     /**
@@ -6794,7 +6682,7 @@
     parse(data) {
       const uniqueData = data.filter((obj) => !this.getTask(obj.id));
 
-      this.options.data = [...this.originalData, ...uniqueData];
+      this.options.data = [...this.#originalData, ...uniqueData];
       this.#arrangeData = true;
 
       if (this.options.collapse === false) {
@@ -6844,12 +6732,12 @@
      * @param {object} link - The link object containing link type information.
      */
     createLinks(sourceId, targetId, link) {
-      const linksArea = document.querySelector("#zt-gantt-links-area");
+      const linksArea = this.element.querySelector("#zt-gantt-links-area");
 
-      const source = document.querySelector(
+      const source = this.element.querySelector(
         `[zt-gantt-taskbar-id="${sourceId}"]`
       );
-      const target = document.querySelector(
+      const target = this.element.querySelector(
         `[zt-gantt-taskbar-id="${targetId}"]`
       );
 
@@ -6861,7 +6749,8 @@
         return;
       }
 
-      let rowHeight = document.querySelector(".zt-gantt-bar-task").offsetHeight,
+      let rowHeight =
+          this.element.querySelector(".zt-gantt-bar-task").offsetHeight,
         sourceLeft = source.offsetLeft,
         sourceWidth = source.offsetWidth,
         sourceTop = source.offsetTop,
@@ -7554,7 +7443,7 @@
      * @param {string | number} id - The ID of the link to be deleted.
      */
     deleteLink(id) {
-      let link = document.querySelector(`[link-id="${id}"]`);
+      let link = this.element.querySelector(`[link-id="${id}"]`);
       if (link !== undefined && link !== null) {
         link.remove();
         const linkIndex = this.options.links.findIndex((obj) => obj.id == id);
@@ -7583,7 +7472,8 @@
         that = this,
         autoScroll = false,
         rightPanelScroll,
-        barsArea;
+        barsArea,
+        linkDirection;
 
       linkPoint.removeEventListener("mousedown", handleMouseDown);
       linkPoint.addEventListener("mousedown", handleMouseDown);
@@ -7593,6 +7483,17 @@
         barsArea = document.getElementById("zt-gantt-bars-area");
         startX = e.clientX + rightPanelScroll.scrollLeft;
         startY = e.clientY + rightPanelScroll.scrollTop;
+
+        let linksArea = that.element.querySelector("#zt-gantt-links-area");
+
+        if (!linkDirection) {
+          linkDirection = document.createElement("div");
+          linkDirection.classList.add("zt-gantt-link-direction");
+          linksArea.append(linkDirection);
+        } else {
+          linkDirection.style.width = `0px`;
+          linksArea.append(linkDirection);
+        }
 
         barsArea.classList.add("zt-gantt-link-streching");
         source.classList.add("source");
@@ -7606,8 +7507,8 @@
         document.removeEventListener("mousemove", strechLink, false);
         document.removeEventListener("mouseup", handleMouseUp, false);
 
-        let selectedTarget = document.querySelector(".selected-target");
-        if (selectedTarget !== undefined && selectedTarget !== null) {
+        let selectedTarget = that.element.querySelector(".selected-target");
+        if (selectedTarget) {
           selectedTarget.classList.remove("selected-target");
         }
 
@@ -7615,7 +7516,7 @@
         source.classList.remove("source");
 
         if (strech) {
-          document.querySelector(".zt-gantt-link-direction").remove();
+          linkDirection.remove();
           let linkType =
             type === "left" && targetType === "left"
               ? 1
@@ -7643,8 +7544,8 @@
             type: linkType,
           });
 
-          if (that.eventValue === false) {
-            that.eventValue = true;
+          if (that.#eventValue === false) {
+            that.#eventValue = true;
             return;
           }
 
@@ -7674,19 +7575,6 @@
 
       function strechLink(e) {
         strech = true;
-
-        let linkDirection;
-        let isLinkDirectionExist = document.querySelector(
-          ".zt-gantt-link-direction"
-        );
-        let linksArea = document.querySelector("#zt-gantt-links-area");
-        if (!isLinkDirectionExist) {
-          linkDirection = document.createElement("div");
-          linkDirection.classList.add("zt-gantt-link-direction");
-          linksArea.append(linkDirection);
-        } else {
-          linkDirection = isLinkDirectionExist;
-        }
 
         linkDirection.style.left =
           (type === "right"
@@ -7815,7 +7703,7 @@
         } else {
           targetId = null;
           targetType = undefined;
-          let selectedTarget = document.querySelector(".selected-target");
+          let selectedTarget = that.element.querySelector(".selected-target");
           if (selectedTarget !== undefined && selectedTarget !== null) {
             selectedTarget.classList.remove("selected-target");
           }
@@ -7929,7 +7817,7 @@
         that = this,
         taskParent,
         end_date,
-        timeLineContainer,
+        timelineContainer,
         autoScroll = false,
         scrollSpeed = 5;
 
@@ -7943,10 +7831,12 @@
           e.ctrlKey
         )
           return;
-        taskBarArea = document.querySelector("#zt-gantt-bars-area");
-        timeLineContainer = document.querySelector("#zt-gantt-timeline-cell");
+        taskBarArea = that.element.querySelector("#zt-gantt-bars-area");
+        timelineContainer = that.element.querySelector(
+          "#zt-gantt-timeline-cell"
+        );
         startX =
-          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft;
+          e.clientX + timelineContainer.scrollLeft - that.element.offsetLeft;
         let classesToCheck = ["zt-gantt-task-row", "zt-gantt-task-cell"];
 
         let isClassPresent = false;
@@ -7972,7 +7862,7 @@
         taskArea.classList.add("task-area");
         taskArea.style.top = `${taskAreaRow.offsetTop}px`;
         taskArea.style.left = `${
-          e.clientX - timeLine.offsetLeft + timeLineContainer.scrollLeft
+          e.clientX - timeLine.offsetLeft + timelineContainer.scrollLeft
         }px`;
         taskArea.style.height = `${taskAreaRow.offsetHeight}px`;
 
@@ -8039,30 +7929,30 @@
         hasMoved = true;
 
         if (
-          e.clientX + timeLineContainer.scrollLeft - that.element.offsetLeft <
+          e.clientX + timelineContainer.scrollLeft - that.element.offsetLeft <
           startX
         ) {
           taskArea.style.left = `${
             e.clientX -
             timeLine.offsetLeft +
-            timeLineContainer.scrollLeft -
+            timelineContainer.scrollLeft -
             that.element.offsetLeft
           }px`;
           taskArea.style.width = `${
             startX -
             (e.clientX - that.element.offsetLeft) -
-            timeLineContainer.scrollLeft
+            timelineContainer.scrollLeft
           }px`;
         } else {
           taskArea.style.left = `${startX - timeLine.offsetLeft}px`;
           taskArea.style.width = `${
             e.clientX -
             startX +
-            timeLineContainer.scrollLeft -
+            timelineContainer.scrollLeft -
             that.element.offsetLeft
           }px`;
         }
-        let isTaskAreaExist = document.querySelector("#task-area");
+        let isTaskAreaExist = that.element.querySelector("#task-area");
         if (!isTaskAreaExist) {
           if (startX !== e.clientX) {
             taskBarArea.append(taskArea);
@@ -8071,17 +7961,17 @@
 
         function startAutoScroll(type) {
           if (type === "right") {
-            timeLineContainer.scrollLeft += scrollSpeed;
+            timelineContainer.scrollLeft += scrollSpeed;
             if (
-              timeLineContainer.scrollLeft >=
-              timeLineContainer.scrollWidth - timeLineContainer.clientWidth
+              timelineContainer.scrollLeft >=
+              timelineContainer.scrollWidth - timelineContainer.clientWidth
             ) {
               autoScroll = false;
               return;
             }
           } else if (type === "left") {
-            timeLineContainer.scrollLeft -= scrollSpeed;
-            if (timeLineContainer.scrollLeft <= 0) {
+            timelineContainer.scrollLeft -= scrollSpeed;
+            if (timelineContainer.scrollLeft <= 0) {
               autoScroll = false;
               return;
             }
@@ -8094,9 +7984,9 @@
         }
 
         const scrollContainer =
-          that.element.offsetLeft + timeLineContainer.offsetLeft;
+          that.element.offsetLeft + timelineContainer.offsetLeft;
         const scrollThresholdRight =
-          scrollContainer + timeLineContainer.offsetWidth - 30;
+          scrollContainer + timelineContainer.offsetWidth - 30;
         const scrollThresholdLeft = scrollContainer + 30;
 
         // auto scroll the div left and right
@@ -8133,7 +8023,9 @@
 
       function handleMouseDown(e) {
         startProgressWidth = progress.offsetWidth;
-        timeLineContainer = document.querySelector("#zt-gantt-timeline-cell");
+        timeLineContainer = that.element.querySelector(
+          "#zt-gantt-timeline-cell"
+        );
         startX = e.clientX + timeLineContainer.scrollLeft;
 
         document.addEventListener("mousemove", resize, false);
@@ -8151,7 +8043,7 @@
           resizer.style.left = `${progressPer}%`;
 
           task.progress = progressPer;
-          that.originalData.findIndex((item) => {
+          that.#originalData.findIndex((item) => {
             if (item.id == task.id) {
               item.progress = progressPer;
             }
@@ -8166,7 +8058,7 @@
         that.dispatchEvent("onBeforeProgressDrag", { task });
 
         // if onBeforeProgressDrag return false then do not drag the Progress
-        if (that.eventValue === false) {
+        if (that.#eventValue === false) {
           return;
         }
 
@@ -8235,15 +8127,14 @@
      */
     updateBody() {
       this.verScroll =
-        document.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
+        this.element.querySelector(".zt-gantt-ver-scroll")?.scrollTop || 0;
       this.horScroll =
-        document.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
+        this.element.querySelector(".zt-gantt-hor-scroll")?.scrollLeft || 0;
 
-      const timeline = document.getElementById("zt-gantt-timeline-cell");
-      const ganttLayout = document.querySelector(".zt-gantt-layout");
+      const timeline = this.element.querySelector("#zt-gantt-timeline-cell");
       timeline.innerHTML = "";
       this.createTimelineScale(timeline);
-      this.createTimelineBody(timeline, ganttLayout);
+      this.createTimelineBody(timeline);
     }
 
     /**
@@ -8257,11 +8148,11 @@
 
         if (!link) return;
 
-        let source = document.querySelector(
+        let source = this.element.querySelector(
           `[zt-gantt-taskbar-id="${link.source}"]`
         );
 
-        let target = document.querySelector(
+        let target = this.element.querySelector(
           `[zt-gantt-taskbar-id="${link.target}"]`
         );
 
@@ -8275,25 +8166,24 @@
         switch (link.type) {
           case 1:
             if (targetLeft < sourceLeft) {
-              target.style.left = sourceLeft + "px";
+              target.style.left = `${sourceLeft}px`;
             }
             break;
           case 2:
             if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
               target.style.left =
-                targetLeft +
-                (sourceLeft + sourceWidth - (targetLeft + targetWidth)) +
-                "px";
+                `${targetLeft +
+                (sourceLeft + sourceWidth - (targetLeft + targetWidth))}px`;
             }
             break;
           case 3:
             if (targetLeft + targetWidth < sourceLeft) {
-              target.style.left = sourceLeft - targetWidth + "px";
+              target.style.left = `${sourceLeft - targetWidth}px`;
             }
             break;
           case 0:
             if (targetLeft < sourceLeft + sourceWidth) {
-              target.style.left = sourceLeft + sourceWidth + "px";
+              target.style.left = `${sourceLeft + sourceWidth}px`;
             }
             break;
         }
@@ -8314,9 +8204,8 @@
         target.offsetLeft / this.calculateGridWidth(task.start_date, "day")
       );
 
-      let taskStartDate = this.dates[
-        dateDiff - (task.type === "milestone" ? 1 : 0)
-      ];
+      let taskStartDate =
+        this.dates[dateDiff - (task.type === "milestone" ? 1 : 0)];
 
       // if taskStartDate is less than the gantt range
       if (!taskStartDate) {
@@ -8327,12 +8216,13 @@
 
     // calculateTaskEndDate by element
     calculateTaskEndDate(target, task) {
-      let taskEndDate = this.dates[
-        Math.round(
-          (target.offsetLeft + target.offsetWidth) /
-            this.calculateGridWidth(task.start_date, "day")
-        ) - 1
-      ];
+      let taskEndDate =
+        this.dates[
+          Math.round(
+            (target.offsetLeft + target.offsetWidth) /
+              this.calculateGridWidth(task.start_date, "day")
+          ) - 1
+        ];
 
       // if taskEndDate is greater than the gantt range
       if (!taskEndDate) {
@@ -8637,27 +8527,35 @@
 
       const setColorToOriginalData = (color) => {
         task.taskColor = color;
-        const taskIndex = this.originalData.findIndex(
+        const taskIndex = this.#originalData.findIndex(
           (item) => item.id == task.id
         );
         if (taskIndex !== -1) {
-          this.originalData[taskIndex].taskColor = color;
+          this.#originalData[taskIndex].taskColor = color;
         }
       };
     }
 
+    /**
+     * Method to change the opacity of a given color.
+     * @param {string} color - The color to change the opacity of.
+     * @returns {string} - The color with the specified opacity in rgba format.
+     */
     changeOpacity(color) {
       const opacity = this.options.taskOpacity;
+
       const tempElement = document.createElement("div");
       tempElement.style.color = color;
       document.body.appendChild(tempElement);
-      let computedColor = window.getComputedStyle(tempElement).color;
-      document.body.removeChild(tempElement);
 
-      let rgbaColor = computedColor
-        .replace("rgb", "rgba")
-        .replace(")", "," + opacity + ")");
-      return rgbaColor;
+      const computedColor = window.getComputedStyle(tempElement).color;
+
+      document.body.removeChild(tempElement);
+      // Extract the rgb values
+      const rgbValues = computedColor.match(/\d+/g).map(Number);
+      
+      // Return the color in rgba format with the specified opacity
+      return `rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${opacity})`;
     }
 
     // Function to convert RGBA to HEX
@@ -8689,10 +8587,9 @@
      * and resetting the main element.
      */
     destroy() {
-      const layout = document.querySelector("#zt-gantt-layout");
-
-      if (layout) {
-        layout.remove();
+      if (this.ztGanttLayout) {
+        this.ztGanttLayout.remove();
+        this.ztGanttLayout = null;
       }
 
       if (this.tooltip) this.tooltip.remove();
@@ -8712,7 +8609,7 @@
         this.handleFullScreenChange
       );
       window.removeEventListener("resize", this.handleResizeWindow);
-      let newElement = this.element.cloneNode(true);
+      const newElement = this.element.cloneNode(true);
       this.element.replaceWith(newElement);
       this.element = newElement;
     }
@@ -8725,27 +8622,25 @@
      * @returns {boolean} - Returns true if both elements exist and are not hidden, false otherwise.
      */
     isTaskExistOrHidden(source, target) {
+      if (!source || !target || source === target) {
+        return false; // Return false if either element is null, undefined, or the same element
+      }
+
       let sourceStyle = source ? window.getComputedStyle(source) : null;
       let targetStyle = target ? window.getComputedStyle(target) : null;
 
       let isSourceHidden = sourceStyle ? sourceStyle.display === "none" : false;
       let isTargetHidden = targetStyle ? targetStyle.display === "none" : false;
 
-      if (
-        source == undefined ||
-        source == null ||
-        target == undefined ||
-        target == null ||
-        source == target ||
-        isTargetHidden ||
-        isSourceHidden
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      return !isSourceHidden && !isTargetHidden;
     }
 
+    /**
+     * Method to create split tasks.
+     *
+     * @param {*} barContainer  - taskbar container.
+     * @param {*} isFromRender  - is calling from render or not.
+     */
     createSplitTask(barContainer = null, isFromRender = false) {
       let rowCount = 0;
 
@@ -8938,8 +8833,8 @@
             that.dispatchEvent("onBeforeTaskDblClick", { task });
 
             // if onBeforeTaskDblClick return false then do not drag the task
-            if (that.eventValue === false) {
-              that.eventValue = true;
+            if (that.#eventValue === false) {
+              that.#eventValue = true;
               return;
             }
 
@@ -9107,13 +9002,11 @@
                   ? ztGanttBarTaskContent
                   : ztGanttBarTask;
               // Get the computed style of the element
-              const ztGanttBarTaskStyle = window.getComputedStyle(
-                backgroundElement
-              );
+              const ztGanttBarTaskStyle =
+                window.getComputedStyle(backgroundElement);
               // Get the background-color property value
-              const backgroundColor = ztGanttBarTaskStyle.getPropertyValue(
-                "background-color"
-              );
+              const backgroundColor =
+                ztGanttBarTaskStyle.getPropertyValue("background-color");
               colorInput.value =
                 task.taskColor || this.rgbaToHex(backgroundColor);
             }, 0);
@@ -9198,30 +9091,31 @@
     }
 
     /**
-     * Method to calculate gantt height.
-     * @returns { number } gantt height
+     * Method to calculate Gantt chart height.
+     * @returns {number} - The total Gantt chart height.
      */
     get calculateGanttHeight() {
       let totalGanttHeight = this.calculateScaleHeight("scroll");
 
-      let that = this;
+      // Helper function to calculate the height of visible tasks recursively
+      const calculateVisibleTasksHeight = (task) => {
+        let childHeight = 0;
+        if (this.isTaskOpened(task.id)) {
+          childHeight += task.children.length * this.options.row_height;
+          task?.children?.forEach((child) => {
+            childHeight += calculateVisibleTasksHeight(child);
+          });
+        }
+        return childHeight;
+      };
+
+      // Iterate over each task to add its height to the total Gantt chart height
       this.options.data.forEach((task) => {
         totalGanttHeight += this.options.row_height;
         if (this.isTaskOpened(task.id)) {
           totalGanttHeight += calculateVisibleTasksHeight(task);
         }
       });
-
-      function calculateVisibleTasksHeight(task) {
-        let childHight = 0;
-        if (that.isTaskOpened(task.id)) {
-          childHight += task.children.length * that.options.row_height;
-          task.children.forEach((child) => {
-            childHight += calculateVisibleTasksHeight(child);
-          });
-        }
-        return childHight;
-      }
 
       return totalGanttHeight;
     }
@@ -9269,7 +9163,7 @@
      * @param {HTMLElement} horizontalScroll - The horizontal scrollbar element.
      */
     addMouseScroll(verticalScroll, horizontalScroll) {
-      const timeLine = document.querySelector("#zt-gantt-timeline-cell");
+      const timeLine = this.element.querySelector("#zt-gantt-timeline-cell");
       timeLine.addEventListener("mousedown", handleMouseDown);
       let startX,
         startY,
@@ -9320,7 +9214,7 @@
     sort(sortBy, isAsc) {
       const sortOrderMultiplier = isAsc ? 1 : -1;
 
-      this.originalData.sort((a, b) => {
+      this.#originalData.sort((a, b) => {
         let valueA = this.getFieldValue(a, sortBy);
         let valueB = this.getFieldValue(b, sortBy);
 
@@ -9365,11 +9259,11 @@
       const editorWraper = document.createElement("div");
       editorWraper.classList.add("zt-gantt-inline-editor-wraper");
       editorWraper.style.cssText = `
-          top: ${cell.offsetTop}px;
-          left: ${cell.offsetLeft}px;
-          height: ${cell.offsetHeight}px;
-          width: ${cell.offsetWidth}px;
-      `;
+            top: ${cell.offsetTop}px;
+            left: ${cell.offsetLeft}px;
+            height: ${cell.offsetHeight}px;
+            width: ${cell.offsetWidth}px;
+        `;
 
       const editor = document.createElement(
         editorData.type === "select" ? "select" : "input"
@@ -9620,6 +9514,7 @@
      * @param { Object } task task to select
      */
     selectTask(task) {
+      const that = this;
       removeClassFromElements(".zt-gantt-selected", "zt-gantt-selected");
       removeClassFromElements(
         ".zt-gantt-selected-task-bar",
@@ -9630,7 +9525,7 @@
       this.scrollToTask(task.id);
 
       // Select the current task bar
-      const currentTaskBar = document.querySelector(
+      const currentTaskBar = this.element.querySelector(
         `[zt-gantt-taskbar-id="${task.id}"]`
       );
 
@@ -9639,7 +9534,7 @@
       }
 
       // Select the task row
-      const taskRows = document.querySelectorAll(
+      const taskRows = this.element.querySelectorAll(
         `[zt-gantt-task-id="${task.id}"]`
       );
 
@@ -9652,7 +9547,7 @@
       this.options.selectedTask = `${task.id}`;
 
       function removeClassFromElements(selector, className) {
-        const elements = document.querySelectorAll(selector);
+        const elements = that.element.querySelectorAll(selector);
         elements.forEach((element) => {
           element.classList.remove(className);
         });
@@ -9664,8 +9559,10 @@
      * @param {string | number} taskId
      */
     scrollToTask(taskId) {
-      const horizontalScroll = document.querySelector(".zt-gantt-hor-scroll");
-      const taskBar = document.querySelector(
+      const horizontalScroll = this.element.querySelector(
+        ".zt-gantt-hor-scroll"
+      );
+      const taskBar = this.element.querySelector(
         `[zt-gantt-taskbar-id="${taskId}"]`
       );
 
@@ -9721,6 +9618,17 @@
      */
     addTaskToOpenedList(id) {
       this.options.openedTasks.push(id);
+    }
+
+    /**
+     * Method to remove a task from the list of opened tasks.
+     * @param {number | string} id task id
+     */
+    removeTaskFromOpenedList(id) {
+      const openedTaskIndex = this.options.openedTasks.indexOf(id);
+      if (openedTaskIndex > -1) {
+        this.options.openedTasks.splice(openedTaskIndex, 1);
+      }
     }
   }
 
