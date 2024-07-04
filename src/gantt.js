@@ -3006,15 +3006,15 @@
                   : ztGanttBarTask;
 
               // Get the computed style of the element
-              const ztGanttBarTaskStyle =
-                window.getComputedStyle(backgroundElement);
-
-              // Get the background-color property value
               const backgroundColor =
-                ztGanttBarTaskStyle.getPropertyValue("background-color");
+                task.taskColor ||
+                this.rgbaToHex(
+                  window
+                    .getComputedStyle(backgroundElement)
+                    .getPropertyValue("background-color")
+                );
 
-              colorInput.value =
-                task.taskColor || this.rgbaToHex(backgroundColor);
+              colorInput.value = backgroundColor;
             }, 0);
 
             colorPicker.append(colorInput);
@@ -5719,21 +5719,23 @@
             colorInput.type = "color";
 
             setTimeout(() => {
-              let backgroundColor = task?.taskColor;
-              if (!task?.taskColor) {
-                // Get the computed style of the element
-                const backgroundElement =
-                  task.type === "milestone"
-                    ? ztGanttBarTaskContent
-                    : ztGanttBarTask;
-                const ztGanttBarTaskStyle =
-                  window.getComputedStyle(backgroundElement);
-                // Get the background-color property value
-                backgroundColor =
-                  ztGanttBarTaskStyle.getPropertyValue("background-color");
-              }
-              colorInput.value =
-                task?.taskColor || this.rgbaToHex(backgroundColor);
+              // Determine the background element based on task type
+              const backgroundElement =
+                task?.type === "milestone"
+                  ? ztGanttBarTaskContent
+                  : ztGanttBarTask;
+
+              // Get task color or computed background color
+              const backgroundColor =
+                task?.taskColor ||
+                this.rgbaToHex(
+                  window
+                    .getComputedStyle(backgroundElement)
+                    .getPropertyValue("background-color")
+                );
+
+              // Set color input value to task color or converted rgba to hex color
+              colorInput.value = backgroundColor;
             }, 0);
 
             colorPicker.append(colorInput);
@@ -5942,7 +5944,7 @@
       }
 
       // data loop of left side
-      let leftDataContainer = document.createElement("div");
+      const leftDataContainer = document.createElement("div");
       leftDataContainer.classList.add("zt-gantt-grid-data");
       leftDataContainer.id = "zt-gantt-left-grid";
       setTimeout(() => {
@@ -7473,7 +7475,10 @@
         autoScroll = false,
         rightPanelScroll,
         barsArea,
-        linkDirection;
+        linkDirection,
+        scrollSpeed = 5, // Adjust the scroll speed by changing the value here
+        autoScrollDelay = 5, // Adjust the scroll delay by changing the value here
+        autoScrollTimer;
 
       linkPoint.removeEventListener("mousedown", handleMouseDown);
       linkPoint.addEventListener("mousedown", handleMouseDown);
@@ -7598,8 +7603,6 @@
         let hypo = Math.sqrt(base * base + perp * perp);
         linkDirection.style.width = hypo + "px";
 
-        let scrollSpeed = 5;
-
         function startAutoScroll(type) {
           if (type === "right") {
             rightPanelScroll.scrollLeft += scrollSpeed;
@@ -7633,9 +7636,12 @@
             }
           }
           if (autoScroll) {
-            setTimeout(() => {
+            if (autoScrollTimer) {
+              clearInterval(autoScrollTimer);
+            }
+            autoScrollTimer = setTimeout(() => {
               startAutoScroll(type);
-            }, 50); // Adjust the scroll delay by changing the value here
+            }, autoScrollDelay); // Adjust the scroll delay by changing the value here
           }
         }
 
@@ -7819,7 +7825,9 @@
         end_date,
         timelineContainer,
         autoScroll = false,
-        scrollSpeed = 5;
+        scrollSpeed = 5, // Adjust the scroll speed by changing the value here
+        autoScrollDelay = 5, // Adjust the scroll delay by changing the value here
+        autoScrollTimer;
 
       timeLine.removeEventListener("mousedown", handleMouseDown);
       timeLine.addEventListener("mousedown", handleMouseDown);
@@ -7977,9 +7985,12 @@
             }
           }
           if (autoScroll) {
-            setTimeout(() => {
+            if (autoScrollTimer) {
+              clearInterval(autoScrollTimer);
+            }
+            autoScrollTimer = setTimeout(() => {
               startAutoScroll(type);
-            }, 50); // Adjust the scroll delay by changing the value here
+            }, autoScrollDelay); // Adjust the scroll delay by changing the value here
           }
         }
 
@@ -8015,7 +8026,9 @@
         that = this,
         autoScroll = false,
         timeLineContainer,
-        scrollSpeed = 5,
+        scrollSpeed = 5, // Adjust the scroll speed by changing the value here
+        autoScrollDelay = 5, // Adjust the scroll delay by changing the value here
+        autoScrollTimer,
         startProgressWidth;
 
       resizer.removeEventListener("mousedown", handleMouseDown);
@@ -8078,6 +8091,8 @@
         progress.style.width = `${progressWidth}px`;
         resizer.style.left = `${progressWidth}px`;
 
+        const progressPer = (progress.offsetWidth / taskBar.offsetWidth) * 100;
+
         // function for auto scroll
         function startAutoScroll(type) {
           if (type === "right") {
@@ -8097,9 +8112,13 @@
             }
           }
           if (autoScroll) {
-            setTimeout(() => {
+            if (autoScrollTimer) {
+              clearInterval(autoScrollTimer);
+            }
+
+            autoScrollTimer = setTimeout(() => {
               startAutoScroll(type);
-            }, 50);
+            }, autoScrollDelay);
           }
         }
 
@@ -8110,10 +8129,16 @@
         const scrollThresholdLeft = scrollContainer + 30;
 
         // auto scroll the div left and right
-        if (e.clientX > scrollThresholdRight - window.scrollX) {
+        if (
+          e.clientX > scrollThresholdRight - window.scrollX &&
+          progressPer < 100
+        ) {
           autoScroll = true;
           startAutoScroll("right");
-        } else if (e.clientX < scrollThresholdLeft - window.scrollX) {
+        } else if (
+          e.clientX < scrollThresholdLeft - window.scrollX &&
+          progressPer > 0
+        ) {
           autoScroll = true;
           startAutoScroll("left");
         } else {
@@ -8171,9 +8196,10 @@
             break;
           case 2:
             if (targetLeft + targetWidth < sourceLeft + sourceWidth) {
-              target.style.left =
-                `${targetLeft +
-                (sourceLeft + sourceWidth - (targetLeft + targetWidth))}px`;
+              target.style.left = `${
+                targetLeft +
+                (sourceLeft + sourceWidth - (targetLeft + targetWidth))
+              }px`;
             }
             break;
           case 3:
@@ -8553,7 +8579,7 @@
       document.body.removeChild(tempElement);
       // Extract the rgb values
       const rgbValues = computedColor.match(/\d+/g).map(Number);
-      
+
       // Return the color in rgba format with the specified opacity
       return `rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${opacity})`;
     }
@@ -9001,14 +9027,17 @@
                 task.type === "milestone"
                   ? ztGanttBarTaskContent
                   : ztGanttBarTask;
+                  
               // Get the computed style of the element
-              const ztGanttBarTaskStyle =
-                window.getComputedStyle(backgroundElement);
-              // Get the background-color property value
               const backgroundColor =
-                ztGanttBarTaskStyle.getPropertyValue("background-color");
-              colorInput.value =
-                task.taskColor || this.rgbaToHex(backgroundColor);
+                task.taskColor ||
+                this.rgbaToHex(
+                  window
+                    .getComputedStyle(backgroundElement)
+                    .getPropertyValue("background-color")
+                );
+
+              colorInput.value = backgroundColor;
             }, 0);
 
             colorPicker.append(colorInput);
