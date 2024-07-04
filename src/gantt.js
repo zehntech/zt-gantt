@@ -4046,13 +4046,13 @@
           });
         }
 
-        resizeTask = true;
-
         // if onBeforeTaskDrag return false then do not drag the task
         if (that.eventValue === false) {
           return;
         }
 
+        resizeTask = true;
+        
         function startAutoScroll(type) {
           if (type === "right") {
             rightPanelScroll.scrollLeft += scrollSpeed;
