@@ -1989,11 +1989,7 @@
 
       // create links
       for (let i = 0; i < this.options.links.length; i++) {
-        this.createLinks(
-          this.options.links[i].source,
-          this.options.links[i].target,
-          this.options.links[i]
-        );
+        this.createLink(this.options.links[i]);
       }
     }
 
@@ -3127,11 +3123,7 @@
         }
 
         for (let i = 0; i < this.options.links.length; i++) {
-          this.createLinks(
-            this.options.links[i].source,
-            this.options.links[i].target,
-            this.options.links[i]
-          );
+          this.createLink(this.options.links[i]);
         }
       }
     }
@@ -6503,6 +6495,9 @@
      */
     addMarker(marker) {
       this.options.customMarker.push(marker);
+      if (this.markerArea) {
+        this.addMarkerToGantt(marker);
+      }
     }
 
     // add custom marker to gantt
@@ -6729,11 +6724,11 @@
      * 1 is  start_to_start
      * 2 is  finish_to_finish
      * 3 is  start_to_finish
-     * @param {string | number} sourceId - The id of the source task.
-     * @param {string | number} targetId - The id of the target task.
      * @param {object} link - The link object containing link type information.
      */
-    createLinks(sourceId, targetId, link) {
+    createLink(link) {
+      const sourceId = link.source;
+      const targetId = link.target;
       const linksArea = this.element.querySelector("#zt-gantt-links-area");
 
       const source = this.element.querySelector(
@@ -7568,7 +7563,7 @@
               type: linkType,
             };
 
-            that.createLinks(sourceId, targetId, link);
+            that.createLink(link);
             that.options.links.push(link);
 
             // handle custom event
@@ -9027,7 +9022,7 @@
                 task.type === "milestone"
                   ? ztGanttBarTaskContent
                   : ztGanttBarTask;
-                  
+
               // Get the computed style of the element
               const backgroundColor =
                 task.taskColor ||
