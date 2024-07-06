@@ -23,7 +23,6 @@ node_modules
 eslint.config.mjs
 
 #package
-package.json
 package-lock.json
 
 #demo files
