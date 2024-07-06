@@ -1,0 +1,227 @@
+.zt-tour-popup * {
+  font-family: Helvetica Neue, Inter, ui-sans-serif, "Apple Color Emoji",
+    Helvetica, Arial, sans-serif;
+  color: var(--text-color);
+}
+
+.zt-tour-popup {
+  all: unset;
+  box-sizing: border-box;
+  color: var(--text-color);
+  margin: 0;
+  border-radius: 5px;
+  min-width: 250px;
+  max-width: 300px;
+  box-shadow: 0 1px 10px #0006;
+  z-index: 1000000000;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: var(--bg-color);
+}
+
+.zt-tour-popup-close-btn {
+  all: unset;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 500;
+  color: #ffffff;
+  text-align: center;
+  transition: color;
+  transition-duration: 0.3s;
+  z-index: 1;
+}
+
+.zt-tour-popup-close-btn:hover {
+  color: #000;
+}
+
+.zt-tour-popup-description {
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 5px;
+}
+
+.zt-tour-popup-footer {
+  margin-top: 15px;
+  text-align: right;
+  zoom: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.zt-tour-popup-navigation-btns {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+.zt-tour-popup-footer button {
+  font-size: 12px;
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: var(--index-primary-color);
+  color: #fff;
+  border-radius: 3px;
+  border: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-left: 10px;
+}
+
+.zt-tour-popup-footer button:hover {
+  background-color: var(--index-primary-hover-color);
+}
+
+.zt-tour-popup-footer button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.zt-tour-popup-footer .zt-tour-popup-btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.zt-tour-popup-arrow {
+  content: "";
+  position: absolute;
+  border: 5px solid #408be1;
+}
+
+.zt-tour-popup-arrow-side-left {
+  left: 100%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.zt-tour-popup-arrow-side-right {
+  right: 100%;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.zt-tour-popup-arrow-side-top {
+  top: 100%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.zt-tour-popup-arrow-side-bottom {
+  bottom: 100%;
+  border-left-color: transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+}
+
+.zt-tour-popup-arrow-side-left.zt-tour-popup-arrow-align-start,
+.zt-tour-popup-arrow-side-right.zt-tour-popup-arrow-align-start {
+  top: 15px;
+}
+
+.zt-tour-popup-arrow-side-bottom.zt-tour-popup-arrow-align-start,
+.zt-tour-popup-arrow-side-top.zt-tour-popup-arrow-align-start {
+  left: 15px;
+}
+
+.zt-tour-popup-arrow-align-end.zt-tour-popup-arrow-side-left,
+.zt-tour-popup-arrow-align-end.zt-tour-popup-arrow-side-right {
+  bottom: 15px;
+}
+
+.zt-tour-popup-arrow-side-bottom.zt-tour-popup-arrow-align-end,
+.zt-tour-popup-arrow-side-top.zt-tour-popup-arrow-align-end {
+  right: 15px;
+}
+
+.zt-tour-popup-arrow-side-left.zt-tour-popup-arrow-align-center,
+.zt-tour-popup-arrow-side-right.zt-tour-popup-arrow-align-center {
+  top: 50%;
+  margin-top: -5px;
+}
+
+.zt-tour-popup-arrow-side-bottom.zt-tour-popup-arrow-align-center,
+.zt-tour-popup-arrow-side-top.zt-tour-popup-arrow-align-center {
+  left: 50%;
+  margin-left: -5px;
+}
+
+.zt-tour-popup-arrow-side-over.zt-tour-popup-arrow-align-over {
+  display: none;
+}
+
+.zt-tour-d-none {
+  display: none;
+}
+
+.zt-tour-popup-title {
+  font-size: 18px;
+  font-weight: 700;
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 10px;
+  background-color: var(--index-primary-color);
+  color: #fff;
+  border-radius: 5px 5px 0 0;
+}
+
+.zt-tour-popup-description {
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  zoom: 1;
+  color: var(--text-color);
+  padding: 10px;
+}
+
+.zt-tour-hint,
+.zt-tour-announcement {
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 0 17px rgba(0, 0, 0, 0.24);
+  padding: 12px 18px;
+  border-radius: 5px;
+  max-width: 400px;
+  z-index: 10001010;
+  animation-name: fadein;
+  animation-duration: 0.2s;
+}
+
+.zt-tour-hint-backdrop,
+.zt-tour-announcement-backdrop {
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1000109;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}

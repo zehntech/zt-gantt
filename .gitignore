@@ -25,3 +25,7 @@ eslint.config.mjs
 #package
 package.json
 package-lock.json
+
+#demo files
+index.html
+style.css

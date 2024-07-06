@@ -161,7 +161,7 @@
   text-align: center;
 }
 
-.zt-gantt-scale-container {
+.zt-gantt-scale-row {
   position: relative;
   height: 29px;
   background-color: var(--timeline-scale-background);
@@ -169,11 +169,11 @@
   width: 100%;
 }
 
-.zt-gantt-scale-container:not(:nth-child(1)) {
+.zt-gantt-scale-row:not(:nth-child(1)) {
   border-top: 1px solid var(--primary-border);
 }
 
-.zt-gantt-right-cell .zt-gantt-scale {
+.zt-gantt-timeline-cell .zt-gantt-scale {
   overflow-x: hidden;
   overflow-y: hidden;
   position: sticky;
@@ -209,7 +209,7 @@
 
 .zt-gantt-left-cell,
 .zt-gantt-right-sidebar-cell,
-.zt-gantt-right-cell {
+.zt-gantt-timeline-cell {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   scrollbar-width: none;
@@ -220,7 +220,7 @@
 /* WebKit (Safari/Chrome) */
 .zt-gantt-left-cell::-webkit-scrollbar,
 .zt-gantt-right-sidebar-cell::-webkit-scrollbar,
-.zt-gantt-right-cell::-webkit-scrollbar {
+.zt-gantt-timeline-cell::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
@@ -252,7 +252,7 @@
   flex-shrink: 0;
 }
 
-.zt-gantt-right-cell {
+.zt-gantt-timeline-cell {
   height: 100%;
   overflow: auto;
 }
@@ -304,6 +304,11 @@
   margin: 0 auto;
 }
 
+.zt-gantt-left-layout-resizer-wrap .zt-gantt-left-layout-resizer.resizing,
+.zt-gantt-timeline-resizer-wrap .zt-gantt-timeline-resizer.resizing {
+  --resizer-background: #218eed;
+}
+
 .zt-gantt-grid-data {
   width: 100%;
   min-width: 100%;
@@ -328,14 +333,14 @@
 }
 
 /* .zt-gantt-selected {
-  background-color: var(--selected-background);
-} */
+    background-color: var(--selected-background);
+  } */
 
 .zt-gantt-selected > div {
   background-color: var(--selected-background);
 }
 
-.zt-gantt-scale-data {
+.zt-gantt-timeline-data {
   position: relative;
   overflow: hidden;
 }
@@ -370,7 +375,7 @@
 
 .zt-gantt-tooltip {
   padding: 10px;
-  position: absolute;
+  position: fixed; /* previous value :- absolute */
   z-index: 1080;
   white-space: nowrap;
   background-color: var(--tooltip-background);
@@ -935,7 +940,7 @@
 }
 
 .zt-gantt-bar-milestone .zt-gantt-bar-task-content {
-  background: var(--milestone-content-background);
+  background-color: var(--milestone-content-background);
   border: 1px solid var(--milestone-content-border);
   border-radius: inherit;
   box-sizing: border-box;
@@ -1134,4 +1139,19 @@
 .zt-gantt-inline-editor-wraper > select {
   height: 100%;
   width: 100%;
+}
+
+.drop-area {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  border: 2px solid var(--task-area-border);
+  background: var(--task-area-background);
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.zt-gantt-timeline-data:has(.task-dragging) .drop-area {
+  z-index: 101;
+  opacity: 1;
 }
