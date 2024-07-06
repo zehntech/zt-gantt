@@ -2578,7 +2578,7 @@
 
     /**
      * Method to create a timeline row template
-     * @returns { HTMLElement } timelineRow
+     * @returns { HTMLElement } timelineRow template element.
      */
     createRowTemplate() {
       const { options, dates } = this;
@@ -3810,7 +3810,10 @@
         scrollContainer,
         scrollThresholdRight,
         scrollThresholdLeft,
-        allTaskbars;
+        allTaskbars,
+        dropArea,
+        dropAreaHeight,
+        dropAreaTop;
 
       const timelineCellWidth = this.calculateGridWidth(task.start_date, "day");
 
@@ -3819,6 +3822,7 @@
 
       function handleMouseDown(event) {
         rightPanelScroll = document.getElementById("zt-gantt-timeline-cell");
+        dropArea = rightPanelScroll.querySelector(".drop-area");
         rightPanelScrollWidth = rightPanelScroll.scrollWidth;
         allTaskbars = that.element.querySelectorAll(".zt-gantt-bar-task");
 
@@ -4086,13 +4090,21 @@
               const rows = that.element.querySelectorAll(
                 `[zt-gantt-data-task-id^="${pos}"].zt-gantt-task-row`
               );
-              const dropAreaHeight =
+              const dropAreaNewHeight =
                 rows[rows.length - 1].offsetTop -
                 rows[0].offsetTop +
                 that.options.row_height;
-              const dropArea = that.element.querySelector(".drop-area");
-              dropArea.style.top = `${rows[0].offsetTop}px`;
-              dropArea.style.height = `${dropAreaHeight}px`;
+              const dropAreaNewTop = rows[0].offsetTop;
+
+              if(dropAreaHeight != dropAreaNewHeight){
+                dropAreaHeight = dropAreaNewHeight;
+                dropArea.style.height = `${dropAreaHeight}px`;
+              }
+              if(dropAreaTop != dropAreaNewTop){
+                dropAreaTop = dropAreaNewTop;
+                dropArea.style.top = `${dropAreaTop}px`;
+              }
+
             }
           }
 
@@ -8579,7 +8591,11 @@
       return `rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${opacity})`;
     }
 
-    // Function to convert RGBA to HEX
+    /**
+     * Method to convert RGBA to HEX.
+     * @param { string } rgbaColor - rgba color code.
+     * @returns {string | boolean} - HEX color or false if unable to convert color to rgba.
+     */
     rgbaToHex(rgbaColor) {
       if (rgbaColor) {
         const rgbaArray = rgbaColor.match(/\d+/g);
@@ -9631,6 +9647,7 @@
     /**
      * Method to check task is opened of collapsed.
      * @param {number | string} id task id
+     * @returns {boolean} - True if the task is opened, false otherwise.
      */
     isTaskOpened(id) {
       return this.options.openedTasks.includes(id);

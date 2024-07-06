@@ -79,7 +79,7 @@ body {
 }
 input[type="search"] {
   height: 35px;
-  width: 280px;
+  width: 180px;
   color: var(--text-color);
   border: 1px solid #cecece;
   margin-bottom: 0px;
@@ -103,9 +103,14 @@ input[type="checkbox"] {
   height: 0;
   width: 0;
   visibility: hidden;
+  display: none;
 }
 
 .action-container label {
+  cursor: pointer;
+}
+
+.action-container label.switch {
   cursor: pointer;
   text-indent: -9999px;
   width: 44px;
@@ -116,7 +121,7 @@ input[type="checkbox"] {
   position: relative;
 }
 
-.action-container label:after {
+.action-container label.switch:after {
   content: "";
   position: absolute;
   top: 2px;
@@ -128,11 +133,11 @@ input[type="checkbox"] {
   transition: 0.3s;
 }
 
-.action-container input:checked + label {
+.action-container input:checked + label.switch {
   background: var(--index-primary-color);
 }
 
-.action-container input:checked + label:after {
+.action-container input:checked + label.switch:after {
   left: 22px;
 }
 
@@ -153,14 +158,11 @@ input[type="checkbox"] {
   margin: 0 10px;
   height: 80px;
   align-items: center;
+  gap: 5px;
 }
 
 .action-container div {
-  margin-right: 15px;
-}
-
-.collapse-container span {
-  margin-right: 5px;
+  gap: 5px;
 }
 
 .gantt-search {

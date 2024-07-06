@@ -18,24 +18,24 @@
   <body>
     <div class="zt-gantt-d-flex action-container"> 
       <div class="collapse-container">
-        <span>Collapse</span>
+        <label for="collapse-switch">Collapse</label>
         <input
           type="checkbox"
           id="collapse-switch"
           onchange="changeCollapse(event)"
         />
-        <label for="collapse-switch">collapse</label>
+        <label class="switch" for="collapse-switch">collapse</label>
       </div>
 
       <div class="collapse-container today-container">
-        <span>Today</span>
+        <label for="today-switch">Today</label>
         <input
           type="checkbox"
           id="today-switch"
           checked="true"
           onchange="changeToday(event)"
         />
-        <label for="today-switch">Today</label>
+        <label class="switch" for="today-switch">Today</label>
       </div>
       <div class="export-data">
         <select
@@ -117,14 +117,14 @@
       </div>
 
       <div class="dark-mode">
-        <span>Dark Mode</span>
+        <label for="toggle">Dark Mode</label>
         <input
         type="checkbox"
         id="toggle"
         onchange="changeTheme(event.target.checked)"
         class="toggle--checkbox"
         />
-        <label for="toggle" class="toggle-theme"> </label>
+        <label for="toggle" class="toggle-theme switch"> </label>
       </div>
       <div class="fullscreen">
         <button class="btn" style="margin-left: 10px" onclick="startTour()">
